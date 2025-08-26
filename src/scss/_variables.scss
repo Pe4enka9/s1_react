@@ -1,0 +1,19 @@
+$red: #E7000B;
+$red2: #FF6467;
+$red-20: rgba(231, 0, 11, .2);
+$white: #FFF;
+$background: #2F2F2F;
+$gray: #D1D5DC;
+$footerBackground: #222222;
+
+$width: 90%;
+$radius: .8rem;
+$fontSize: 1.6rem;
+
+@mixin flex($jc: flex-start, $ai: stretch, $fd: row, $g: 0) {
+  display: flex;
+  justify-content: $jc;
+  align-items: $ai;
+  flex-direction: $fd;
+  gap: $g;
+}

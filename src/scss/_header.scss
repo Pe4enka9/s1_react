@@ -1,0 +1,80 @@
+header {
+  width: 100%;
+
+  padding: .5rem 0;
+
+  border-bottom: .1rem solid $red-20;
+
+  .header-wrapper {
+    width: $width;
+
+    margin: 0 auto;
+
+    @include flex(space-between, center);
+
+    .logo {
+      span {
+        font-size: 3rem;
+        font-weight: 700;
+
+        &:first-child {
+          color: $red;
+        }
+      }
+    }
+
+    nav {
+      @include flex($ai: center, $g: 1.5rem);
+
+      a {
+        padding: .5em .7em;
+
+        color: $gray;
+
+        -webkit-border-radius: .5rem;
+        -moz-border-radius: .5rem;
+        border-radius: .5rem;
+
+        transition: background-color .3s ease, color .3s ease, padding .3s ease;
+
+        position: relative;
+
+        &:hover {
+          background-color: $red-20;
+        }
+
+        &::after {
+          width: .5rem;
+          height: .5rem;
+
+          display: block;
+
+          background-color: $red2;
+          
+          -webkit-border-radius: 50%;
+          -moz-border-radius: 50%;
+          border-radius: 50%;
+
+          content: '';
+          opacity: 0;
+          transition: opacity .3s ease;
+
+          position: absolute;
+          top: 50%;
+          right: .5rem;
+          transform: translateY(-50%);
+        }
+
+        &.active {
+          padding: .5em 1.2em .5em .7em;
+
+          color: $red2;
+
+          &::after {
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+}

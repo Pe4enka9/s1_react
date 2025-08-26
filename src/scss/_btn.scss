@@ -1,0 +1,14 @@
+.btn {
+  width: fit-content;
+  height: fit-content;
+
+  display: block;
+
+  outline: none;
+  border: none;
+
+  font-size: $fontSize;
+  font-weight: 500;
+
+  cursor: pointer;
+}
