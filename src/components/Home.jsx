@@ -11,10 +11,13 @@ import menuBg3 from '../img/menu-bg-3.jpg';
 import menuBg4 from '../img/menu-bg-4.jpg';
 import menuBg5 from '../img/menu-bg-5.jpg';
 import menuBg6 from '../img/menu-bg-6.jpg';
+import Banner from "./Banner.jsx";
 
 export default function Home() {
     return (
         <>
+            <Banner/>
+
             <section className="menu-wrapper">
                 <MenuItem img={raceTrack} title="Кольцевые гонки" bgImg={menuBg1}/>
                 <MenuItem img={raceCar} title="F1 гонки" bgImg={menuBg2}/>

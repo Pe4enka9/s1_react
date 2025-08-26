@@ -5,7 +5,7 @@
 
 <defs>
 
-<style>.g{fill:none;stroke:#fff;stroke-linecap:round;stroke-linejoin:round;}</style>
+<style>.g{fill:none;stroke:#fff;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px;}</style>
 
 </defs>
 

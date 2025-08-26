@@ -18,7 +18,7 @@ export default function Banner() {
             </div>
 
             <div className="indicators">
-                <div></div>
+                <div className="active"></div>
                 <div></div>
                 <div></div>
             </div>

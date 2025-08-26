@@ -1,9 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 @import "variables";
+@import "navigation";
 @import "header";
 @import "banner";
 @import "btn";
 @import "menu";
+@import "footer";
 
 * {
   margin: 0;
@@ -11,6 +13,7 @@
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 
   color: $white;
 
@@ -18,15 +21,23 @@
 }
 
 body {
+  min-height: 100vh;
+
   background-color: $background;
 }
 
-#root, main {
-  @include flex($ai:center, $fd: column, $g: 2.5rem);
+#root {
+  min-height: 100vh;
+
+  @include flex($ai: center, $fd: column);
 }
 
 main {
   width: $width;
+
+  margin-bottom: 2.5rem;
+
+  @include flex($ai: center, $fd: column, $g: 2.5rem);
 }
 
 h1 {

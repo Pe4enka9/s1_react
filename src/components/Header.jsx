@@ -1,4 +1,5 @@
-import {Link, NavLink} from "react-router-dom";
+import {Link} from "react-router-dom";
+import Navigation from "./Navigation.jsx";
 
 export default function Header() {
     return (
@@ -9,10 +10,7 @@ export default function Header() {
                     <span>1</span>
                 </Link>
 
-                <nav>
-                    <NavLink to="/register">Регистрация</NavLink>
-                    <NavLink to="/login">Вход</NavLink>
-                </nav>
+                <Navigation/>
             </div>
         </header>
     )
