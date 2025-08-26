@@ -5,7 +5,7 @@ export default function MenuItem({img, title, bgImg}) {
         <div className="menu-item" style={{background: `url(${bgImg}) no-repeat center / cover`}}>
             <div className="top">
                 <div className="icon">
-                    <img src={img} alt="Иконка"/>
+                    <img src={img} alt="Иконка" loading="lazy"/>
                 </div>
             </div>
 

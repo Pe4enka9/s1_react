@@ -6,8 +6,6 @@
 
   background: url("../img/banner.jpg") no-repeat center / cover;
 
-  position: relative;
-
   .content {
     width: 100%;
 
@@ -72,30 +70,6 @@
 
       &:active {
         transform: scale(.95);
-      }
-    }
-  }
-
-  .indicators {
-    @include flex($ai: center, $g: .5rem);
-
-    position: absolute;
-    bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-
-    div {
-      width: 1rem;
-      height: 1rem;
-
-      background-color: rgba(255, 255, 255, .6);
-
-      -webkit-border-radius: 50%;
-      -moz-border-radius: 50%;
-      border-radius: 50%;
-
-      &.active {
-        background-color: $white;
       }
     }
   }

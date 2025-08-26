@@ -10,7 +10,7 @@ $width: 90%;
 $radius: .8rem;
 $fontSize: 1.6rem;
 
-@mixin flex($jc: flex-start, $ai: stretch, $fd: row, $g: 0, $fxw: no-wrap) {
+@mixin flex($jc: flex-start, $ai: stretch, $fd: row, $g: 0, $fxw: nowrap) {
   display: flex;
   justify-content: $jc;
   align-items: $ai;

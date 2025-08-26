@@ -16,12 +16,6 @@ export default function Banner() {
 
                 <button type="button" className="btn">Записаться</button>
             </div>
-
-            <div className="indicators">
-                <div className="active"></div>
-                <div></div>
-                <div></div>
-            </div>
         </section>
     )
 }

@@ -12,11 +12,33 @@ import menuBg4 from '../img/menu-bg-4.jpg';
 import menuBg5 from '../img/menu-bg-5.jpg';
 import menuBg6 from '../img/menu-bg-6.jpg';
 import Banner from "./Banner.jsx";
+import {Swiper, SwiperSlide} from "swiper/react";
+import {Autoplay, Pagination} from "swiper/modules";
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/autoplay';
 
 export default function Home() {
     return (
         <>
-            <Banner/>
+            <div style={{width: '100vw'}}>
+                <Swiper
+                    modules={[Pagination, Autoplay]}
+                    pagination={{
+                        clickable: true,
+                        bulletClass: 'custom-pagination',
+                        bulletActiveClass: 'active',
+                    }}
+                    loop={true}
+                    autoplay={{
+                        delay: 5000,
+                    }}
+                >
+                    <SwiperSlide><Banner/></SwiperSlide>
+                    <SwiperSlide><Banner/></SwiperSlide>
+                    <SwiperSlide><Banner/></SwiperSlide>
+                </Swiper>
+            </div>
 
             <section className="menu-wrapper">
                 <MenuItem img={raceTrack} title="Кольцевые гонки" bgImg={menuBg1}/>
