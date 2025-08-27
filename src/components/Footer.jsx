@@ -1,6 +1,10 @@
 import {Link} from "react-router-dom";
 import Navigation from "./Navigation.jsx";
 import telegram from '../img/icons/telegram.svg';
+import location from '../img/icons/location.svg';
+import clock from '../img/icons/clock.svg';
+import phone from '../img/icons/phone.svg';
+import email from '../img/icons/email.svg';
 
 export default function Footer() {
     return (
@@ -17,20 +21,39 @@ export default function Footer() {
                     </div>
 
                     <div>
-                        <p>ул. Гоночная, 15, Москва</p>
-                        <a href="tel:+74951234567">+7 (495) 123-45-67</a>
-                        <a href="mailto:info@simrace.ru">info@simrace.ru</a>
-                        <p>Ежедневно: 10:00 – 22:00</p>
+                        <div>
+                            <span>
+                                <img src={location} alt="Адрес"/>
+                                <p>ул. Гоночная, 15, Москва</p>
+                            </span>
+
+                            <span>
+                                <img src={clock} alt="Время работы"/>
+                                <p>Ежедневно: 10:00 – 22:00</p>
+                            </span>
+                        </div>
+
+                        <div>
+                            <a href="tel:+74951234567">
+                                <img src={phone} alt="Номер телефона"/>
+                                <p>+7 (495) 123-45-67</p>
+                            </a>
+
+                            <a href="mailto:info@simrace.ru">
+                                <img src={email} alt="Электронная почта"/>
+                                <p>info@simrace.ru</p>
+                            </a>
+                        </div>
                     </div>
 
                     <div>
                         <p>Подписывайтесь</p>
 
-                        <div className="icons">
-                            <img src={telegram} alt="Телеграм"/>
-                            <img src={telegram} alt="Телеграм"/>
-                            <img src={telegram} alt="Телеграм"/>
-                            <img src={telegram} alt="Телеграм"/>
+                        <div className="social">
+                            <a href="#"><img src={telegram} alt="Телеграм"/></a>
+                            <a href="#"><img src={telegram} alt="Телеграм"/></a>
+                            <a href="#"><img src={telegram} alt="Телеграм"/></a>
+                            <a href="#"><img src={telegram} alt="Телеграм"/></a>
                         </div>
                     </div>
                 </div>

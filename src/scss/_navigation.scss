@@ -10,7 +10,10 @@ nav {
     -moz-border-radius: .5rem;
     border-radius: .5rem;
 
+    font-size: $fontSize;
+
     transition: background-color .3s ease, color .3s ease, padding .3s ease;
+    -webkit-tap-highlight-color: transparent;
 
     position: relative;
 

@@ -22,6 +22,8 @@ header {
     @include flex(space-between, center);
 
     .logo {
+      -webkit-tap-highlight-color: transparent;
+
       span {
         font-size: 3rem;
         font-weight: 700;
