@@ -1,21 +1,23 @@
-import fire from '../img/icons/fire.svg';
-
-export default function Banner() {
+export default function Banner({bgImg, icon = '', iconText = '', title = '', description = '', button = 'Записаться'}) {
     return (
-        <section className="banner">
+        <div className="banner" style={{background: `url(${bgImg}) no-repeat center / cover`}}>
             <div className="content">
-                <div className="type">
-                    <img src={fire} alt="Огонь"/>
-                    <span>Акция</span>
-                </div>
+                {icon || iconText ? (
+                    <div className="type">
+                        <img src={icon} alt={iconText}/>
+                        <span>{iconText}</span>
+                    </div>
+                ) : null}
 
-                <div className="text">
-                    <h4>Скидка 30%</h4>
-                    <h6>На все симуляторы до воскресенья</h6>
-                </div>
+                {title || description ? (
+                    <div className="text">
+                        <h4>{title}</h4>
+                        <h6>{description}</h6>
+                    </div>
+                ) : null}
 
-                <button type="button" className="btn">Записаться</button>
+                <button type="button" className="btn">{button}</button>
             </div>
-        </section>
+        </div>
     )
 }

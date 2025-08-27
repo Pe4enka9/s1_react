@@ -11,12 +11,15 @@ import menuBg3 from '../img/menu-bg-3.jpg';
 import menuBg4 from '../img/menu-bg-4.jpg';
 import menuBg5 from '../img/menu-bg-5.jpg';
 import menuBg6 from '../img/menu-bg-6.jpg';
+import banner from '../img/banner.jpg';
+import fire from '../img/icons/fire.svg';
 import Banner from "./Banner.jsx";
 import {Swiper, SwiperSlide} from "swiper/react";
 import {Autoplay, Pagination} from "swiper/modules";
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
+import 'swiper/css/effect-creative';
 
 export default function Home() {
     return (
@@ -32,11 +35,16 @@ export default function Home() {
                     loop={true}
                     autoplay={{
                         delay: 5000,
+                        waitForTransition: true,
                     }}
+                    speed={800}
                 >
-                    <SwiperSlide><Banner/></SwiperSlide>
-                    <SwiperSlide><Banner/></SwiperSlide>
-                    <SwiperSlide><Banner/></SwiperSlide>
+                    <SwiperSlide><Banner bgImg={banner} icon={fire} iconText="Акция" title="Скидка 30%"
+                                         description="На все симуляторы до воскресенья"/></SwiperSlide>
+                    <SwiperSlide><Banner bgImg={menuBg1} icon={fire} iconText="Акция" title="Скидка 20%"
+                                         description="На все симуляторы до воскресенья"/></SwiperSlide>
+                    <SwiperSlide><Banner bgImg={menuBg2} icon={fire} iconText="Акция" title="Скидка 10%"
+                                         description="На все симуляторы до воскресенья"/></SwiperSlide>
                 </Swiper>
             </div>
 
