@@ -130,30 +130,30 @@ header .header-wrapper .logo span:first-child {
   font-weight: 700;
 }
 .banner .content .btn {
-  padding: 0.5em 1em;
-  color: #FFF;
-  background-color: #E7000B;
-  -webkit-border-radius: 2rem;
-  -moz-border-radius: 2rem;
-  border-radius: 2rem;
   font-size: 2rem;
-  box-shadow: 0 0 1rem rgba(231, 0, 11, 0.5);
-  transition: transform 0.3s ease;
-}
-.banner .content .btn:active {
-  transform: scale(0.95);
 }
 
 .btn {
   width: fit-content;
   height: fit-content;
+  padding: 0.5em 1em;
   display: block;
+  color: #FFF;
+  background-color: #E7000B;
   outline: none;
   border: none;
+  -webkit-border-radius: 2rem;
+  -moz-border-radius: 2rem;
+  border-radius: 2rem;
   font-size: 1.6rem;
   font-weight: 500;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 0 1rem rgba(231, 0, 11, 0.5);
+  transition: transform 0.3s ease;
+}
+.btn:active {
+  transform: scale(0.95);
 }
 
 .menu-wrapper {
@@ -440,18 +440,43 @@ footer .footer-wrapper .bottom div {
   font-family: "Oswald", sans-serif;
 }
 .card .card-content .btn {
-  padding: 0.5em 1em;
-  color: #FFF;
-  background-color: #E7000B;
-  -webkit-border-radius: 2rem;
-  -moz-border-radius: 2rem;
-  border-radius: 2rem;
   font-size: 2rem;
-  box-shadow: 0 0 1rem rgba(231, 0, 11, 0.5);
-  transition: transform 0.3s ease;
 }
-.card .card-content .btn:active {
-  transform: scale(0.95);
+
+form {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+  flex-direction: column;
+  gap: 2rem;
+  flex-wrap: nowrap;
+}
+form .field {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+}
+form .field input {
+  padding: 0.5em 0.7em;
+  background-color: #222222;
+  color: #D1D5DC;
+  outline: none;
+  border: 0.2rem solid #757575;
+  -webkit-border-radius: 0.8rem;
+  -moz-border-radius: 0.8rem;
+  border-radius: 0.8rem;
+  transition: border-color 0.3s ease;
+}
+form .field input:focus {
+  border-color: rgba(255, 100, 103, 0.8);
+}
+form .btn {
+  width: 100%;
 }
 
 * {
@@ -481,13 +506,16 @@ body {
 
 main {
   width: 90%;
-  margin-bottom: 2.5rem;
+  margin: 2.5rem 0;
   display: flex;
   justify-content: flex-start;
   align-items: center;
   flex-direction: column;
   gap: 2.5rem;
   flex-wrap: nowrap;
+}
+main:has(.banner) {
+  margin: 0 0 2.5rem;
 }
 
 h1 {
@@ -523,7 +551,7 @@ p, a {
   font-weight: 400;
 }
 
-p {
+p, label, input {
   font-size: 1.6rem;
 }
 

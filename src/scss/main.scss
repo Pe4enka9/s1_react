@@ -8,6 +8,7 @@
 @import "footer";
 @import "show-menu-item";
 @import "card";
+@import "form";
 
 * {
   margin: 0;
@@ -36,9 +37,13 @@ body {
 main {
   width: $width;
 
-  margin-bottom: 2.5rem;
+  margin: 2.5rem 0;
 
   @include flex($ai: center, $fd: column, $g: 2.5rem);
+
+  &:has(.banner) {
+    margin: 0 0 2.5rem;
+  }
 }
 
 h1 {
@@ -74,7 +79,7 @@ p, a {
   font-weight: 400;
 }
 
-p {
+p, label, input {
   font-size: $fontSize;
 }
 

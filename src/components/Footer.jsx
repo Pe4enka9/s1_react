@@ -50,10 +50,10 @@ export default function Footer() {
                         <p>Подписывайтесь</p>
 
                         <div className="social">
-                            <a href="#"><img src={telegram} alt="Телеграм"/></a>
-                            <a href="#"><img src={telegram} alt="Телеграм"/></a>
-                            <a href="#"><img src={telegram} alt="Телеграм"/></a>
-                            <a href="#"><img src={telegram} alt="Телеграм"/></a>
+                            <a href="https://t.me/S1racee"><img src={telegram} alt="Телеграм"/></a>
+                            <a href="https://t.me/S1racee"><img src={telegram} alt="Телеграм"/></a>
+                            <a href="https://t.me/S1racee"><img src={telegram} alt="Телеграм"/></a>
+                            <a href="https://t.me/S1racee"><img src={telegram} alt="Телеграм"/></a>
                         </div>
                     </div>
                 </div>

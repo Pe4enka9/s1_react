@@ -1,0 +1,34 @@
+form {
+  width: 100%;
+
+  @include flex($fd: column, $g: 2rem);
+
+  .field {
+    width: 100%;
+
+    @include flex($fd: column, $g: .5rem);
+
+    input {
+      padding: .5em .7em;
+
+      background-color: $footerBackground;
+      color: $gray;
+
+      outline: none;
+      border: .2rem solid $gray2;
+      -webkit-border-radius: $radius;
+      -moz-border-radius: $radius;
+      border-radius: $radius;
+
+      transition: border-color .3s ease;
+
+      &:focus {
+        border-color: rgba($red2, .8);
+      }
+    }
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
