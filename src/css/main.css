@@ -645,7 +645,8 @@ form .btn {
   flex-direction: column;
   gap: 1.5rem;
   flex-wrap: nowrap;
-  transition: transform 0.8s ease;
+  opacity: 0.5;
+  transition: transform 0.8s ease, opacity 0.8s ease;
   position: absolute;
   top: 0;
   left: 0;
@@ -655,6 +656,7 @@ form .btn {
   transform: translateX(calc(-100% - 4rem));
 }
 #register form .step.current > div {
+  opacity: 1;
   pointer-events: auto;
   transform: translateX(0);
 }

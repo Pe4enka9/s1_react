@@ -146,7 +146,8 @@
 
         @include flex($fd: column, $g: 1.5rem);
 
-        transition: transform .8s ease;
+        opacity: .5;
+        transition: transform .8s ease, opacity .8s ease;
 
         position: absolute;
         top: 0;
@@ -159,6 +160,7 @@
       }
 
       &.current > div {
+        opacity: 1;
         pointer-events: auto;
         transform: translateX(0);
       }

@@ -28,7 +28,7 @@ export default function App() {
                 </Routes>
             </main>
 
-            <Footer isActive={isActive} setIsActive={setIsActive}/>
+            <Footer isActive={isActive} setIsActive={setIsActive} step={step} setStep={setStep}/>
         </>
     )
 }

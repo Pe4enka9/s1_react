@@ -6,18 +6,22 @@ import clock from '../img/icons/clock.svg';
 import phone from '../img/icons/phone.svg';
 import email from '../img/icons/email.svg';
 
-export default function Footer({isActive, setIsActive}) {
+export default function Footer({isActive, setIsActive, step, setStep}) {
+    const handleClick = () => {
+        setIsActive({register: false, login: false});
+    };
+
     return (
         <footer>
             <div className="footer-wrapper">
                 <div className="top">
                     <div>
-                        <Link to="/" className="logo">
+                        <Link to="/" className="logo" onClick={handleClick}>
                             <span>S</span>
                             <span>1</span>
                         </Link>
 
-                        <Navigation isActive={isActive} setIsActive={setIsActive}/>
+                        <Navigation isActive={isActive} setIsActive={setIsActive} step={step} setStep={setStep}/>
                     </div>
 
                     <div>
