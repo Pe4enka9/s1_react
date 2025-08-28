@@ -18,7 +18,7 @@ export default function App() {
         <>
             <Register isActive={isActive} setIsActive={setIsActive} step={step} setStep={setStep}/>
 
-            <Header isActive={isActive} setIsActive={setIsActive} setStep={setStep}/>
+            <Header isActive={isActive} setIsActive={setIsActive} step={step} setStep={setStep}/>
 
             <main>
                 <Routes>

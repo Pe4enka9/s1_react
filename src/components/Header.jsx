@@ -1,7 +1,7 @@
 import {Link} from "react-router-dom";
 import Navigation from "./Navigation.jsx";
 
-export default function Header({isActive, setIsActive, setStep}) {
+export default function Header({isActive, setIsActive, step, setStep}) {
     const handleClick = () => {
         setIsActive({register: false, login: false});
     };
@@ -14,7 +14,7 @@ export default function Header({isActive, setIsActive, setStep}) {
                     <span>1</span>
                 </Link>
 
-                <Navigation isActive={isActive} setIsActive={setIsActive} setStep={setStep}/>
+                <Navigation isActive={isActive} setIsActive={setIsActive} step={step} setStep={setStep}/>
             </div>
         </header>
     )

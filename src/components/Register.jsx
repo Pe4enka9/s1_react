@@ -66,7 +66,6 @@ export default function Register({isActive, setIsActive, step, setStep}) {
     const handleCancel = () => {
         document.body.style.overflowY = 'auto';
         setIsActive({register: false, login: false});
-        setStep(0);
     };
 
     const handleBack = () => {
@@ -85,6 +84,29 @@ export default function Register({isActive, setIsActive, step, setStep}) {
     const toggleEyePasswordConfirmation = () => {
         setIsPasswordConfirmationHidden(prev => !prev);
     };
+
+    const pressEnter = (e) => {
+        if (e.key === 'Enter' || e.key === 'Done') {
+            handleContinue();
+        }
+    };
+
+    useEffect(() => {
+        let startTouchY = 0;
+        let endTouchY = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            startTouchY = e.changedTouches[0].pageY;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            endTouchY = e.changedTouches[0].pageY;
+
+            if (startTouchY < endTouchY && Math.abs(endTouchY - startTouchY) > 100) {
+                handleCancel();
+            }
+        });
+    }, []);
 
     return (
         <div id="register" className={isActive.register ? 'active' : ''}>
@@ -121,6 +143,7 @@ export default function Register({isActive, setIsActive, step, setStep}) {
                                 onAccept={handlePhoneAccept}
                                 prepare={preparePhoneValue}
                                 autoComplete="tel phone"
+                                onKeyDown={pressEnter}
                                 // inputRef={phoneInputRef}
                             />
                         </div>
@@ -133,14 +156,15 @@ export default function Register({isActive, setIsActive, step, setStep}) {
                             <label htmlFor="first_name">Имя</label>
                             <input type="text" name="first_name" id="first_name" placeholder="Введите ваше имя"
                                    autoComplete="name first_name" value={formData.first_name} onChange={handleChange}
-                                   // ref={firstNameInputRef}
+                                // ref={firstNameInputRef}
                             />
                         </div>
 
                         <div className="field">
                             <label htmlFor="last_name">Фамилия</label>
                             <input type="text" name="last_name" id="last_name" placeholder="Введите вашу фамилию"
-                                   autoComplete="last_name surname" value={formData.last_name} onChange={handleChange}/>
+                                   autoComplete="last_name surname" value={formData.last_name} onChange={handleChange}
+                                   onKeyDown={pressEnter}/>
                         </div>
                     </div>
                 </div>
@@ -152,7 +176,7 @@ export default function Register({isActive, setIsActive, step, setStep}) {
                             <input type={isPasswordHidden ? "password" : "text"} name="password" id="password"
                                    placeholder="Введите пароль" autoComplete="off" value={formData.password}
                                    onChange={handleChange}
-                                   // ref={passwordInputRef}
+                                // ref={passwordInputRef}
                             />
                             <div className={`eye-password ${isPasswordHidden ? 'hidden' : 'visible'}`}
                                  onClick={toggleEyePassword}></div>
