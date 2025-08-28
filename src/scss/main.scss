@@ -9,6 +9,7 @@
 @import "show-menu-item";
 @import "card";
 @import "form";
+@import "register";
 
 * {
   margin: 0;
@@ -81,6 +82,10 @@ p, a {
 
 p, label, input {
   font-size: $fontSize;
+}
+
+p.small {
+  font-size: 1.3rem;
 }
 
 a {

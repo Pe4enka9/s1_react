@@ -16,7 +16,7 @@ export default function Banner({bgImg, icon = '', iconText = '', title = '', des
                     </div>
                 ) : null}
 
-                <button type="button" className="btn">{button}</button>
+                <button type="button" className="btn cta">{button}</button>
             </div>
         </div>
     )

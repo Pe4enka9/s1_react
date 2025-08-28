@@ -1,12 +1,40 @@
 form {
   width: 100%;
+  height: 100%;
 
-  @include flex($fd: column, $g: 2rem);
+  @include flex($fd: column, $g: 3rem);
 
   .field {
     width: 100%;
 
-    @include flex($fd: column, $g: .5rem);
+    @include flex($fd: column, $g: .8rem);
+
+    position: relative;
+
+    .eye-password {
+      width: 2rem;
+      height: 2rem;
+
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+
+      position: absolute;
+      top: 57%;
+      right: 1rem;
+
+      &.hidden {
+        background-image: url("../img/icons/eye-password-hidden.svg");
+      }
+
+      &.visible {
+        background-image: url("../img/icons/eye-password-visible.svg");
+      }
+    }
+
+    label {
+      font-weight: 500;
+    }
 
     input {
       padding: .5em .7em;
@@ -25,6 +53,16 @@ form {
       &:focus {
         border-color: rgba($red2, .8);
       }
+
+      &.error {
+        border-color: $red;
+      }
+    }
+
+    .error {
+      color: $red;
+
+      font-weight: 500;
     }
   }
 

@@ -6,7 +6,7 @@ import clock from '../img/icons/clock.svg';
 import phone from '../img/icons/phone.svg';
 import email from '../img/icons/email.svg';
 
-export default function Footer() {
+export default function Footer({isActive, setIsActive}) {
     return (
         <footer>
             <div className="footer-wrapper">
@@ -17,7 +17,7 @@ export default function Footer() {
                             <span>1</span>
                         </Link>
 
-                        <Navigation/>
+                        <Navigation isActive={isActive} setIsActive={setIsActive}/>
                     </div>
 
                     <div>

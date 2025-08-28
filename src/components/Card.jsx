@@ -8,7 +8,7 @@ export default function Card({bgImg, number, title, description, button = false}
             <div className="card-content">
                 <h2>{title}</h2>
                 <p>{description}</p>
-                {button && <button type="button" className="btn">Записаться</button>}
+                {button && <button type="button" className="btn cta">Записаться</button>}
             </div>
         </div>
     )

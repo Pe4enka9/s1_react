@@ -7,23 +7,40 @@
   display: block;
 
   color: $white;
-  background-color: $red;
+  background-color: $red2;
 
   outline: none;
   border: none;
-  -webkit-border-radius: 2rem;
-  -moz-border-radius: 2rem;
-  border-radius: 2rem;
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  border-radius: $radius;
 
   font-size: $fontSize;
   font-weight: 500;
 
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  box-shadow: 0 0 1rem rgba($red, .5);
   transition: transform .3s ease;
 
   &:active {
     transform: scale(.95);
+  }
+
+  &.cta {
+    background-color: $red;
+
+    -webkit-border-radius: 2rem;
+    -moz-border-radius: 2rem;
+    border-radius: 2rem;
+
+    font-size: 2rem;
+
+    box-shadow: 0 0 1rem rgba($red, .5);
+  }
+
+  &.cancel {
+    background-color: $background;
+
+    border: .1rem solid $gray2;
   }
 }
