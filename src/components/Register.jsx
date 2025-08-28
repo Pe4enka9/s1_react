@@ -64,7 +64,9 @@ export default function Register({isActive, setIsActive, step, setStep}) {
     };
 
     const handleCancel = () => {
+        document.body.style.overflowY = 'auto';
         setIsActive({register: false, login: false});
+        setStep(0);
     };
 
     const handleBack = () => {
@@ -119,7 +121,7 @@ export default function Register({isActive, setIsActive, step, setStep}) {
                                 onAccept={handlePhoneAccept}
                                 prepare={preparePhoneValue}
                                 autoComplete="tel phone"
-                                inputRef={phoneInputRef}
+                                // inputRef={phoneInputRef}
                             />
                         </div>
                     </div>
@@ -131,7 +133,8 @@ export default function Register({isActive, setIsActive, step, setStep}) {
                             <label htmlFor="first_name">Имя</label>
                             <input type="text" name="first_name" id="first_name" placeholder="Введите ваше имя"
                                    autoComplete="name first_name" value={formData.first_name} onChange={handleChange}
-                                   ref={firstNameInputRef}/>
+                                   // ref={firstNameInputRef}
+                            />
                         </div>
 
                         <div className="field">
@@ -148,7 +151,9 @@ export default function Register({isActive, setIsActive, step, setStep}) {
                             <label htmlFor="password">Пароль</label>
                             <input type={isPasswordHidden ? "password" : "text"} name="password" id="password"
                                    placeholder="Введите пароль" autoComplete="off" value={formData.password}
-                                   onChange={handleChange} ref={passwordInputRef}/>
+                                   onChange={handleChange}
+                                   // ref={passwordInputRef}
+                            />
                             <div className={`eye-password ${isPasswordHidden ? 'hidden' : 'visible'}`}
                                  onClick={toggleEyePassword}></div>
                         </div>

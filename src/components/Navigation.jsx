@@ -4,12 +4,13 @@ export default function Navigation({isActive, setIsActive, setStep}) {
 
         if (button.id === 'register-btn') {
             setIsActive({register: true, login: false});
-
+            document.body.style.overflowY = 'hidden';
             const timer = setTimeout(() => setStep(1), 1000);
 
             return () => clearTimeout(timer);
         } else {
             setIsActive({register: false, login: true});
+            document.body.style.overflowY = 'hidden';
         }
     };
 
