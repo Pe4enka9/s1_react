@@ -1,17 +1,21 @@
-export default function Navigation({isActive, setIsActive, step, setStep}) {
+export default function Navigation({isActive, setIsActive, registerStep, setRegisterStep, loginStep, setLoginStep}) {
     const handleClick = (e) => {
         const button = e.target;
 
         if (button.id === 'register-btn') {
             setIsActive({register: true, login: false});
             document.body.style.overflowY = 'hidden';
-            const currentStep = step > 1 ? step : 1;
-            const timer = setTimeout(() => setStep(currentStep), 1000);
+            const currentStep = registerStep > 1 ? registerStep : 1;
+            const timer = setTimeout(() => setRegisterStep(currentStep), 1000);
 
             return () => clearTimeout(timer);
         } else {
             setIsActive({register: false, login: true});
             document.body.style.overflowY = 'hidden';
+            const currentStep = loginStep > 1 ? loginStep : 1;
+            const timer = setTimeout(() => setLoginStep(currentStep), 1000);
+
+            return () => clearTimeout(timer);
         }
     };
 

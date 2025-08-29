@@ -1,3 +1,4 @@
+/** @type {string} */
 import play from '../img/icons/play.svg';
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";

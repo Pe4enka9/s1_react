@@ -12,6 +12,7 @@ import menuBg4 from '../img/menu-bg-4.jpg';
 import menuBg5 from '../img/menu-bg-5.jpg';
 import menuBg6 from '../img/menu-bg-6.jpg';
 import banner from '../img/banner.jpg';
+/** @type {string} */
 import fire from '../img/icons/fire.svg';
 import Banner from "./Banner.jsx";
 import {Swiper, SwiperSlide} from "swiper/react";

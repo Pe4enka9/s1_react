@@ -1,12 +1,17 @@
 import {Link} from "react-router-dom";
 import Navigation from "./Navigation.jsx";
+/** @type {string} */
 import telegram from '../img/icons/telegram.svg';
+/** @type {string} */
 import location from '../img/icons/location.svg';
+/** @type {string} */
 import clock from '../img/icons/clock.svg';
+/** @type {string} */
 import phone from '../img/icons/phone.svg';
+/** @type {string} */
 import email from '../img/icons/email.svg';
 
-export default function Footer({isActive, setIsActive, step, setStep}) {
+export default function Footer({isActive, setIsActive, registerStep, setRegisterStep, loginStep, setLoginStep}) {
     const handleClick = () => {
         setIsActive({register: false, login: false});
     };
@@ -21,7 +26,14 @@ export default function Footer({isActive, setIsActive, step, setStep}) {
                             <span>1</span>
                         </Link>
 
-                        <Navigation isActive={isActive} setIsActive={setIsActive} step={step} setStep={setStep}/>
+                        <Navigation
+                            isActive={isActive}
+                            setIsActive={setIsActive}
+                            registerStep={registerStep}
+                            setRegisterStep={setRegisterStep}
+                            loginStep={loginStep}
+                            setLoginStep={setLoginStep}
+                        />
                     </div>
 
                     <div>

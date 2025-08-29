@@ -515,7 +515,7 @@ form .btn {
   width: 100%;
 }
 
-#register {
+.modal {
   width: 100%;
   height: 100dvh;
   background-color: transparent;
@@ -526,23 +526,23 @@ form .btn {
   top: 0;
   left: 0;
 }
-#register.active {
+.modal.active {
   background-color: rgba(0, 0, 0, 0.5);
   pointer-events: auto;
 }
-#register form {
+.modal form {
   padding: 2rem 2rem 4rem;
   background-color: #2F2F2F;
   transform: translateY(110%);
   transition: transform 1.2s ease 0.5s;
 }
-#register form.active {
+.modal form.active {
   transform: translateY(0);
 }
-#register form.closing {
+.modal form.closing {
   transition: transform 1.2s ease;
 }
-#register form .steps-progress {
+.modal form .steps-progress {
   display: flex;
   justify-content: flex-start;
   align-items: stretch;
@@ -550,6 +550,109 @@ form .btn {
   gap: 1rem;
   flex-wrap: nowrap;
 }
+.modal form .steps-progress .steps-name {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  flex-direction: row;
+  gap: 0;
+  flex-wrap: nowrap;
+}
+.modal form .steps-progress .steps-name p {
+  color: #757575;
+  font-weight: 500;
+  transition: color 1s ease;
+}
+.modal form .steps-progress .steps-progress-bar {
+  width: 100%;
+  height: 0.4rem;
+  background-color: #757575;
+  -webkit-border-radius: 10rem;
+  -moz-border-radius: 10rem;
+  border-radius: 10rem;
+  overflow: hidden;
+  position: relative;
+}
+.modal form .steps-progress .steps-progress-bar::after {
+  width: 0;
+  height: 100%;
+  background-color: #FF6467;
+  content: "";
+  transition: width 1s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.modal form .title {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  gap: 1rem;
+  flex-wrap: nowrap;
+}
+.modal form .title .icon {
+  width: 6.4rem;
+  height: 6.4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  gap: 0;
+  flex-wrap: nowrap;
+  background-color: #FF6467;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+}
+.modal form .title .icon img {
+  width: 3.2rem;
+  height: 3.2rem;
+}
+.modal form .step {
+  width: calc(100% - 4rem);
+  position: absolute;
+  top: 37%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.modal form .step > div {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+  flex-direction: column;
+  gap: 1.5rem;
+  flex-wrap: nowrap;
+  opacity: 0.5;
+  transition: transform 0.8s ease, opacity 0.8s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.modal form .step.prev > div {
+  pointer-events: none;
+  transform: translateX(calc(-100% - 4rem));
+}
+.modal form .step.current > div {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+.modal form .step.next > div {
+  pointer-events: none;
+  transform: translateX(calc(100% + 4rem));
+}
+.modal form .buttons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  flex-direction: column;
+  gap: 1.5rem;
+  flex-wrap: nowrap;
+  flex: 1;
+}
+
 #register form .steps-progress.step-1 .steps-progress-bar::after {
   width: 25%;
 }
@@ -571,107 +674,19 @@ form .btn {
 #register form .steps-progress.step-3 .steps-name p:last-child {
   color: #D1D5DC;
 }
-#register form .steps-progress .steps-name {
-  display: flex;
-  justify-content: space-between;
-  align-items: stretch;
-  flex-direction: row;
-  gap: 0;
-  flex-wrap: nowrap;
+
+#login form .steps-progress.step-1 .steps-progress-bar::after {
+  width: 50%;
 }
-#register form .steps-progress .steps-name p {
-  color: #757575;
-  font-weight: 500;
-  transition: color 1s ease;
+#login form .steps-progress.step-1 .steps-name p:first-child {
+  color: #D1D5DC;
 }
-#register form .steps-progress .steps-progress-bar {
+#login form .steps-progress.step-2 .steps-progress-bar::after {
   width: 100%;
-  height: 0.4rem;
-  background-color: #757575;
-  -webkit-border-radius: 10rem;
-  -moz-border-radius: 10rem;
-  border-radius: 10rem;
-  overflow: hidden;
-  position: relative;
 }
-#register form .steps-progress .steps-progress-bar::after {
-  width: 0;
-  height: 100%;
-  background-color: #FF6467;
-  content: "";
-  transition: width 1s ease;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-#register form .title {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  flex-direction: column;
-  gap: 1rem;
-  flex-wrap: nowrap;
-}
-#register form .title .icon {
-  width: 6.4rem;
-  height: 6.4rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
-  gap: 0;
-  flex-wrap: nowrap;
-  background-color: #FF6467;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
-  border-radius: 50%;
-}
-#register form .title .icon img {
-  width: 3.2rem;
-  height: 3.2rem;
-}
-#register form .step {
-  width: calc(100% - 4rem);
-  position: absolute;
-  top: 37%;
-  left: 50%;
-  transform: translateX(-50%);
-}
-#register form .step > div {
-  width: 100%;
-  display: flex;
-  justify-content: flex-start;
-  align-items: stretch;
-  flex-direction: column;
-  gap: 1.5rem;
-  flex-wrap: nowrap;
-  opacity: 0.5;
-  transition: transform 0.8s ease, opacity 0.8s ease;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-#register form .step.prev > div {
-  pointer-events: none;
-  transform: translateX(calc(-100% - 4rem));
-}
-#register form .step.current > div {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateX(0);
-}
-#register form .step.next > div {
-  pointer-events: none;
-  transform: translateX(calc(100% + 4rem));
-}
-#register form .buttons {
-  display: flex;
-  justify-content: flex-end;
-  align-items: stretch;
-  flex-direction: column;
-  gap: 1.5rem;
-  flex-wrap: nowrap;
-  flex: 1;
+#login form .steps-progress.step-2 .steps-name p:first-child,
+#login form .steps-progress.step-2 .steps-name p:last-child {
+  color: #D1D5DC;
 }
 
 * {

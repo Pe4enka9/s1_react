@@ -1,0 +1,146 @@
+.modal {
+  width: 100%;
+  height: 100dvh;
+
+  background-color: transparent;
+
+  pointer-events: none;
+  transition: background-color 1s ease;
+
+  z-index: 3;
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  &.active {
+    background-color: rgba(0, 0, 0, .5);
+    pointer-events: auto;
+  }
+
+  form {
+    padding: 2rem 2rem 4rem;
+
+    background-color: $background;
+
+    transform: translateY(110%);
+    transition: transform 1.2s ease .5s;
+
+    &.active {
+      transform: translateY(0);
+    }
+
+    &.closing {
+      transition: transform 1.2s ease;
+    }
+
+    .steps-progress {
+      @include flex($fd: column, $g: 1rem);
+
+      .steps-name {
+        @include flex(space-between);
+
+        p {
+          color: $gray2;
+
+          font-weight: 500;
+
+          transition: color 1s ease;
+        }
+      }
+
+      .steps-progress-bar {
+        width: 100%;
+        height: .4rem;
+
+        background-color: $gray2;
+
+        -webkit-border-radius: 10rem;
+        -moz-border-radius: 10rem;
+        border-radius: 10rem;
+
+        overflow: hidden;
+
+        position: relative;
+
+        &::after {
+          width: 0;
+          height: 100%;
+
+          background-color: $red2;
+
+          content: '';
+          transition: width 1s ease;
+
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+      }
+    }
+
+    .title {
+      @include flex($ai: center, $fd: column, $g: 1rem);
+
+      .icon {
+        width: 6.4rem;
+        height: 6.4rem;
+
+        @include flex(center, center);
+
+        background-color: $red2;
+
+        -webkit-border-radius: 50%;
+        -moz-border-radius: 50%;
+        border-radius: 50%;
+
+        img {
+          width: 3.2rem;
+          height: 3.2rem;
+        }
+      }
+    }
+
+    .step {
+      width: calc(100% - 4rem);
+
+      position: absolute;
+      top: 37%;
+      left: 50%;
+      transform: translateX(-50%);
+
+      & > div {
+        width: 100%;
+
+        @include flex($fd: column, $g: 1.5rem);
+
+        opacity: .5;
+        transition: transform .8s ease, opacity .8s ease;
+
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      &.prev > div {
+        pointer-events: none;
+        transform: translateX(calc(-100% - 4rem));
+      }
+
+      &.current > div {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(0);
+      }
+
+      &.next > div {
+        pointer-events: none;
+        transform: translateX(calc(100% + 4rem));
+      }
+    }
+
+    .buttons {
+      @include flex($jc: flex-end, $fd: column, $g: 1.5rem);
+      flex: 1;
+    }
+  }
+}
