@@ -701,7 +701,7 @@ form .btn {
 
 body {
   min-height: 100vh;
-  background-color: #2F2F2F;
+  background: #2F2F2F url("../img/icons/S1.svg") repeat;
 }
 
 #root {
