@@ -1,11 +1,11 @@
-import {useCallback, useEffect, useRef, useState} from "react";
-import {IMaskInput} from "react-imask";
 /** @type {string} */
 import profile from '../img/icons/profile.svg';
+import {useCallback, useEffect, useRef, useState} from "react";
+import {IMaskInput} from "react-imask";
 import preparePhoneValue from "../handlers/preparePhoneValue.js";
 import swipeClose from "../handlers/swipeClose.js";
 
-export default function Register({isActive, setIsActive, registerStep, setRegisterStep}) {
+export default function RegisterForm({isActive, setIsActive, registerStep, setRegisterStep}) {
     const [formData, setFormData] = useState({
         phone_number: '',
         first_name: '',
@@ -57,7 +57,7 @@ export default function Register({isActive, setIsActive, registerStep, setRegist
 
     const handleCancel = useCallback(() => {
         document.body.style.overflowY = 'auto';
-        setIsActive({register: false, login: false});
+        setIsActive({register: false, login: false, booking: false});
     }, [setIsActive]);
 
     const toggleEyePassword = () => {

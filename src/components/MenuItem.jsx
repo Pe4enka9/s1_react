@@ -3,7 +3,16 @@ import play from '../img/icons/play.svg';
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 
-export default function MenuItem({img, title, bgImg}) {
+export default function MenuItem({
+                                     img,
+                                     title,
+                                     bgImg,
+                                     isActiveForm,
+                                     setIsActiveForm,
+                                     bookingStep,
+                                     setBookingStep,
+                                     booking
+                                 }) {
     const navigate = useNavigate();
 
     const [isActive, setIsActive] = useState(false);
@@ -12,8 +21,18 @@ export default function MenuItem({img, title, bgImg}) {
     const handleClick = () => {
         setIsActive(prev => !prev);
 
-        const timeout = setTimeout(() =>
-                navigate('/show'),
+        const timeout = setTimeout(() => {
+                if (booking) {
+                    setIsActiveForm({register: false, login: false, booking: true});
+                    document.body.style.overflowY = 'hidden';
+                    const currentStep = bookingStep > 1 ? bookingStep : 1;
+                    const timer = setTimeout(() => setBookingStep(currentStep), 1000);
+
+                    return () => clearTimeout(timer);
+                } else {
+                    navigate('/show');
+                }
+            },
             1000);
 
         return () => clearTimeout(timeout);

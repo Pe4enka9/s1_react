@@ -491,6 +491,7 @@ form .field label {
   font-weight: 500;
 }
 form .field input {
+  width: 100%;
   padding: 0.5em 0.7em;
   background-color: #222222;
   color: #D1D5DC;
@@ -691,6 +692,108 @@ form .btn {
 #login form .steps-progress.step-2 .steps-name p:first-child,
 #login form .steps-progress.step-2 .steps-name p:last-child {
   color: #D1D5DC;
+}
+
+#booking form .steps-progress.step-1 .steps-progress-bar::after {
+  width: 25%;
+}
+#booking form .steps-progress.step-1 .steps-name p:first-child {
+  color: #D1D5DC;
+}
+#booking form .steps-progress.step-2 .steps-progress-bar::after {
+  width: 67%;
+}
+#booking form .steps-progress.step-2 .steps-name p:first-child,
+#booking form .steps-progress.step-2 .steps-name p:nth-child(2) {
+  color: #D1D5DC;
+}
+#booking form .steps-progress.step-3 .steps-progress-bar::after {
+  width: 100%;
+}
+#booking form .steps-progress.step-3 .steps-name p:first-child,
+#booking form .steps-progress.step-3 .steps-name p:nth-child(2),
+#booking form .steps-progress.step-3 .steps-name p:last-child {
+  color: #D1D5DC;
+}
+
+.calendar {
+  background-color: #2F2F2F;
+  border: none;
+  -webkit-border-radius: 0.8rem;
+  -moz-border-radius: 0.8rem;
+  border-radius: 0.8rem;
+  overflow: hidden;
+  opacity: 0;
+  transform: scale(0.9) translateY(-150%);
+  transition: transform 0.8s ease, opacity 0.8s ease;
+}
+.calendar.active {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.react-datepicker__month-container {
+  width: 100%;
+}
+
+.react-datepicker__header {
+  padding: 1.5rem 0;
+  background-color: #2F2F2F;
+}
+.react-datepicker__header h2 {
+  color: #D1D5DC;
+  font-size: 1.6rem !important;
+  text-transform: capitalize;
+}
+
+.calendar-day {
+  width: 3.5rem !important;
+  margin: 0.3rem;
+  padding: 0.8rem;
+  color: #D1D5DC;
+  -webkit-border-radius: 0.8rem !important;
+  -moz-border-radius: 0.8rem !important;
+  border-radius: 0.8rem !important;
+  font-size: 1.6rem;
+  transition: background-color 0.3s ease;
+}
+.calendar-day.react-datepicker__day--selected, .calendar-day.react-datepicker__day--keyboard-selected, .calendar-day:hover {
+  background-color: #FF6467 !important;
+}
+.calendar-day.react-datepicker__day--selected.weekend, .calendar-day.react-datepicker__day--keyboard-selected.weekend {
+  background-color: #D1D5DC !important;
+  font-weight: 700;
+}
+.calendar-day.react-datepicker__day--disabled {
+  color: rgba(117, 117, 117, 0.5) !important;
+  border: none;
+}
+.calendar-day.react-datepicker__day--disabled:hover {
+  background-color: transparent !important;
+}
+.calendar-day.weekend {
+  color: #FF6467;
+}
+.calendar-day.weekend:hover {
+  background-color: #D1D5DC !important;
+  font-weight: 700;
+}
+.calendar-day.react-datepicker__day--outside-month {
+  visibility: hidden;
+}
+
+.react-datepicker__navigation-icon {
+  top: 0.7rem;
+}
+
+.react-datepicker__day-name {
+  width: 3.5rem !important;
+  margin: 0.3rem;
+  padding: 0.8rem;
+}
+.react-datepicker__day-name span {
+  font-size: 1.6rem;
+  text-transform: uppercase;
 }
 
 * {

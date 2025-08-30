@@ -22,7 +22,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
 import 'swiper/css/effect-creative';
 
-export default function Home() {
+export default function Home({isActive, setIsActive, bookingStep, setBookingStep}) {
     return (
         <>
             <div style={{width: '100vw'}}>
@@ -55,7 +55,16 @@ export default function Home() {
                 <MenuItem img={wheel} title="Дрифт" bgImg={menuBg3}/>
                 <MenuItem img={news} title="Шокирующие события" bgImg={menuBg4}/>
                 <MenuItem img={game} title="Sim Racing" bgImg={menuBg5}/>
-                <MenuItem img={calendar} title="Запись в клубе" bgImg={menuBg6}/>
+                <MenuItem
+                    img={calendar}
+                    title="Запись в клубе"
+                    bgImg={menuBg6}
+                    isActiveForm={isActive}
+                    setIsActiveForm={setIsActive}
+                    bookingStep={bookingStep}
+                    setBookingStep={setBookingStep}
+                    booking
+                />
             </section>
         </>
     )

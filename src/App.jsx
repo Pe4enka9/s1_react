@@ -3,33 +3,45 @@ import Home from "./components/Home.jsx";
 import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
 import ShowMenuItem from "./components/ShowMenuItem.jsx";
-import Register from "./components/Register.jsx";
+import RegisterForm from "./components/RegisterForm.jsx";
 import {useState} from "react";
-import Login from "./components/Login.jsx";
+import LoginForm from "./components/LoginForm.jsx";
+import BookingForm from "./components/BookingForm.jsx";
 
 export default function App() {
     const [isActive, setIsActive] = useState({
         register: false,
         login: false,
+        booking: false,
     });
     const [registerStep, setRegisterStep] = useState(0);
     const [loginStep, setLoginStep] = useState(0);
+    const [bookingStep, setBookingStep] = useState(0)
 
     return (
         <>
-            <Register
+            <RegisterForm
                 isActive={isActive}
                 setIsActive={setIsActive}
                 registerStep={registerStep}
                 setRegisterStep={setRegisterStep}
             />
 
-            <Login
+            <LoginForm
                 isActive={isActive}
                 setIsActive={setIsActive}
                 loginStep={loginStep}
                 setLoginStep={setLoginStep}
             />
+
+            <BookingForm
+                isActive={isActive}
+                setIsActive={setIsActive}
+                bookingStep={bookingStep}
+                setBookingStep={setBookingStep}
+            />
+
+            <div id="calendar"></div>
 
             <Header
                 isActive={isActive}
@@ -42,7 +54,14 @@ export default function App() {
 
             <main>
                 <Routes>
-                    <Route path="/" element={<Home/>}/>
+                    <Route path="/"
+                           element={<Home
+                               isActive={isActive}
+                               setIsActive={setIsActive}
+                               bookingStep={bookingStep}
+                               setBookingStep={setBookingStep}
+                           />}
+                    />
                     <Route path="/show" element={<ShowMenuItem/>}/>
                 </Routes>
             </main>
