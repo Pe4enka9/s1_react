@@ -56,7 +56,6 @@ export default function App() {
                 <Routes>
                     <Route path="/"
                            element={<Home
-                               isActive={isActive}
                                setIsActive={setIsActive}
                                bookingStep={bookingStep}
                                setBookingStep={setBookingStep}

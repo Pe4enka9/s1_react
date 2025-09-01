@@ -1,3 +1,5 @@
+/** @type {string} */
+import fire from '../img/icons/fire.svg';
 import MenuItem from "./MenuItem.jsx";
 import raceTrack from '../img/icons/race-track.svg';
 import raceCar from '../img/icons/race-car.svg';
@@ -12,8 +14,6 @@ import menuBg4 from '../img/menu-bg-4.jpg';
 import menuBg5 from '../img/menu-bg-5.jpg';
 import menuBg6 from '../img/menu-bg-6.jpg';
 import banner from '../img/banner.jpg';
-/** @type {string} */
-import fire from '../img/icons/fire.svg';
 import Banner from "./Banner.jsx";
 import {Swiper, SwiperSlide} from "swiper/react";
 import {Autoplay, Pagination} from "swiper/modules";
@@ -22,7 +22,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
 import 'swiper/css/effect-creative';
 
-export default function Home({isActive, setIsActive, bookingStep, setBookingStep}) {
+export default function Home({setIsActive, bookingStep, setBookingStep}) {
     return (
         <>
             <div style={{width: '100vw'}}>
@@ -59,7 +59,6 @@ export default function Home({isActive, setIsActive, bookingStep, setBookingStep
                     img={calendar}
                     title="Запись в клубе"
                     bgImg={menuBg6}
-                    isActiveForm={isActive}
                     setIsActiveForm={setIsActive}
                     bookingStep={bookingStep}
                     setBookingStep={setBookingStep}

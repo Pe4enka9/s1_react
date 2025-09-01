@@ -7,7 +7,6 @@ export default function MenuItem({
                                      img,
                                      title,
                                      bgImg,
-                                     isActiveForm,
                                      setIsActiveForm,
                                      bookingStep,
                                      setBookingStep,
@@ -21,21 +20,22 @@ export default function MenuItem({
     const handleClick = () => {
         setIsActive(prev => !prev);
 
-        const timeout = setTimeout(() => {
-                if (booking) {
-                    setIsActiveForm({register: false, login: false, booking: true});
-                    document.body.style.overflowY = 'hidden';
-                    const currentStep = bookingStep > 1 ? bookingStep : 1;
-                    const timer = setTimeout(() => setBookingStep(currentStep), 1000);
+        if (booking) {
+            setIsActiveForm({register: false, login: false, booking: true});
+            document.body.style.overflowY = 'hidden';
+            const currentStep = bookingStep > 1 ? bookingStep : 1;
+            const timer = setTimeout(() =>
+                    setBookingStep(currentStep),
+                1000);
 
-                    return () => clearTimeout(timer);
-                } else {
-                    navigate('/show');
-                }
-            },
-            1000);
+            return () => clearTimeout(timer);
+        }
 
-        return () => clearTimeout(timeout);
+        const timer = setTimeout(() =>
+                navigate('/show'),
+            300);
+
+        return () => clearTimeout(timer);
     };
 
     useEffect(() => {
@@ -48,7 +48,9 @@ export default function MenuItem({
 
     return (
         <div className={`menu-item ${isActive ? 'active' : ''}`}
-             style={{background: `url(${bgImg}) no-repeat center / cover`}}>
+             style={{background: `url(${bgImg}) no-repeat center / cover`}}
+             onClick={handleClick}
+        >
             <div className="top">
                 <div className="icon">
                     <img src={img} alt="Иконка" loading="lazy"/>
@@ -58,7 +60,7 @@ export default function MenuItem({
             <div className="bottom">
                 <h6>{title}</h6>
 
-                <button type="button" className={`play ${isAnimate ? 'animate' : ''}`} onClick={handleClick}>
+                <button type="button" className={`play ${isAnimate ? 'animate' : ''}`}>
                     <img src={play} alt="Вперед" className={isAnimate ? 'animate' : ''}/>
                 </button>
             </div>
