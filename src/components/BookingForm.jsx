@@ -1,6 +1,6 @@
 /** @type {string} */
 import calendar from '../img/icons/calendar.svg';
-import {useCallback, useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import swipeClose from "../handlers/swipeClose.js";
 import preparePhoneValue from "../handlers/preparePhoneValue.js";
 import {IMaskInput} from "react-imask";
@@ -147,7 +147,6 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                 showMonthYearDropdown={false}
                                 selected={formData.date ? new Date(formData.date) : null}
                                 minDate={new Date()}
-                                value={formData.date}
                                 onChange={date => setFormData({...formData, date: date})}
                                 onCalendarOpen={() => {
                                     setTimeout(() => setIsCalendarActive(true), 100)
@@ -163,6 +162,7 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                 calendarClassName={`calendar ${isCalendarActive ? 'active' : ''}`}
                                 portalClassName="portal"
                                 onKeyDown={handleKeyDown}
+                                onFocus={e => e.target.readOnly = true}
                                 dayClassName={date => {
                                     const day = date.getDay();
                                     let className = 'calendar-day';

@@ -36,7 +36,7 @@ form {
       font-weight: 500;
     }
 
-    input {
+    input, .input {
       width: 100%;
 
       padding: .5em .7em;
@@ -49,6 +49,8 @@ form {
       -webkit-border-radius: $radius;
       -moz-border-radius: $radius;
       border-radius: $radius;
+
+      font-size: $fontSize;
 
       transition: border-color .3s ease;
 

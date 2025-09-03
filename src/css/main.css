@@ -482,7 +482,7 @@ form .field .eye-password.visible {
 form .field label {
   font-weight: 500;
 }
-form .field input {
+form .field input, form .field .input {
   width: 100%;
   padding: 0.5em 0.7em;
   background-color: #222222;
@@ -492,15 +492,16 @@ form .field input {
   -webkit-border-radius: 0.8rem;
   -moz-border-radius: 0.8rem;
   border-radius: 0.8rem;
+  font-size: 1.6rem;
   transition: border-color 0.3s ease;
 }
-form .field input:focus {
+form .field input:focus, form .field .input:focus {
   border-color: rgba(255, 100, 103, 0.8);
 }
-form .field input.error {
+form .field input.error, form .field .input.error {
   border-color: #E7000B;
 }
-form .field input:-webkit-autofill, form .field input:-webkit-autofill:hover, form .field input:-webkit-autofill:focus, form .field input:-webkit-autofill:active {
+form .field input:-webkit-autofill, form .field input:-webkit-autofill:hover, form .field input:-webkit-autofill:focus, form .field input:-webkit-autofill:active, form .field .input:-webkit-autofill, form .field .input:-webkit-autofill:hover, form .field .input:-webkit-autofill:focus, form .field .input:-webkit-autofill:active {
   transition: background-color 5000s ease-in-out 0s;
   -webkit-text-fill-color: #fff !important;
 }
