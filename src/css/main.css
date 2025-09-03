@@ -710,6 +710,14 @@ form .btn {
 }
 
 .calendar {
+  width: 90dvw;
+  height: 90dvh;
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+  flex-direction: column;
+  gap: 0;
+  flex-wrap: nowrap;
   background-color: #2F2F2F;
   border: none;
   -webkit-border-radius: 0.8rem;
@@ -749,6 +757,7 @@ form .btn {
   border-radius: 0.8rem !important;
   font-size: 1.6rem;
   transition: background-color 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 .calendar-day.react-datepicker__day--selected, .calendar-day.react-datepicker__day--keyboard-selected, .calendar-day:hover {
   background-color: #FF6467 !important;
@@ -776,7 +785,15 @@ form .btn {
 }
 
 .react-datepicker__navigation-icon {
-  top: 0.7rem;
+  top: 1rem !important;
+}
+
+.react-datepicker__navigation--next {
+  right: 0.2rem !important;
+}
+
+.react-datepicker__navigation--previous {
+  left: 0.2rem !important;
 }
 
 .react-datepicker__day-name {
@@ -787,6 +804,48 @@ form .btn {
 .react-datepicker__day-name span {
   font-size: 1.6rem;
   text-transform: uppercase;
+}
+
+.react-datepicker__time-container {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  max-height: calc(90dvh - 37rem);
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+  flex-direction: column;
+  gap: 0;
+  flex-wrap: nowrap;
+  flex: 1;
+  border: none;
+}
+.react-datepicker__time-container .react-datepicker-time__header {
+  color: #D1D5DC;
+  font-size: 1.6rem;
+}
+.react-datepicker__time-container .react-datepicker__time {
+  height: 100%;
+  flex: 1;
+  background-color: #2F2F2F;
+}
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box {
+  width: 100%;
+  height: 100%;
+}
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box .react-datepicker__time-list {
+  height: 100% !important;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #FF6467 transparent;
+}
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box .react-datepicker__time-list .time-item {
+  color: #D1D5DC;
+  font-size: 1.6rem;
+  transition: background-color 0.3s ease;
+}
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box .react-datepicker__time-list .time-item.react-datepicker__time-list-item--selected, .react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box .react-datepicker__time-list .time-item:active, .react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box .react-datepicker__time-list .time-item:hover {
+  background-color: #FF6467 !important;
 }
 
 * {

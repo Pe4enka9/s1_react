@@ -1,4 +1,6 @@
-export default function swipeClose(handleCancel) {
+export default function swipeClose(isCalendarActive, handleCancel) {
+    if (isCalendarActive) return;
+
     let startTouchY = 0;
     let endTouchY = 0;
 

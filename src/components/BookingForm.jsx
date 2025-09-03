@@ -60,8 +60,8 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
     }, [setIsActive]);
 
     useEffect(() => {
-        return swipeClose(handleCancel);
-    }, [handleCancel]);
+        return swipeClose(isCalendarActive, handleCancel);
+    }, [handleCancel, isCalendarActive]);
 
     const handleKeyDown = (event) => {
         if (event.key !== 'Enter') return;
@@ -145,6 +145,7 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                 name="date"
                                 id="date"
                                 showMonthYearDropdown={false}
+                                showTimeSelect
                                 selected={formData.date ? new Date(formData.date) : null}
                                 minDate={new Date()}
                                 onChange={date => setFormData({...formData, date: date})}
@@ -155,7 +156,7 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                     setTimeout(() => setIsCalendarActive(false), 500)
                                 }}
                                 placeholderText="Введите дату"
-                                dateFormat="dd MMMM yyyy"
+                                dateFormat="dd MMMM yyyy, HH:mm"
                                 locale="ru"
                                 withPortal
                                 portalId="calendar"
@@ -169,20 +170,9 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                     if (day === 0 || day === 6) className += ' weekend';
                                     return className;
                                 }}
-                            />
-                        </div>
-
-                        <div className="field">
-                            <label htmlFor="time">Время</label>
-                            <input
-                                type="time"
-                                inputMode="numeric"
-                                name="time"
-                                id="time"
-                                value={formData.time}
-                                onChange={handleChange}
-                                enterKeyHint="next"
-                                onKeyDown={handleKeyDown}
+                                timeIntervals={60}
+                                timeCaption="Время"
+                                timeClassName={() => "time-item"}
                             />
                         </div>
                     </div>
