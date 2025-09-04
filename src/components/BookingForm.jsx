@@ -15,6 +15,7 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
         phone_number: '',
         date: '',
         time: '',
+        duration: '',
         number_of_people: '',
     });
     const [isClosing, setIsClosing] = useState(false);
@@ -173,6 +174,18 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                 timeIntervals={60}
                                 timeCaption="Время"
                                 timeClassName={() => "time-item"}
+                            />
+                        </div>
+
+                        <div className="field">
+                            <label htmlFor="duration">Продолжительность</label>
+                            <input
+                                type="number"
+                                name="duration"
+                                id="duration"
+                                placeholder="2 часа"
+                                value={formData.duration}
+                                onChange={handleChange}
                             />
                         </div>
                     </div>
