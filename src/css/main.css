@@ -149,10 +149,31 @@ header .header-wrapper .logo span:first-child {
   font-weight: 500;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
 }
-.btn:active {
+.btn:not(:disabled):active {
   transform: scale(0.95);
+}
+.btn:disabled {
+  color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 100, 103, 0.5);
+}
+.btn:disabled:active {
+  animation: disabledAnim 0.2s ease;
+}
+@keyframes disabledAnim {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-0.5rem);
+  }
+  100% {
+    transform: translateX(0.5rem);
+  }
+}
+.btn.loading {
+  position: relative;
 }
 .btn.cta {
   background-color: #E7000B;
@@ -470,7 +491,7 @@ form .field .eye-password {
   background-position: center;
   background-size: contain;
   position: absolute;
-  top: 57%;
+  top: 4.2rem;
   right: 1rem;
 }
 form .field .eye-password.hidden {
@@ -498,7 +519,7 @@ form .field input, form .field .input {
 form .field input:focus, form .field .input:focus {
   border-color: rgba(255, 100, 103, 0.8);
 }
-form .field input.error, form .field .input.error {
+form .field input.error-input, form .field .input.error-input {
   border-color: #E7000B;
 }
 form .field input:-webkit-autofill, form .field input:-webkit-autofill:hover, form .field input:-webkit-autofill:focus, form .field input:-webkit-autofill:active, form .field .input:-webkit-autofill, form .field .input:-webkit-autofill:hover, form .field .input:-webkit-autofill:focus, form .field .input:-webkit-autofill:active {
@@ -507,7 +528,16 @@ form .field input:-webkit-autofill, form .field input:-webkit-autofill:hover, fo
 }
 form .field .error {
   color: #E7000B;
+  font-size: 1.4rem;
   font-weight: 500;
+  z-index: -1;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  opacity: 0;
+  transform: translateY(-3rem);
+}
+form .field .error.active {
+  opacity: 1;
+  transform: translateY(0);
 }
 form .btn {
   width: 100%;
@@ -846,6 +876,30 @@ form .btn {
 }
 .react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box .react-datepicker__time-list .time-item.react-datepicker__time-list-item--selected, .react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box .react-datepicker__time-list .time-item:active, .react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box .react-datepicker__time-list .time-item:hover {
   background-color: #FF6467 !important;
+}
+
+.loader {
+  width: 2rem;
+  height: 2rem;
+  border: 0.2rem solid rgba(255, 255, 255, 0.3);
+  border-top: 0.2rem solid #FFF;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  animation: loader 1s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  position: absolute;
+  top: 1.3rem;
+  right: 3rem;
+}
+.loader.active {
+  opacity: 1;
+}
+@keyframes loader {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 * {

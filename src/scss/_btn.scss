@@ -20,10 +20,37 @@
 
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: transform .3s ease;
+  transition: transform .3s ease, background-color .3s ease, color .3s ease;
 
-  &:active {
+  &:not(:disabled):active {
     transform: scale(.95);
+  }
+
+  &:disabled {
+    color: rgba($white, .5);
+    background-color: rgba($red2, .5);
+
+    &:active {
+      animation: disabledAnim .2s ease;
+
+      @keyframes disabledAnim {
+        0% {
+          transform: translateX(0);
+        }
+
+        50% {
+          transform: translateX(-.5rem);
+        }
+
+        100% {
+          transform: translateX(.5rem);
+        }
+      }
+    }
+  }
+
+  &.loading {
+    position: relative;
   }
 
   &.cta {

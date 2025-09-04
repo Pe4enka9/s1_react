@@ -1,4 +1,8 @@
+import {useEffect, useState} from "react";
+
 export default function Navigation({isActive, setIsActive, registerStep, setRegisterStep, loginStep, setLoginStep}) {
+    const [token, setToken] = useState(localStorage.getItem('token') || null);
+
     const handleClick = (e) => {
         const button = e.target;
 
@@ -19,13 +23,46 @@ export default function Navigation({isActive, setIsActive, registerStep, setRegi
         }
     };
 
+    useEffect(() => {
+        window.addEventListener('storage', () => {
+            setToken(localStorage.getItem('token'));
+        });
+
+        return () => window.removeEventListener('storage', () => {});
+    }, []);
+
     return (
         <nav>
-            <button type="button" className={isActive.register ? 'active' : ''} id="register-btn"
-                    onClick={handleClick}>Регистрация
-            </button>
-            <button type="button" className={isActive.login ? 'active' : ''} id="login-btn" onClick={handleClick}>Вход
-            </button>
+            {!token ? (
+                <>
+                    <button
+                        type="button"
+                        className={isActive.register ? 'active' : ''}
+                        id="register-btn"
+                        onClick={handleClick}
+                    >
+                        Регистрация
+                    </button>
+
+                    <button
+                        type="button"
+                        className={isActive.login ? 'active' : ''}
+                        id="login-btn"
+                        onClick={handleClick}
+                    >
+                        Вход
+                    </button>
+                </>
+            ) : (
+                <button
+                    type="button"
+                    className={isActive.login ? 'active' : ''}
+                    id="login-btn"
+                    onClick={handleClick}
+                >
+                    Выход
+                </button>
+            )}
         </nav>
     )
 }

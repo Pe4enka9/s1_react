@@ -1,0 +1,29 @@
+.loader {
+  width: 2rem;
+  height: 2rem;
+
+  border: .2rem solid rgba($white, .3);
+  border-top: .2rem solid $white;
+
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+
+  animation: loader 1s linear infinite;
+  opacity: 0;
+  transition: opacity .3s ease;
+
+  position: absolute;
+  top: 1.3rem;
+  right: 3rem;
+
+  &.active {
+    opacity: 1;
+  }
+
+  @keyframes loader {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}

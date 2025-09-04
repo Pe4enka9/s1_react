@@ -4,6 +4,7 @@ import {useCallback, useEffect, useRef, useState} from "react";
 import {IMaskInput} from "react-imask";
 import preparePhoneValue from "../handlers/preparePhoneValue.js";
 import swipeClose from "../handlers/swipeClose.js";
+import axios from "axios";
 
 export default function RegisterForm({isActive, setIsActive, registerStep, setRegisterStep}) {
     const [formData, setFormData] = useState({
@@ -13,9 +14,12 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
         password: '',
         password_confirmation: '',
     });
+    const [errors, setErrors] = useState({});
     const [isClosing, setIsClosing] = useState(false);
     const [isPasswordHidden, setIsPasswordHidden] = useState(true);
     const [isPasswordConfirmationHidden, setIsPasswordConfirmationHidden] = useState(true);
+    const [isDisabledButton, setIsDisabledButton] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
 
     const phoneInputRef = useRef(null);
     const firstNameInputRef = useRef(null);
@@ -36,13 +40,64 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
         return () => clearTimeout(timer);
     }, [isActive.register]);
 
+    useEffect(() => {
+        if (registerStep === 2 && (formData.first_name.trim() === '' || formData.last_name.trim() === '')) {
+            setIsDisabledButton(true);
+            return;
+        } else {
+            setIsDisabledButton(false);
+        }
+
+        if (registerStep === 3 && (formData.password.trim() === '' || formData.password_confirmation.trim() === '')) setIsDisabledButton(true);
+        else setIsDisabledButton(false);
+    }, [formData.first_name, formData.last_name, formData.password, formData.password_confirmation, registerStep]);
+
+    useEffect(() => {
+        if (errors.password) return;
+
+        if (errors.phone_number) setRegisterStep(1);
+    }, [errors.password, errors.phone_number, setRegisterStep]);
+
+    const handleValidation = (phoneInputValue) => {
+        if (registerStep === 1 && phoneInputValue.length !== 18) setIsDisabledButton(true);
+        else setIsDisabledButton(false);
+
+        if (registerStep === 2 && formData.first_name.trim() === '') setIsDisabledButton(true);
+        if (registerStep === 2 && formData.last_name.trim() === '') setIsDisabledButton(true);
+
+        if (registerStep === 3 && formData.password.trim() === '') setIsDisabledButton(true);
+        if (registerStep === 3 && formData.password_confirmation.trim() === '') setIsDisabledButton(true);
+    };
+
     const handleChange = (event) => {
         const {name, value} = event.target;
         setFormData({...formData, [name]: value});
+
+        handleValidation();
+
+        event.target.classList.remove('error-input');
+        event.target.nextSibling.classList.remove('active');
+        const timer = setTimeout(() =>
+                setErrors({...errors, [name]: ''}),
+            500);
+
+        return () => clearTimeout(timer);
     }
 
     const handlePhoneAccept = (value) => {
         setFormData({...formData, phone_number: value});
+
+        handleValidation(value);
+
+        const phoneNumberInput = document.getElementById('phone_number');
+
+        phoneNumberInput.classList.remove('error-input');
+        phoneNumberInput.nextSibling.classList.remove('active');
+        const timer = setTimeout(() =>
+                setErrors({...errors, phone_number: ''}),
+            500);
+
+        return () => clearTimeout(timer);
     }
 
     const handleBack = () => {
@@ -54,6 +109,16 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
 
         setRegisterStep(prev => prev + 1);
     }
+
+    const handleOnBlur = () => {
+        if (formData.phone_number.length === 18) {
+            setIsDisabledButton(false);
+            firstNameInputRef.current?.focus();
+            handleContinue();
+        } else {
+            setIsDisabledButton(true);
+        }
+    };
 
     const handleCancel = useCallback(() => {
         document.body.style.overflowY = 'auto';
@@ -95,11 +160,27 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (registerStep === 3) {
-            console.log("Форма отправлена!");
+            setIsLoading(true);
+
+            try {
+                const response = await axios.post(import.meta.env.VITE_API_URL + '/register', formData);
+
+                if (response.status === 201) {
+                    setIsActive({register: false, login: false, booking: false});
+
+                    localStorage.setItem('token', response.data.token);
+                    localStorage.setItem('user', JSON.stringify(response.data.user));
+                    window.dispatchEvent(new Event('storage'));
+                }
+            } catch (err) {
+                setErrors(err.response.data.errors);
+            } finally {
+                setIsLoading(false);
+            }
         }
     };
 
@@ -134,6 +215,7 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 inputMode="tel"
                                 name="phone_number"
                                 id="phone_number"
+                                className={errors.phone_number ? 'error-input' : ''}
                                 placeholder="+7 (000) 000-00-00"
                                 value={formData.phone_number}
                                 onAccept={value =>
@@ -145,11 +227,9 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 autoComplete="tel phone"
                                 enterKeyHint="next"
                                 inputRef={phoneInputRef}
-                                onBlur={() => {
-                                    firstNameInputRef.current?.focus();
-                                    handleContinue();
-                                }}
+                                onBlur={handleOnBlur}
                             />
+                            {<p className={`error ${errors.phone_number ? 'active' : ''}`}>{errors.phone_number}</p>}
                         </div>
                     </div>
                 </div>
@@ -163,6 +243,7 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 inputMode="text"
                                 name="first_name"
                                 id="first_name"
+                                className={errors.first_name ? 'error-input' : ''}
                                 placeholder="Введите ваше имя"
                                 autoComplete="given-name"
                                 value={formData.first_name}
@@ -171,6 +252,7 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 onKeyDown={handleKeyDown}
                                 ref={firstNameInputRef}
                             />
+                            {<p className={`error ${errors.first_name ? 'active' : ''}`}>{errors.first_name}</p>}
                         </div>
 
                         <div className="field">
@@ -180,6 +262,7 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 inputMode="text"
                                 name="last_name"
                                 id="last_name"
+                                className={errors.last_name ? 'error-input' : ''}
                                 placeholder="Введите вашу фамилию"
                                 autoComplete="family-name"
                                 value={formData.last_name}
@@ -188,6 +271,7 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 onKeyDown={handleKeyDown}
                                 ref={lastNameInputRef}
                             />
+                            {<p className={`error ${errors.last_name ? 'active' : ''}`}>{errors.last_name}</p>}
                         </div>
                     </div>
                 </div>
@@ -201,6 +285,7 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 inputMode="text"
                                 name="password"
                                 id="password"
+                                className={errors.password ? 'error-input' : ''}
                                 placeholder="Введите пароль"
                                 autoComplete="new-password"
                                 value={formData.password}
@@ -209,6 +294,9 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 onKeyDown={handleKeyDown}
                                 ref={passwordInputRef}
                             />
+                            {<p className={`error ${errors.password ? 'active' : ''}`}>
+                                {errors.password ? errors.password[0] : null}
+                            </p>}
 
                             <div
                                 className={`eye-password ${isPasswordHidden ? 'hidden' : 'visible'}`}
@@ -223,6 +311,7 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 inputMode="text"
                                 name="password_confirmation"
                                 id="password_confirmation"
+                                className={errors.password_confirmation ? 'error-input' : ''}
                                 placeholder="Повторите пароль"
                                 autoComplete="new-password"
                                 value={formData.password_confirmation}
@@ -231,6 +320,7 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 onKeyDown={handleKeyDown}
                                 ref={passwordConfirmationInputRef}
                             />
+
                             <div className={`eye-password ${isPasswordConfirmationHidden ? 'hidden' : 'visible'}`}
                                  onClick={toggleEyePasswordConfirmation}></div>
                         </div>
@@ -240,10 +330,12 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                 <div className="buttons">
                     <button
                         type="button"
-                        className="btn"
+                        className={`btn ${isLoading ? 'loading' : ''}`}
                         onClick={registerStep === 3 ? handleSubmit : handleContinue}
+                        disabled={isDisabledButton || isLoading}
                     >
                         {registerStep === 3 ? 'Зарегистрироваться' : 'Продолжить'}
+                        <div className={`loader ${isLoading ? 'active' : ''}`}></div>
                     </button>
 
                     <button

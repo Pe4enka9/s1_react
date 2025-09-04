@@ -20,7 +20,7 @@ form {
       background-size: contain;
 
       position: absolute;
-      top: 57%;
+      top: 4.2rem;
       right: 1rem;
 
       &.hidden {
@@ -58,7 +58,7 @@ form {
         border-color: rgba($red2, .8);
       }
 
-      &.error {
+      &.error-input {
         border-color: $red;
       }
 
@@ -74,7 +74,18 @@ form {
     .error {
       color: $red;
 
+      font-size: $fontSize - .2;
       font-weight: 500;
+
+      z-index: -1;
+      transition: transform .5s ease, opacity .5s ease;
+      opacity: 0;
+      transform: translateY(-3rem);
+
+      &.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   }
 
