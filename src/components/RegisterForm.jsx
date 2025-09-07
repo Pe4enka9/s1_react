@@ -14,12 +14,23 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
         password: '',
         password_confirmation: '',
     });
+    // Ошибки валидации
     const [errors, setErrors] = useState({});
+    // Закрытие формы
     const [isClosing, setIsClosing] = useState(false);
-    const [isPasswordHidden, setIsPasswordHidden] = useState(true);
-    const [isPasswordConfirmationHidden, setIsPasswordConfirmationHidden] = useState(true);
+    // Скрытие пароля
+    const [isPasswordHidden, setIsPasswordHidden] = useState({
+        password: true,
+        password_confirmation: true,
+    });
+    // Блокировка кнопки
     const [isDisabledButton, setIsDisabledButton] = useState(true);
+    // Загрузка
     const [isLoading, setIsLoading] = useState(false);
+    // Проверка отправляется ли форма сейчас
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    // Ошибка сервера
+    const [isServerError, setIsServerError] = useState(false);
 
     const phoneInputRef = useRef(null);
     const firstNameInputRef = useRef(null);
@@ -27,6 +38,7 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
     const passwordInputRef = useRef(null);
     const passwordConfirmationInputRef = useRef(null);
 
+    // Закрытие формы с анимацией быстрее, чем анимация появления
     useEffect(() => {
         let timer;
 
@@ -40,76 +52,60 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
         return () => clearTimeout(timer);
     }, [isActive.register]);
 
+    // Блокировка кнопки "Продолжить" или "Зарегистрироваться" в случае пустых полей
     useEffect(() => {
-        if (registerStep === 2 && (formData.first_name.trim() === '' || formData.last_name.trim() === '')) {
-            setIsDisabledButton(true);
-            return;
-        } else {
-            setIsDisabledButton(false);
+        let isDisabled = false;
+
+        if (registerStep === 1) {
+            isDisabled = formData.phone_number.length !== 18;
+        } else if (registerStep === 2) {
+            isDisabled = !formData.first_name.trim() || !formData.last_name.trim();
+        } else if (registerStep === 3) {
+            isDisabled = !formData.password.trim() || !formData.password_confirmation.trim();
         }
 
-        if (registerStep === 3 && (formData.password.trim() === '' || formData.password_confirmation.trim() === '')) setIsDisabledButton(true);
-        else setIsDisabledButton(false);
-    }, [formData.first_name, formData.last_name, formData.password, formData.password_confirmation, registerStep]);
-
-    useEffect(() => {
-        if (errors.password) return;
-
-        if (errors.phone_number) setRegisterStep(1);
-    }, [errors.password, errors.phone_number, setRegisterStep]);
-
-    const handleValidation = (phoneInputValue) => {
-        if (registerStep === 1 && phoneInputValue.length !== 18) setIsDisabledButton(true);
-        else setIsDisabledButton(false);
-
-        if (registerStep === 2 && formData.first_name.trim() === '') setIsDisabledButton(true);
-        if (registerStep === 2 && formData.last_name.trim() === '') setIsDisabledButton(true);
-
-        if (registerStep === 3 && formData.password.trim() === '') setIsDisabledButton(true);
-        if (registerStep === 3 && formData.password_confirmation.trim() === '') setIsDisabledButton(true);
-    };
+        setIsDisabledButton(isDisabled);
+    }, [
+        formData.first_name,
+        formData.last_name,
+        formData.password,
+        formData.password_confirmation,
+        formData.phone_number.length,
+        registerStep
+    ]);
 
     const handleChange = (event) => {
         const {name, value} = event.target;
         setFormData({...formData, [name]: value});
 
-        handleValidation();
-
         event.target.classList.remove('error-input');
         event.target.nextSibling.classList.remove('active');
-        const timer = setTimeout(() =>
-                setErrors({...errors, [name]: ''}),
-            500);
-
-        return () => clearTimeout(timer);
+        setErrors({...errors, [name]: ''});
     }
 
     const handlePhoneAccept = (value) => {
         setFormData({...formData, phone_number: value});
 
-        handleValidation(value);
-
         const phoneNumberInput = document.getElementById('phone_number');
 
         phoneNumberInput.classList.remove('error-input');
         phoneNumberInput.nextSibling.classList.remove('active');
-        const timer = setTimeout(() =>
-                setErrors({...errors, phone_number: ''}),
-            500);
-
-        return () => clearTimeout(timer);
+        setErrors({...errors, phone_number: ''});
     }
 
+    // Вернуться на шаг назад
     const handleBack = () => {
         setRegisterStep(prev => prev - 1);
     }
 
+    // Перейти на шаг вперёд
     const handleContinue = () => {
         if (registerStep >= 3) return;
 
         setRegisterStep(prev => prev + 1);
     }
 
+    // Фокус на следующий input после события blur (только для номера телефона)
     const handleOnBlur = () => {
         if (formData.phone_number.length === 18) {
             setIsDisabledButton(false);
@@ -120,23 +116,29 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
         }
     };
 
+    // Закрытие формы
     const handleCancel = useCallback(() => {
         document.body.style.overflowY = 'auto';
         setIsActive({register: false, login: false, booking: false});
     }, [setIsActive]);
 
-    const toggleEyePassword = () => {
-        setIsPasswordHidden(prev => !prev);
+    // Показать / скрыть пароль
+    const toggleEyePassword = (e) => {
+        const elementId = e.target.parentElement.querySelector('input').id;
+
+        setIsPasswordHidden(prev =>
+            ({
+                ...prev,
+                [elementId]: !prev[elementId]
+            }));
     }
 
-    const toggleEyePasswordConfirmation = () => {
-        setIsPasswordConfirmationHidden(prev => !prev);
-    };
-
+    // Закрытие формы с помощью свайпа
     useEffect(() => {
         return swipeClose(handleCancel);
     }, [handleCancel]);
 
+    // Переход к следующему input при нажатии на Enter
     const handleKeyDown = (e) => {
         if (e.key !== 'Enter') return;
 
@@ -155,16 +157,22 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
             if (e.target.name === 'password') {
                 passwordConfirmationInputRef.current?.focus();
             } else if (e.target.name === 'password_confirmation') {
-                handleSubmit(e);
+                if (!isLoading && !isSubmitting) {
+                    setIsSubmitting(true);
+                    handleSubmit(e);
+                }
             }
         }
     };
 
+    // Отправка формы
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (registerStep === 3) {
             setIsLoading(true);
+            setErrors({});
+            setIsServerError(false);
 
             try {
                 const response = await axios.post(import.meta.env.VITE_API_URL + '/register', formData);
@@ -177,9 +185,30 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                     window.dispatchEvent(new Event('storage'));
                 }
             } catch (err) {
-                setErrors(err.response.data.errors);
+                if (err.code === 'ERR_NETWORK') {
+                    setIsServerError(true);
+
+                    const timer = setTimeout(() =>
+                            setIsServerError(false),
+                        2000);
+
+                    return () => clearTimeout(timer);
+                }
+
+                const currentErrors = err.response.data.errors;
+                setErrors(currentErrors);
+
+                // Переход к шагу, где возникла ошибка
+                if (currentErrors.password) {
+                    setRegisterStep(3);
+                } else if (currentErrors.first_name || currentErrors.last_name) {
+                    setRegisterStep(2);
+                } else if (currentErrors.phone_number) {
+                    setRegisterStep(1)
+                }
             } finally {
                 setIsLoading(false);
+                setIsSubmitting(false);
             }
         }
     };
@@ -281,7 +310,7 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                         <div className="field">
                             <label htmlFor="password">Пароль</label>
                             <input
-                                type={isPasswordHidden ? "password" : "text"}
+                                type={isPasswordHidden.password ? "password" : "text"}
                                 inputMode="text"
                                 name="password"
                                 id="password"
@@ -299,7 +328,7 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                             </p>}
 
                             <div
-                                className={`eye-password ${isPasswordHidden ? 'hidden' : 'visible'}`}
+                                className={`eye-password ${isPasswordHidden.password ? 'hidden' : 'visible'}`}
                                 onClick={toggleEyePassword}
                             ></div>
                         </div>
@@ -307,7 +336,7 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                         <div className="field">
                             <label htmlFor="password_confirmation">Повтор пароля</label>
                             <input
-                                type={isPasswordConfirmationHidden ? "password" : "text"}
+                                type={isPasswordHidden.password_confirmation ? "password" : "text"}
                                 inputMode="text"
                                 name="password_confirmation"
                                 id="password_confirmation"
@@ -321,8 +350,9 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 ref={passwordConfirmationInputRef}
                             />
 
-                            <div className={`eye-password ${isPasswordConfirmationHidden ? 'hidden' : 'visible'}`}
-                                 onClick={toggleEyePasswordConfirmation}></div>
+                            <div
+                                className={`eye-password ${isPasswordHidden.password_confirmation ? 'hidden' : 'visible'}`}
+                                onClick={toggleEyePassword}></div>
                         </div>
                     </div>
                 </div>
@@ -334,7 +364,9 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                         onClick={registerStep === 3 ? handleSubmit : handleContinue}
                         disabled={isDisabledButton || isLoading}
                     >
-                        {registerStep === 3 ? 'Зарегистрироваться' : 'Продолжить'}
+                        {registerStep === 3 && !isServerError ? 'Зарегистрироваться' :
+                            registerStep === 3 && isServerError ? 'Ошибка сервера'
+                                : 'Продолжить'}
                         <div className={`loader ${isLoading ? 'active' : ''}`}></div>
                     </button>
 
