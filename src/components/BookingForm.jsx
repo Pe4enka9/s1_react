@@ -314,8 +314,9 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                 enterKeyHint="done"
                                 onKeyDown={handleKeyDown}
                             />
-                            {
-                                <p className={`error ${errors.number_of_people ? 'active' : ''}`}>{errors.number_of_people}</p>}
+                            {<p className={`error ${errors.number_of_people ? 'active' : ''}`}>
+                                {errors.number_of_people}
+                            </p>}
                         </div>
                     </div>
                 </div>
@@ -330,6 +331,7 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                         {bookingStep === 3 && !isServerError ? 'Забронировать'
                             : bookingStep === 3 && isServerError ? 'Ошибка сервера'
                                 : 'Продолжить'}
+                        <div className={`loader ${isLoading ? 'active' : ''}`}></div>
                     </button>
 
                     <button
