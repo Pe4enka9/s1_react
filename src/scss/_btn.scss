@@ -21,6 +21,7 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: transform .3s ease, background-color .3s ease, color .3s ease;
+  position: relative;
 
   &:not(:disabled):active {
     transform: scale(.95);

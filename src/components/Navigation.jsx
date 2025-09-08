@@ -1,4 +1,5 @@
 import {useEffect, useState} from "react";
+import axios from "axios";
 
 export default function Navigation({isActive, setIsActive, registerStep, setRegisterStep, loginStep, setLoginStep}) {
     const [token, setToken] = useState(localStorage.getItem('token') || null);
@@ -20,6 +21,24 @@ export default function Navigation({isActive, setIsActive, registerStep, setRegi
             const timer = setTimeout(() => setLoginStep(currentStep), 1000);
 
             return () => clearTimeout(timer);
+        }
+    };
+
+    const handleLogout = async () => {
+        try {
+            const response = await axios.post(import.meta.env.VITE_API_URL + '/logout',
+                {},
+                {
+                    headers: {'Authorization': `Bearer ${token}`},
+                });
+
+            if (response.status === 204) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.dispatchEvent(new Event('storage'));
+            }
+        } catch (err) {
+            console.log(err);
         }
     };
 
@@ -57,8 +76,7 @@ export default function Navigation({isActive, setIsActive, registerStep, setRegi
                 <button
                     type="button"
                     className={isActive.login ? 'active' : ''}
-                    id="login-btn"
-                    onClick={handleClick}
+                    onClick={handleLogout}
                 >
                     Выход
                 </button>

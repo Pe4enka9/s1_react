@@ -150,6 +150,7 @@ header .header-wrapper .logo span:first-child {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+  position: relative;
 }
 .btn:not(:disabled):active {
   transform: scale(0.95);
@@ -886,7 +887,6 @@ form .btn {
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
   border-radius: 50%;
-  animation: loader 1s linear infinite;
   opacity: 0;
   transition: opacity 0.3s ease;
   position: absolute;
@@ -895,6 +895,7 @@ form .btn {
 }
 .loader.active {
   opacity: 1;
+  animation: loader 1s linear infinite;
 }
 @keyframes loader {
   to {

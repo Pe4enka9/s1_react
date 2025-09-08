@@ -9,7 +9,6 @@
   -moz-border-radius: 50%;
   border-radius: 50%;
 
-  animation: loader 1s linear infinite;
   opacity: 0;
   transition: opacity .3s ease;
 
@@ -19,11 +18,12 @@
 
   &.active {
     opacity: 1;
-  }
+    animation: loader 1s linear infinite;
 
-  @keyframes loader {
-    to {
-      transform: rotate(360deg);
+    @keyframes loader {
+      to {
+        transform: rotate(360deg);
+      }
     }
   }
 }

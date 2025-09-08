@@ -179,10 +179,23 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
 
                 if (response.status === 201) {
                     setIsActive({register: false, login: false, booking: false});
+                    setFormData({
+                        phone_number: '',
+                        first_name: '',
+                        last_name: '',
+                        password: '',
+                        password_confirmation: ''
+                    });
+
+                    const timer = setTimeout(() =>
+                            setRegisterStep(0),
+                        1000);
 
                     localStorage.setItem('token', response.data.token);
                     localStorage.setItem('user', JSON.stringify(response.data.user));
                     window.dispatchEvent(new Event('storage'));
+
+                    return () => clearTimeout(timer);
                 }
             } catch (err) {
                 if (err.code === 'ERR_NETWORK') {
