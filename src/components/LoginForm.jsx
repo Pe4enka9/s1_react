@@ -42,8 +42,7 @@ export default function LoginForm({isActive, setIsActive, loginStep, setLoginSte
         return () => clearTimeout(timer);
     }, [isActive.login]);
 
-    // Блокировка кнопки "Продолжить" или "Войти" в случае пустых полей
-    useEffect(() => {
+    const failedValidation = useCallback(() => {
         let isDisabled = false;
 
         if (loginStep === 1) {
@@ -53,7 +52,29 @@ export default function LoginForm({isActive, setIsActive, loginStep, setLoginSte
         }
 
         setIsDisabledButton(isDisabled);
+        return isDisabled;
     }, [formData.password, formData.phone_number.length, loginStep]);
+
+    // Блокировка кнопки "Продолжить" или "Войти" в случае пустых полей
+    useEffect(() => {
+        failedValidation();
+    }, [failedValidation]);
+
+    const handleOnFocus = (step) => {
+        if (step !== loginStep) {
+            if (failedValidation()) {
+                if (loginStep === 1) {
+                    phoneInputRef.current?.focus();
+                } else {
+                    passwordInputRef.current?.focus();
+                }
+
+                return;
+            }
+
+            setLoginStep(step);
+        }
+    };
 
     const handlePhoneAccept = (value) => {
         setFormData({...formData, phone_number: value});
@@ -64,17 +85,6 @@ export default function LoginForm({isActive, setIsActive, loginStep, setLoginSte
         phoneNumberInput.nextSibling.classList.remove('active');
         setErrors({...errors, phone_number: ''});
     }
-
-    // Фокус на следующий input после события blur (только для номера телефона)
-    const handleOnBlur = () => {
-        if (formData.phone_number.length === 18) {
-            setIsDisabledButton(false);
-            passwordInputRef.current?.focus();
-            handleContinue();
-        } else {
-            setIsDisabledButton(true);
-        }
-    };
 
     const handleChange = (event) => {
         const {name, value} = event.target;
@@ -113,13 +123,13 @@ export default function LoginForm({isActive, setIsActive, loginStep, setLoginSte
 
         e.preventDefault();
 
-        if (loginStep === 2) {
-            if (e.target.name === 'password') {
-                if (!isLoading && !isSubmitting) {
-                    setIsSubmitting(true);
-                    handleSubmit(e);
-                }
-            }
+        if (
+            loginStep === 2 &&
+            e.target.name === 'password' &&
+            !isLoading && !isSubmitting && !failedValidation()
+        ) {
+            setIsSubmitting(true);
+            handleSubmit(e);
         }
     };
 
@@ -215,13 +225,13 @@ export default function LoginForm({isActive, setIsActive, loginStep, setLoginSte
                                 onAccept={value =>
                                     handlePhoneAccept(value)
                                 }
+                                onFocus={() => handleOnFocus(1)}
                                 prepare={(appended, masked) =>
                                     preparePhoneValue(appended, masked)
                                 }
                                 autoComplete="tel phone"
                                 enterKeyHint="next"
                                 inputRef={phoneInputRef}
-                                onBlur={handleOnBlur}
                             />
                             {<p className={`error ${errors.phone_number ? 'active' : ''}`}>{errors.phone_number}</p>}
                         </div>
@@ -242,6 +252,7 @@ export default function LoginForm({isActive, setIsActive, loginStep, setLoginSte
                                 autoComplete="new-password"
                                 value={formData.password}
                                 onChange={handleChange}
+                                onFocus={() => handleOnFocus(2)}
                                 enterKeyHint="done"
                                 onKeyDown={handleKeyDown}
                                 ref={passwordInputRef}

@@ -34,6 +34,9 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
     const [isDisabledButton, setIsDisabledButton] = useState(true);
 
     const phoneInputRef = useRef(null);
+    const dateInputRef = useRef(null);
+    const durationInputRef = useRef(null);
+    const numberOfPeopleRef = useRef(null);
 
     useEffect(() => {
         let timer;
@@ -48,12 +51,11 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
         return () => clearTimeout(timer);
     }, [isActive.booking]);
 
-    // Блокировка кнопки "Продолжить" или "Забронировать" в случае пустых полей
-    useEffect(() => {
+    const failedValidation = useCallback(() => {
         let isDisabled = false;
 
         if (bookingStep === 1) {
-            isDisabled = formData.phone_number.length !== 18;
+            isDisabled = formData.phone_number.length < 18;
         } else if (bookingStep === 2) {
             isDisabled = !formData.date.trim() || !formData.duration.trim();
         } else if (bookingStep === 3) {
@@ -61,7 +63,34 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
         }
 
         setIsDisabledButton(isDisabled);
+        return isDisabled;
     }, [bookingStep, formData.date, formData.duration, formData.number_of_people, formData.phone_number.length]);
+
+    // Блокировка кнопки "Продолжить" или "Войти" в случае пустых полей
+    useEffect(() => {
+        failedValidation();
+    }, [failedValidation]);
+
+    const handleOnFocus = (step) => {
+        if (step !== bookingStep) {
+            if (failedValidation()) {
+                if (bookingStep === 1) {
+                    phoneInputRef.current?.focus();
+                } else if (bookingStep === 2) {
+                    if (!formData.date.trim()) {
+                        dateInputRef.current?.focus();
+                    } else {
+                        durationInputRef.current?.focus();
+                    }
+                } else if (bookingStep === 3) {
+                    numberOfPeopleRef.current?.focus();
+                }
+                return;
+            }
+
+            setBookingStep(step);
+        }
+    };
 
     const handleChange = (event) => {
         const {name, value} = event.target;
@@ -81,16 +110,6 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
         phoneNumberInput.nextSibling.classList.remove('active');
         setErrors({...errors, phone_number: ''});
     }
-
-    // Фокус на следующий input после события blur (только для номера телефона)
-    const handleOnBlur = () => {
-        if (formData.phone_number.length === 18) {
-            setIsDisabledButton(false);
-            handleContinue();
-        } else {
-            setIsDisabledButton(true);
-        }
-    };
 
     const handleBack = () => {
         setBookingStep(prev => prev - 1);
@@ -116,13 +135,13 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
 
         e.preventDefault();
 
-        if (bookingStep === 3) {
-            if (e.target.name === 'number_of_people') {
-                if (!isLoading && !isSubmitting) {
-                    setIsSubmitting(true);
-                    handleSubmit(e);
-                }
-            }
+        if (
+            bookingStep === 3 &&
+            e.target.name === 'number_of_people' &&
+            !isLoading && !isSubmitting && !failedValidation()
+        ) {
+            setIsSubmitting(true);
+            handleSubmit(e);
         }
     };
 
@@ -213,16 +232,16 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                 onAccept={value =>
                                     handlePhoneAccept(value)
                                 }
+                                onFocus={() => handleOnFocus(1)}
                                 prepare={(appended, masked) =>
                                     preparePhoneValue(appended, masked)
                                 }
                                 autoComplete="tel phone"
                                 enterKeyHint="next"
                                 inputRef={phoneInputRef}
-                                onBlur={handleOnBlur}
-                                onKeyDown={event => {
-                                    if (event.key === 'Tab' || event.key === 'Enter') {
-                                        event.preventDefault();
+                                onKeyDown={e => {
+                                    if (e.key === 'Tab' || e.key === 'Enter') {
+                                        e.preventDefault();
                                         handleContinue();
                                     }
                                 }}
@@ -268,7 +287,10 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                 calendarClassName={`calendar ${isCalendarActive ? 'active' : ''}`}
                                 portalClassName="portal"
                                 onKeyDown={handleKeyDown}
-                                onFocus={e => e.target.readOnly = true}
+                                onFocus={e => {
+                                    e.target.readOnly = true;
+                                    handleOnFocus(2);
+                                }}
                                 dayClassName={date => {
                                     const day = date.getDay();
                                     let className = 'calendar-day';
@@ -292,6 +314,9 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                 placeholder="2 часа"
                                 value={formData.duration}
                                 onChange={handleChange}
+                                onFocus={() => handleOnFocus(2)}
+                                onKeyDown={handleKeyDown}
+                                ref={durationInputRef}
                             />
                             {<p className={`error ${errors.duration ? 'active' : ''}`}>{errors.duration}</p>}
                         </div>
@@ -311,8 +336,10 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                 placeholder="Максимум 5"
                                 value={formData.number_of_people}
                                 onChange={handleChange}
-                                enterKeyHint="done"
+                                onFocus={() => handleOnFocus(3)}
                                 onKeyDown={handleKeyDown}
+                                enterKeyHint="done"
+                                ref={numberOfPeopleRef}
                             />
                             {<p className={`error ${errors.number_of_people ? 'active' : ''}`}>
                                 {errors.number_of_people}

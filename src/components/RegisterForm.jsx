@@ -52,28 +52,6 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
         return () => clearTimeout(timer);
     }, [isActive.register]);
 
-    // Блокировка кнопки "Продолжить" или "Зарегистрироваться" в случае пустых полей
-    useEffect(() => {
-        let isDisabled = false;
-
-        if (registerStep === 1) {
-            isDisabled = formData.phone_number.length !== 18;
-        } else if (registerStep === 2) {
-            isDisabled = !formData.first_name.trim() || !formData.last_name.trim();
-        } else if (registerStep === 3) {
-            isDisabled = !formData.password.trim() || !formData.password_confirmation.trim();
-        }
-
-        setIsDisabledButton(isDisabled);
-    }, [
-        formData.first_name,
-        formData.last_name,
-        formData.password,
-        formData.password_confirmation,
-        formData.phone_number.length,
-        registerStep
-    ]);
-
     const handleChange = (event) => {
         const {name, value} = event.target;
         setFormData({...formData, [name]: value});
@@ -105,14 +83,48 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
         setRegisterStep(prev => prev + 1);
     }
 
-    // Фокус на следующий input после события blur (только для номера телефона)
-    const handleOnBlur = () => {
-        if (formData.phone_number.length === 18) {
-            setIsDisabledButton(false);
-            firstNameInputRef.current?.focus();
-            handleContinue();
-        } else {
-            setIsDisabledButton(true);
+    const failedValidation = useCallback(() => {
+        let isDisabled = false;
+
+        if (registerStep === 1) {
+            isDisabled = formData.phone_number.length !== 18;
+        } else if (registerStep === 2) {
+            isDisabled = !formData.first_name.trim() || !formData.last_name.trim();
+        } else if (registerStep === 3) {
+            isDisabled = !formData.password.trim() || !formData.password_confirmation.trim();
+        }
+
+        setIsDisabledButton(isDisabled);
+        return isDisabled;
+    }, [formData.first_name, formData.last_name, formData.password, formData.password_confirmation, formData.phone_number.length, registerStep]);
+
+    // Блокировка кнопки "Продолжить" или "Войти" в случае пустых полей
+    useEffect(() => {
+        failedValidation();
+    }, [failedValidation]);
+
+    const handleOnFocus = (step) => {
+        if (step !== registerStep) {
+            if (failedValidation()) {
+                if (registerStep === 1) {
+                    phoneInputRef.current?.focus();
+                } else if (registerStep === 2) {
+                    if (!formData.first_name.trim()) {
+                        firstNameInputRef.current?.focus();
+                    } else {
+                        lastNameInputRef.current?.focus();
+                    }
+                } else if (registerStep === 3) {
+                    if (!formData.password.trim()) {
+                        passwordInputRef.current?.focus();
+                    } else {
+                        passwordConfirmationInputRef.current?.focus();
+                    }
+                }
+                return;
+            }
+
+            setRegisterStep(step);
         }
     };
 
@@ -144,24 +156,13 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
 
         e.preventDefault();
 
-        if (registerStep === 2) {
-            if (e.target.name === 'first_name') {
-                lastNameInputRef.current?.focus();
-            } else if (e.target.name === 'last_name') {
-                passwordInputRef.current?.focus();
-                handleContinue();
-            }
-        }
-
-        if (registerStep === 3) {
-            if (e.target.name === 'password') {
-                passwordConfirmationInputRef.current?.focus();
-            } else if (e.target.name === 'password_confirmation') {
-                if (!isLoading && !isSubmitting) {
-                    setIsSubmitting(true);
-                    handleSubmit(e);
-                }
-            }
+        if (
+            registerStep === 3 &&
+            e.target.name === 'password_confirmation' &&
+            !isLoading && !isSubmitting && !failedValidation()
+        ) {
+            setIsSubmitting(true);
+            handleSubmit(e);
         }
     };
 
@@ -263,13 +264,13 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 onAccept={value =>
                                     handlePhoneAccept(value)
                                 }
+                                onFocus={() => handleOnFocus(1)}
                                 prepare={(appended, masked) =>
                                     preparePhoneValue(appended, masked)
                                 }
                                 autoComplete="tel phone"
                                 enterKeyHint="next"
                                 inputRef={phoneInputRef}
-                                onBlur={handleOnBlur}
                             />
                             {<p className={`error ${errors.phone_number ? 'active' : ''}`}>{errors.phone_number}</p>}
                         </div>
@@ -290,8 +291,9 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 autoComplete="given-name"
                                 value={formData.first_name}
                                 onChange={handleChange}
-                                enterKeyHint="next"
+                                onFocus={() => handleOnFocus(2)}
                                 onKeyDown={handleKeyDown}
+                                enterKeyHint="next"
                                 ref={firstNameInputRef}
                             />
                             {<p className={`error ${errors.first_name ? 'active' : ''}`}>{errors.first_name}</p>}
@@ -309,8 +311,9 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 autoComplete="family-name"
                                 value={formData.last_name}
                                 onChange={handleChange}
-                                enterKeyHint="next"
+                                onFocus={() => handleOnFocus(2)}
                                 onKeyDown={handleKeyDown}
+                                enterKeyHint="next"
                                 ref={lastNameInputRef}
                             />
                             {<p className={`error ${errors.last_name ? 'active' : ''}`}>{errors.last_name}</p>}
@@ -332,8 +335,9 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 autoComplete="new-password"
                                 value={formData.password}
                                 onChange={handleChange}
-                                enterKeyHint="next"
+                                onFocus={() => handleOnFocus(3)}
                                 onKeyDown={handleKeyDown}
+                                enterKeyHint="next"
                                 ref={passwordInputRef}
                             />
                             {<p className={`error ${errors.password ? 'active' : ''}`}>
@@ -358,8 +362,9 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 autoComplete="new-password"
                                 value={formData.password_confirmation}
                                 onChange={handleChange}
-                                enterKeyHint="done"
+                                onFocus={() => handleOnFocus(3)}
                                 onKeyDown={handleKeyDown}
+                                enterKeyHint="done"
                                 ref={passwordConfirmationInputRef}
                             />
 
