@@ -7,6 +7,7 @@ import {IMaskInput} from "react-imask";
 import DatePicker, {registerLocale} from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
 import {ru} from "date-fns/locale/ru";
+import axios from "axios";
 
 registerLocale('ru', ru);
 
@@ -14,12 +15,23 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
     const [formData, setFormData] = useState({
         phone_number: '',
         date: '',
-        time: '',
         duration: '',
         number_of_people: '',
     });
+    // Ошибки валидации
+    const [errors, setErrors] = useState({});
+    // Загрузка
+    const [isLoading, setIsLoading] = useState(false);
+    // Ошибка сервера
+    const [isServerError, setIsServerError] = useState(false);
+    // Закрытие формы
     const [isClosing, setIsClosing] = useState(false);
+    // Проверка отправляется ли форма сейчас
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    // Активен ли календарь
     const [isCalendarActive, setIsCalendarActive] = useState(false);
+    // Блокировка кнопки
+    const [isDisabledButton, setIsDisabledButton] = useState(true);
 
     const phoneInputRef = useRef(null);
 
@@ -36,14 +48,49 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
         return () => clearTimeout(timer);
     }, [isActive.booking]);
 
+    // Блокировка кнопки "Продолжить" или "Забронировать" в случае пустых полей
+    useEffect(() => {
+        let isDisabled = false;
+
+        if (bookingStep === 1) {
+            isDisabled = formData.phone_number.length !== 18;
+        } else if (bookingStep === 2) {
+            isDisabled = !formData.date.trim() || !formData.duration.trim();
+        } else if (bookingStep === 3) {
+            isDisabled = !formData.number_of_people.trim();
+        }
+
+        setIsDisabledButton(isDisabled);
+    }, [bookingStep, formData.date, formData.duration, formData.number_of_people, formData.phone_number.length]);
+
     const handleChange = (event) => {
         const {name, value} = event.target;
         setFormData({...formData, [name]: value});
+
+        event.target.classList.remove('error-input');
+        event.target.nextSibling.classList.remove('active');
+        setErrors({...errors, [name]: ''});
     }
 
     const handlePhoneAccept = (value) => {
         setFormData({...formData, phone_number: value});
+
+        const phoneNumberInput = document.getElementById('phone_number');
+
+        phoneNumberInput.classList.remove('error-input');
+        phoneNumberInput.nextSibling.classList.remove('active');
+        setErrors({...errors, phone_number: ''});
     }
+
+    // Фокус на следующий input после события blur (только для номера телефона)
+    const handleOnBlur = () => {
+        if (formData.phone_number.length === 18) {
+            setIsDisabledButton(false);
+            handleContinue();
+        } else {
+            setIsDisabledButton(true);
+        }
+    };
 
     const handleBack = () => {
         setBookingStep(prev => prev - 1);
@@ -64,23 +111,68 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
         return swipeClose(isCalendarActive, handleCancel);
     }, [handleCancel, isCalendarActive]);
 
-    const handleKeyDown = (event) => {
-        if (event.key !== 'Enter') return;
+    const handleKeyDown = (e) => {
+        if (e.key !== 'Enter') return;
 
-        event.preventDefault();
+        e.preventDefault();
 
         if (bookingStep === 3) {
-            if (event.target.name === 'number_of_people') {
-                handleSubmit(event);
+            if (e.target.name === 'number_of_people') {
+                if (!isLoading && !isSubmitting) {
+                    setIsSubmitting(true);
+                    handleSubmit(e);
+                }
             }
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (bookingStep === 3) {
-            console.log("Форма отправлена!");
+            try {
+                setIsLoading(true);
+                setErrors({});
+                setIsServerError(false);
+
+                const response = await axios.post(import.meta.env.VITE_API_URL + '/booking', formData);
+
+                if (response.status === 201) {
+                    setIsActive({register: false, login: false, booking: false});
+                    setFormData({phone_number: '', date: '', duration: '', number_of_people: ''});
+
+                    const timer = setTimeout(() =>
+                            setBookingStep(0),
+                        1000);
+
+                    return () => clearTimeout(timer);
+                }
+            } catch (err) {
+                if (err.code === 'ERR_NETWORK') {
+                    setIsServerError(true);
+
+                    const timer = setTimeout(() =>
+                            setIsServerError(false),
+                        2000);
+
+                    return () => clearTimeout(timer);
+                }
+
+                const currentErrors = err.response.data.errors;
+                setErrors(currentErrors);
+
+                // Переход к шагу, где возникла ошибка
+                if (currentErrors.number_of_people) {
+                    setBookingStep(3);
+                } else if (currentErrors.date || currentErrors.duration) {
+                    setBookingStep(2);
+                } else if (currentErrors.phone_number) {
+                    setBookingStep(1);
+                }
+            } finally {
+                setIsLoading(false);
+                setIsSubmitting(false);
+            }
         }
     };
 
@@ -115,6 +207,7 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                 inputMode="tel"
                                 name="phone_number"
                                 id="phone_number_booking"
+                                className={errors.phone_number ? 'error-input' : ''}
                                 placeholder="+7 (000) 000-00-00"
                                 value={formData.phone_number}
                                 onAccept={value =>
@@ -126,7 +219,7 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                 autoComplete="tel phone"
                                 enterKeyHint="next"
                                 inputRef={phoneInputRef}
-                                onBlur={handleContinue}
+                                onBlur={handleOnBlur}
                                 onKeyDown={event => {
                                     if (event.key === 'Tab' || event.key === 'Enter') {
                                         event.preventDefault();
@@ -134,6 +227,7 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                     }
                                 }}
                             />
+                            {<p className={`error ${errors.phone_number ? 'active' : ''}`}>{errors.phone_number}</p>}
                         </div>
                     </div>
                 </div>
@@ -145,11 +239,21 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                             <DatePicker
                                 name="date"
                                 id="date"
+                                className={errors.date ? 'error-input' : ''}
                                 showMonthYearDropdown={false}
                                 showTimeSelect
                                 selected={formData.date ? new Date(formData.date) : null}
                                 minDate={new Date()}
-                                onChange={date => setFormData({...formData, date: date})}
+                                onChange={date => {
+                                    const year = date.getFullYear();
+                                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                                    const day = String(date.getDate()).padStart(2, '0');
+                                    const hours = String(date.getHours()).padStart(2, '0');
+                                    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+                                    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:00`;
+                                    setFormData({...formData, date: formattedDate});
+                                }}
                                 onCalendarOpen={() => {
                                     setTimeout(() => setIsCalendarActive(true), 100)
                                 }}
@@ -175,6 +279,7 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                 timeCaption="Время"
                                 timeClassName={() => "time-item"}
                             />
+                            {<p className={`error ${errors.date ? 'active' : ''}`}>{errors.date}</p>}
                         </div>
 
                         <div className="field">
@@ -183,10 +288,12 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                 type="number"
                                 name="duration"
                                 id="duration"
+                                className={errors.duration ? 'error-input' : ''}
                                 placeholder="2 часа"
                                 value={formData.duration}
                                 onChange={handleChange}
                             />
+                            {<p className={`error ${errors.duration ? 'active' : ''}`}>{errors.duration}</p>}
                         </div>
                     </div>
                 </div>
@@ -200,12 +307,15 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                 inputMode="numeric"
                                 name="number_of_people"
                                 id="number_of_people"
+                                className={errors.number_of_people ? 'error-input' : ''}
                                 placeholder="Максимум 5"
                                 value={formData.number_of_people}
                                 onChange={handleChange}
                                 enterKeyHint="done"
                                 onKeyDown={handleKeyDown}
                             />
+                            {
+                                <p className={`error ${errors.number_of_people ? 'active' : ''}`}>{errors.number_of_people}</p>}
                         </div>
                     </div>
                 </div>
@@ -215,8 +325,11 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                         type="button"
                         className="btn"
                         onClick={bookingStep === 3 ? handleSubmit : handleContinue}
+                        disabled={isDisabledButton || isLoading}
                     >
-                        {bookingStep === 3 ? 'Забронировать' : 'Продолжить'}
+                        {bookingStep === 3 && !isServerError ? 'Забронировать'
+                            : bookingStep === 3 && isServerError ? 'Ошибка сервера'
+                                : 'Продолжить'}
                     </button>
 
                     <button

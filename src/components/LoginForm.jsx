@@ -20,13 +20,13 @@ export default function LoginForm({isActive, setIsActive, loginStep, setLoginSte
     // Загрузка
     const [isLoading, setIsLoading] = useState(false);
     // Ошибка сервера
-    const [isServerError, setIsServerError] = useState(false)
+    const [isServerError, setIsServerError] = useState(false);
     // Проверка отправляется ли форма сейчас
     const [isSubmitting, setIsSubmitting] = useState(false);
+    // Блокировка кнопки
     const [isDisabledButton, setIsDisabledButton] = useState(true);
 
     const phoneInputRef = useRef(null);
-    const firstNameInputRef = useRef(null);
     const passwordInputRef = useRef(null);
 
     useEffect(() => {
@@ -42,7 +42,7 @@ export default function LoginForm({isActive, setIsActive, loginStep, setLoginSte
         return () => clearTimeout(timer);
     }, [isActive.login]);
 
-    // Блокировка кнопки "Продолжить" или "Зарегистрироваться" в случае пустых полей
+    // Блокировка кнопки "Продолжить" или "Войти" в случае пустых полей
     useEffect(() => {
         let isDisabled = false;
 
@@ -69,7 +69,7 @@ export default function LoginForm({isActive, setIsActive, loginStep, setLoginSte
     const handleOnBlur = () => {
         if (formData.phone_number.length === 18) {
             setIsDisabledButton(false);
-            firstNameInputRef.current?.focus();
+            passwordInputRef.current?.focus();
             handleContinue();
         } else {
             setIsDisabledButton(true);
