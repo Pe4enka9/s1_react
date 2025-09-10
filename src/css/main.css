@@ -488,9 +488,12 @@ form .field {
 form .field .eye-password {
   width: 2rem;
   height: 2rem;
+  background-color: transparent;
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
+  outline: none;
+  border: none;
   position: absolute;
   top: 4.2rem;
   right: 1rem;
@@ -532,13 +535,17 @@ form .field .error {
   font-size: 1.4rem;
   font-weight: 500;
   z-index: -1;
-  transition: transform 0.5s ease, opacity 0.5s ease;
-  opacity: 0;
-  transform: translateY(-3rem);
+  animation: slideDown 0.5s ease forwards;
 }
-form .field .error.active {
-  opacity: 1;
-  transform: translateY(0);
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-3rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 form .btn {
   width: 100%;
@@ -596,8 +603,6 @@ form .btn {
   width: 100%;
   height: 0.4rem;
   background-color: #757575;
-  -webkit-border-radius: 10rem;
-  -moz-border-radius: 10rem;
   border-radius: 10rem;
   overflow: hidden;
   position: relative;
@@ -630,47 +635,18 @@ form .btn {
   gap: 0;
   flex-wrap: nowrap;
   background-color: #FF6467;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
   border-radius: 50%;
 }
 .modal form .title .icon img {
   width: 3.2rem;
   height: 3.2rem;
 }
-.modal form .step {
-  width: calc(100% - 4rem);
-  position: absolute;
-  top: 37%;
-  left: 50%;
-  transform: translateX(-50%);
-}
-.modal form .step > div {
+.modal form .step-container {
   width: 100%;
-  display: flex;
-  justify-content: flex-start;
-  align-items: stretch;
-  flex-direction: column;
-  gap: 1.5rem;
-  flex-wrap: nowrap;
-  opacity: 0.5;
-  transition: transform 0.8s ease, opacity 0.8s ease;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-.modal form .step.prev > div {
-  pointer-events: none;
-  transform: translateX(calc(-100% - 4rem));
-}
-.modal form .step.current > div {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateX(0);
-}
-.modal form .step.next > div {
-  pointer-events: none;
-  transform: translateX(calc(100% + 4rem));
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
 }
 .modal form .buttons {
   display: flex;
@@ -679,7 +655,78 @@ form .btn {
   flex-direction: column;
   gap: 1.5rem;
   flex-wrap: nowrap;
-  flex: 1;
+  flex: 0 0 auto;
+}
+
+.step {
+  width: 100%;
+  opacity: 1;
+  pointer-events: none;
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.step.entering {
+  pointer-events: auto;
+  z-index: 2;
+}
+.step.slide-in-right {
+  transform: translateX(-50%) translateX(100%);
+  animation: slideInRight 0.8s ease forwards;
+}
+@keyframes slideInRight {
+  from {
+    transform: translateX(-50%) translateX(calc(100% + 2rem));
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateX(0);
+    opacity: 1;
+  }
+}
+.step.slide-out-left {
+  transform: translateX(-50%) translateX(0);
+  animation: slideOutLeft 0.8s ease forwards;
+}
+@keyframes slideOutLeft {
+  from {
+    transform: translateX(-50%) translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-50%) translateX(calc(-100% - 2rem));
+    opacity: 0;
+  }
+}
+.step.slide-in-left {
+  transform: translateX(-50%) translateX(-100%);
+  animation: slideInLeft 0.8s ease forwards;
+}
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-50%) translateX(calc(-100% - 2rem));
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateX(0);
+    opacity: 1;
+  }
+}
+.step.slide-out-right {
+  transform: translateX(-50%) translateX(0);
+  animation: slideOutRight 0.8s ease forwards;
+}
+@keyframes slideOutRight {
+  from {
+    transform: translateX(-50%) translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-50%) translateX(calc(100% + 2rem));
+    opacity: 0;
+  }
 }
 
 #register form .steps-progress.step-1 .steps-progress-bar::after {

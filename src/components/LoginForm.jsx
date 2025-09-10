@@ -1,10 +1,11 @@
 /** @type {string} */
 import profile from '../img/icons/profile.svg';
 import {useCallback, useEffect, useRef, useState} from "react";
-import {IMaskInput} from "react-imask";
-import preparePhoneValue from "../handlers/preparePhoneValue.js";
 import swipeClose from "../handlers/swipeClose.js";
 import axios from "axios";
+import InputField from "./InputField.jsx";
+import PhoneNumberInput from "./PhoneNumberInput.jsx";
+import Step from "./Step.jsx";
 
 export default function LoginForm({isActive, setIsActive, loginStep, setLoginStep}) {
     const [formData, setFormData] = useState({
@@ -25,23 +26,15 @@ export default function LoginForm({isActive, setIsActive, loginStep, setLoginSte
     const [isSubmitting, setIsSubmitting] = useState(false);
     // Блокировка кнопки
     const [isDisabledButton, setIsDisabledButton] = useState(true);
+    // Активность формы
+    const [isFormActive, setIsFormActive] = useState(false);
+    const [direction, setDirection] = useState('next');
+    const [prevStep, setPrevStep] = useState(null);
 
     const phoneInputRef = useRef(null);
     const passwordInputRef = useRef(null);
 
-    useEffect(() => {
-        let timer;
-
-        if (isActive.login) timer = setTimeout(() =>
-                setIsClosing(true),
-            1200)
-        else timer = setTimeout(() =>
-                setIsClosing(false),
-            1000);
-
-        return () => clearTimeout(timer);
-    }, [isActive.login]);
-
+    // Валидация
     const failedValidation = useCallback(() => {
         let isDisabled = false;
 
@@ -55,61 +48,41 @@ export default function LoginForm({isActive, setIsActive, loginStep, setLoginSte
         return isDisabled;
     }, [formData.password, formData.phone_number.length, loginStep]);
 
-    // Блокировка кнопки "Продолжить" или "Войти" в случае пустых полей
-    useEffect(() => {
-        failedValidation();
-    }, [failedValidation]);
-
-    const handleOnBlur = (e, step) => {
-        if (failedValidation()) {
-            e.target.focus();
-            return;
-        }
-
-        setLoginStep(step);
-    };
-
-    const handlePhoneAccept = (value) => {
-        setFormData({...formData, phone_number: value});
-
-        const phoneNumberInput = document.getElementById('phone_number');
-
-        phoneNumberInput.classList.remove('error-input');
-        phoneNumberInput.nextSibling.classList.remove('active');
-        setErrors({...errors, phone_number: ''});
-    }
-
-    const handleChange = (event) => {
-        const {name, value} = event.target;
+    const handleChange = (e) => {
+        const {name, value} = e.target;
         setFormData({...formData, [name]: value});
 
-        event.target.classList.remove('error-input');
-        event.target.nextSibling.classList.remove('active');
+        e.target.classList.remove('error-input');
+        e.target.nextSibling.classList.remove('active');
         setErrors({...errors, [name]: ''});
     }
 
     const handleBack = () => {
+        if (loginStep <= 1) return;
+        setDirection('prev');
+        setPrevStep(loginStep);
         setLoginStep(prev => prev - 1);
     }
 
     const handleCancel = useCallback(() => {
         document.body.style.overflowY = 'auto';
-        setIsActive({register: false, login: false, booking: false});
+
+        setIsClosing(true);
+        setIsFormActive(false);
+
+        const timer = setTimeout(() =>
+                setIsActive(prev => ({...prev, login: false})),
+            1000);
+
+        return () => clearTimeout(timer);
     }, [setIsActive]);
 
     const handleContinue = () => {
         if (loginStep >= 2) return;
-
+        setDirection('next');
+        setPrevStep(loginStep);
         setLoginStep(prev => prev + 1);
     }
-
-    const toggleEyePassword = () => {
-        setIsPasswordHidden(prev => !prev);
-    }
-
-    useEffect(() => {
-        return swipeClose(handleCancel);
-    }, [handleCancel]);
 
     const handleKeyDown = (e) => {
         if (e.key !== 'Enter') return;
@@ -170,118 +143,159 @@ export default function LoginForm({isActive, setIsActive, loginStep, setLoginSte
                 setErrors(currentErrors);
 
                 // Переход к шагу, где возникла ошибка
-                if (currentErrors.password) {
+                if (currentErrors.password && loginStep !== 2) {
+                    setPrevStep(loginStep);
+                    setDirection('next');
                     setLoginStep(2);
-                } else if (currentErrors.phone_number) {
-                    setLoginStep(1)
+                } else if (currentErrors.phone_number && loginStep !== 1) {
+                    setPrevStep(loginStep);
+                    setDirection('prev');
+                    setLoginStep(1);
                 }
             } finally {
                 setIsLoading(false);
                 setIsSubmitting(false);
             }
+        } else {
+            handleContinue();
         }
     };
 
+    const steps = [
+        <Step>
+            <InputField
+                id="phone_number"
+                label="Номер телефона"
+                error={errors.phone_number}
+            >
+                <PhoneNumberInput
+                    formData={formData}
+                    setFormData={setFormData}
+                    inputRef={phoneInputRef}
+                    errors={errors}
+                    setErrors={setErrors}
+                />
+            </InputField>
+        </Step>,
+        <Step>
+            <InputField
+                id="password_login"
+                label="Пароль"
+                error={errors.password}
+                isPasswordHidden={isPasswordHidden}
+                setIsPasswordHidden={setIsPasswordHidden}
+                isPassword
+            >
+                <input
+                    type={isPasswordHidden ? "password" : "text"}
+                    inputMode="text"
+                    name="password"
+                    id="password_login"
+                    className={errors.password ? 'error-input' : ''}
+                    placeholder="Введите пароль"
+                    autoComplete="new-password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    enterKeyHint="done"
+                    onKeyDown={handleKeyDown}
+                    ref={passwordInputRef}
+                />
+            </InputField>
+        </Step>
+    ];
+
+    useEffect(() => {
+        if (isActive) {
+            setIsClosing(false);
+            requestAnimationFrame(() => setIsFormActive(true));
+        }
+    }, [isActive, setIsActive]);
+
+    useEffect(() => {
+        return swipeClose(handleCancel);
+    }, [handleCancel]);
+
+    // Блокировка кнопки "Продолжить" или "Войти" в случае пустых полей
+    useEffect(() => {
+        failedValidation();
+    }, [failedValidation]);
+
+    useEffect(() => {
+        if (loginStep === 2) {
+            const timer = setTimeout(() =>
+                    passwordInputRef.current.focus(),
+                800);
+
+            return () => clearTimeout(timer);
+        }
+    }, [loginStep]);
+
     return (
-        <div id="login" className={`modal ${isActive.login ? 'active' : ''}`}>
-            <form className={`${isActive.login ? 'active' : ''} ${isClosing ? 'closing' : ''}`}>
-                <div className={`steps-progress step-${loginStep}`}>
-                    <div className="steps-name">
-                        <p className="small">Контакт</p>
-                        <p className="small">Пароль</p>
-                    </div>
+        <>
+            {isActive && (
+                <div id="login" className={`modal ${isFormActive ? 'active' : ''}`}>
+                    <form className={`${isFormActive ? 'active' : ''} ${isClosing ? 'closing' : ''}`}
+                          onSubmit={handleSubmit}>
+                        <div className={`steps-progress step-${loginStep}`}>
+                            <div className="steps-name">
+                                <p className="small">Контакт</p>
+                                <p className="small">Пароль</p>
+                            </div>
 
-                    <div className="steps-progress-bar"></div>
-                </div>
-
-                <div className="title">
-                    <div className="icon">
-                        <img src={profile} alt="Вход в аккаунт"/>
-                    </div>
-
-                    <h4>Вход в аккаунт</h4>
-                </div>
-
-                <div className={`step ${loginStep === 1 ? 'current' : 'prev'}`}>
-                    <div>
-                        <div className="field">
-                            <label htmlFor="phone_number_login">Номер телефона</label>
-                            <IMaskInput
-                                mask="+{7} (000) 000-00-00"
-                                type="tel"
-                                inputMode="tel"
-                                name="phone_number"
-                                id="phone_number_login"
-                                className={errors.phone_number ? 'error-input' : ''}
-                                placeholder="+7 (000) 000-00-00"
-                                value={formData.phone_number}
-                                onAccept={value =>
-                                    handlePhoneAccept(value)
-                                }
-                                onBlur={e => handleOnBlur(e, 2)}
-                                prepare={(appended, masked) =>
-                                    preparePhoneValue(appended, masked)
-                                }
-                                autoComplete="tel phone"
-                                enterKeyHint="next"
-                                inputRef={phoneInputRef}
-                            />
-                            {<p className={`error ${errors.phone_number ? 'active' : ''}`}>{errors.phone_number}</p>}
+                            <div className="steps-progress-bar"></div>
                         </div>
-                    </div>
-                </div>
 
-                <div className={`step ${loginStep === 2 ? 'current' : 'next'}`}>
-                    <div>
-                        <div className="field">
-                            <label htmlFor="password_login">Пароль</label>
-                            <input
-                                type={isPasswordHidden ? "password" : "text"}
-                                inputMode="text"
-                                name="password"
-                                id="password_login"
-                                className={errors.password ? 'error-input' : ''}
-                                placeholder="Введите пароль"
-                                autoComplete="new-password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                onBlur={e => handleOnBlur(e, 2)}
-                                enterKeyHint="done"
-                                onKeyDown={handleKeyDown}
-                                ref={passwordInputRef}
-                            />
-                            {<p className={`error ${errors.password ? 'active' : ''}`}>{errors.password}</p>}
+                        <div className="title">
+                            <div className="icon">
+                                <img src={profile} alt="Вход в аккаунт"/>
+                            </div>
+
+                            <h4>Вход в аккаунт</h4>
+                        </div>
+
+                        <div className="step-container">
+                            {prevStep !== null && (
+                                <div
+                                    key={`step-${prevStep}`}
+                                    className={`step leaving ${direction === 'next' ? 'slide-out-left' : 'slide-out-right'}`}
+                                    onAnimationEnd={() => setPrevStep(null)}
+                                >
+                                    {steps[prevStep - 1]}
+                                </div>
+                            )}
 
                             <div
-                                className={`eye-password ${isPasswordHidden ? 'hidden' : 'visible'}`}
-                                onClick={toggleEyePassword}
-                            ></div>
+                                key={`step-${loginStep}`}
+                                className={`step entering ${direction === 'next' ? 'slide-in-right' : 'slide-in-left'}`}
+                            >
+                                {steps[loginStep - 1]}
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <div className="buttons">
-                    <button
-                        type="button"
-                        className="btn"
-                        onClick={loginStep === 2 ? handleSubmit : handleContinue}
-                        disabled={isDisabledButton || isLoading}
-                    >
-                        {loginStep === 2 && !isServerError ? 'Войти'
-                            : loginStep === 2 && isServerError ? 'Ошибка сервера'
-                                : 'Продолжить'}
-                        <div className={`loader ${isLoading ? 'active' : ''}`}></div>
-                    </button>
+                        <div className="buttons">
+                            <button
+                                type="submit"
+                                className="btn"
+                                onClick={handleSubmit}
+                                disabled={isDisabledButton || isLoading}
+                            >
+                                {loginStep === 2 && !isServerError ? 'Войти'
+                                    : loginStep === 2 && isServerError ? 'Ошибка сервера'
+                                        : 'Продолжить'}
+                                <div className={`loader ${isLoading ? 'active' : ''}`}></div>
+                            </button>
 
-                    <button
-                        type="button"
-                        className="btn cancel"
-                        onClick={loginStep === 1 ? handleCancel : handleBack}
-                    >
-                        {loginStep === 1 ? 'Отмена' : 'Назад'}
-                    </button>
+                            <button
+                                type="button"
+                                className="btn cancel"
+                                onClick={loginStep === 1 ? handleCancel : handleBack}
+                            >
+                                {loginStep === 1 ? 'Отмена' : 'Назад'}
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </form>
-        </div>
+            )}
+        </>
     )
 }

@@ -20,28 +20,28 @@ export default function App() {
 
     return (
         <>
-            <RegisterForm
-                isActive={isActive}
-                setIsActive={setIsActive}
-                registerStep={registerStep}
-                setRegisterStep={setRegisterStep}
-            />
+            {/*<RegisterForm*/}
+            {/*    isActive={isActive}*/}
+            {/*    setIsActive={setIsActive}*/}
+            {/*    registerStep={registerStep}*/}
+            {/*    setRegisterStep={setRegisterStep}*/}
+            {/*/>*/}
 
             <LoginForm
-                isActive={isActive}
+                isActive={isActive.login}
                 setIsActive={setIsActive}
                 loginStep={loginStep}
                 setLoginStep={setLoginStep}
             />
 
-            <BookingForm
-                isActive={isActive}
-                setIsActive={setIsActive}
-                bookingStep={bookingStep}
-                setBookingStep={setBookingStep}
-            />
+            {/*<BookingForm*/}
+            {/*    isActive={isActive}*/}
+            {/*    setIsActive={setIsActive}*/}
+            {/*    bookingStep={bookingStep}*/}
+            {/*    setBookingStep={setBookingStep}*/}
+            {/*/>*/}
 
-            <div id="calendar"></div>
+            {/*<div id="calendar"></div>*/}
 
             <Header
                 isActive={isActive}

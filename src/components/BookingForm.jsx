@@ -8,6 +8,7 @@ import DatePicker, {registerLocale} from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
 import {ru} from "date-fns/locale/ru";
 import axios from "axios";
+import InputField from "./InputField.jsx";
 
 registerLocale('ru', ru);
 
@@ -218,8 +219,11 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
 
                 <div className={`step ${bookingStep === 1 ? 'current' : 'prev'}`}>
                     <div>
-                        <div className="field">
-                            <label htmlFor="phone_number_booking">Номер телефона</label>
+                        <InputField
+                            id="phone_number_booking"
+                            label="Номер телефона"
+                            error={errors.phone_number}
+                        >
                             <IMaskInput
                                 mask="+{7} (000) 000-00-00"
                                 type="tel"
@@ -246,15 +250,17 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                     }
                                 }}
                             />
-                            {<p className={`error ${errors.phone_number ? 'active' : ''}`}>{errors.phone_number}</p>}
-                        </div>
+                        </InputField>
                     </div>
                 </div>
 
                 <div className={`step ${bookingStep === 2 ? 'current' : bookingStep === 3 ? 'prev' : 'next'}`}>
                     <div>
-                        <div className="field">
-                            <label htmlFor="date">Дата</label>
+                        <InputField
+                            id="date"
+                            label="Дата"
+                            error={errors.date}
+                        >
                             <DatePicker
                                 name="date"
                                 id="date"
@@ -301,11 +307,13 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                 timeCaption="Время"
                                 timeClassName={() => "time-item"}
                             />
-                            {<p className={`error ${errors.date ? 'active' : ''}`}>{errors.date}</p>}
-                        </div>
+                        </InputField>
 
-                        <div className="field">
-                            <label htmlFor="duration">Продолжительность</label>
+                        <InputField
+                            id="duration"
+                            label="Продолжительность"
+                            error={errors.duration}
+                        >
                             <input
                                 type="number"
                                 name="duration"
@@ -318,15 +326,17 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                 onKeyDown={handleKeyDown}
                                 ref={durationInputRef}
                             />
-                            {<p className={`error ${errors.duration ? 'active' : ''}`}>{errors.duration}</p>}
-                        </div>
+                        </InputField>
                     </div>
                 </div>
 
                 <div className={`step ${bookingStep === 3 ? 'current' : 'next'}`}>
                     <div>
-                        <div className="field">
-                            <label htmlFor="number_of_people">Количество человек</label>
+                        <InputField
+                            id="number_of_people"
+                            label="Количество человек"
+                            error={errors.number_of_people}
+                        >
                             <input
                                 type="number"
                                 inputMode="numeric"
@@ -341,10 +351,7 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
                                 enterKeyHint="done"
                                 ref={numberOfPeopleRef}
                             />
-                            {<p className={`error ${errors.number_of_people ? 'active' : ''}`}>
-                                {errors.number_of_people}
-                            </p>}
-                        </div>
+                        </InputField>
                     </div>
                 </div>
 

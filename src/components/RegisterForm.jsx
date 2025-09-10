@@ -5,6 +5,7 @@ import {IMaskInput} from "react-imask";
 import preparePhoneValue from "../handlers/preparePhoneValue.js";
 import swipeClose from "../handlers/swipeClose.js";
 import axios from "axios";
+import InputField from "./InputField.jsx";
 
 export default function RegisterForm({isActive, setIsActive, registerStep, setRegisterStep}) {
     const [formData, setFormData] = useState({
@@ -20,7 +21,7 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
     const [isClosing, setIsClosing] = useState(false);
     // Скрытие пароля
     const [isPasswordHidden, setIsPasswordHidden] = useState({
-        password: true,
+        password_register: true,
         password_confirmation: true,
     });
     // Блокировка кнопки
@@ -119,17 +120,6 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
         document.body.style.overflowY = 'auto';
         setIsActive({register: false, login: false, booking: false});
     }, [setIsActive]);
-
-    // Показать / скрыть пароль
-    const toggleEyePassword = (e) => {
-        const elementId = e.target.parentElement.querySelector('input').id;
-
-        setIsPasswordHidden(prev =>
-            ({
-                ...prev,
-                [elementId]: !prev[elementId]
-            }));
-    }
 
     // Закрытие формы с помощью свайпа
     useEffect(() => {
@@ -236,37 +226,38 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
 
                 <div className={`step ${registerStep === 1 ? 'current' : 'prev'}`}>
                     <div>
-                        <div className="field">
-                            <label htmlFor="phone_number">Номер телефона</label>
+                        <InputField
+                            id="phone_number_register"
+                            label="Номер телефона"
+                            error={errors.phone_number}
+                        >
                             <IMaskInput
                                 mask="+{7} (000) 000-00-00"
                                 type="tel"
                                 inputMode="tel"
                                 name="phone_number"
-                                id="phone_number"
+                                id="phone_number_register"
                                 className={errors.phone_number ? 'error-input' : ''}
                                 placeholder="+7 (000) 000-00-00"
                                 value={formData.phone_number}
-                                onAccept={value =>
-                                    handlePhoneAccept(value)
-                                }
+                                onAccept={value => handlePhoneAccept(value)}
                                 onBlur={e => handleOnBlur(e, 2)}
-                                prepare={(appended, masked) =>
-                                    preparePhoneValue(appended, masked)
-                                }
+                                prepare={(appended, masked) => preparePhoneValue(appended, masked)}
                                 autoComplete="tel phone"
                                 enterKeyHint="next"
                                 inputRef={phoneInputRef}
                             />
-                            {<p className={`error ${errors.phone_number ? 'active' : ''}`}>{errors.phone_number}</p>}
-                        </div>
+                        </InputField>
                     </div>
                 </div>
 
                 <div className={`step ${registerStep === 2 ? 'current' : registerStep === 3 ? 'prev' : 'next'}`}>
                     <div>
-                        <div className="field">
-                            <label htmlFor="first_name">Имя</label>
+                        <InputField
+                            id="first_name"
+                            label="Имя"
+                            error={errors.first_name}
+                        >
                             <input
                                 type="text"
                                 inputMode="text"
@@ -282,11 +273,13 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 enterKeyHint="next"
                                 ref={firstNameInputRef}
                             />
-                            {<p className={`error ${errors.first_name ? 'active' : ''}`}>{errors.first_name}</p>}
-                        </div>
+                        </InputField>
 
-                        <div className="field">
-                            <label htmlFor="last_name">Фамилия</label>
+                        <InputField
+                            id="last_name"
+                            label="Фамилия"
+                            error={errors.last_name}
+                        >
                             <input
                                 type="text"
                                 inputMode="text"
@@ -302,42 +295,52 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 enterKeyHint="next"
                                 ref={lastNameInputRef}
                             />
-                            {<p className={`error ${errors.last_name ? 'active' : ''}`}>{errors.last_name}</p>}
-                        </div>
+                        </InputField>
                     </div>
                 </div>
 
                 <div className={`step ${registerStep === 3 ? 'current' : 'next'}`}>
                     <div>
-                        <div className="field">
-                            <label htmlFor="password">Пароль</label>
+                        <InputField
+                            id="password_register"
+                            label="Пароль"
+                            error={errors.password}
+                            isPasswordHidden={isPasswordHidden.password_register}
+                            setIsPasswordHidden={newHiddenValue =>
+                                setIsPasswordHidden(prev => ({
+                                    ...prev,
+                                    password_register: newHiddenValue
+                                }))}
+                            isPassword
+                        >
                             <input
-                                type={isPasswordHidden.password ? "password" : "text"}
+                                type={isPasswordHidden.password_register ? "password" : "text"}
                                 inputMode="text"
                                 name="password"
-                                id="password"
+                                id="password_register"
                                 className={errors.password ? 'error-input' : ''}
                                 placeholder="Введите пароль"
                                 autoComplete="new-password"
                                 value={formData.password}
                                 onChange={handleChange}
-                                onBlur={e => handleOnBlur(e, 3)}
                                 onKeyDown={handleKeyDown}
                                 enterKeyHint="next"
                                 ref={passwordInputRef}
                             />
-                            {<p className={`error ${errors.password ? 'active' : ''}`}>
-                                {errors.password ? errors.password[0] : null}
-                            </p>}
+                        </InputField>
 
-                            <div
-                                className={`eye-password ${isPasswordHidden.password ? 'hidden' : 'visible'}`}
-                                onClick={toggleEyePassword}
-                            ></div>
-                        </div>
-
-                        <div className="field">
-                            <label htmlFor="password_confirmation">Повтор пароля</label>
+                        <InputField
+                            id="password_confirmation"
+                            label="Повтор пароля"
+                            error={errors.password_confirmation}
+                            isPasswordHidden={isPasswordHidden.password_confirmation}
+                            setIsPasswordHidden={newHiddenValue =>
+                                setIsPasswordHidden(prev => ({
+                                    ...prev,
+                                    password_confirmation: newHiddenValue
+                                }))}
+                            isPassword
+                        >
                             <input
                                 type={isPasswordHidden.password_confirmation ? "password" : "text"}
                                 inputMode="text"
@@ -348,16 +351,11 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 autoComplete="new-password"
                                 value={formData.password_confirmation}
                                 onChange={handleChange}
-                                onBlur={e => handleOnBlur(e, 3)}
                                 onKeyDown={handleKeyDown}
                                 enterKeyHint="done"
                                 ref={passwordConfirmationInputRef}
                             />
-
-                            <div
-                                className={`eye-password ${isPasswordHidden.password_confirmation ? 'hidden' : 'visible'}`}
-                                onClick={toggleEyePassword}></div>
-                        </div>
+                        </InputField>
                     </div>
                 </div>
 
