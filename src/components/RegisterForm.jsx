@@ -103,29 +103,15 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
         failedValidation();
     }, [failedValidation]);
 
-    const handleOnFocus = (step) => {
-        if (step !== registerStep) {
-            if (failedValidation()) {
-                if (registerStep === 1) {
-                    phoneInputRef.current?.focus();
-                } else if (registerStep === 2) {
-                    if (!formData.first_name.trim()) {
-                        firstNameInputRef.current?.focus();
-                    } else {
-                        lastNameInputRef.current?.focus();
-                    }
-                } else if (registerStep === 3) {
-                    if (!formData.password.trim()) {
-                        passwordInputRef.current?.focus();
-                    } else {
-                        passwordConfirmationInputRef.current?.focus();
-                    }
-                }
-                return;
-            }
+    const handleOnBlur = (e, step) => {
+        if (failedValidation()) {
+            if (e.target.name === 'first_name') return;
 
-            setRegisterStep(step);
+            e.target.focus();
+            return;
         }
+
+        setRegisterStep(step);
     };
 
     // Закрытие формы
@@ -264,7 +250,7 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 onAccept={value =>
                                     handlePhoneAccept(value)
                                 }
-                                onFocus={() => handleOnFocus(1)}
+                                onBlur={e => handleOnBlur(e, 2)}
                                 prepare={(appended, masked) =>
                                     preparePhoneValue(appended, masked)
                                 }
@@ -291,7 +277,7 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 autoComplete="given-name"
                                 value={formData.first_name}
                                 onChange={handleChange}
-                                onFocus={() => handleOnFocus(2)}
+                                onBlur={e => handleOnBlur(e, 2)}
                                 onKeyDown={handleKeyDown}
                                 enterKeyHint="next"
                                 ref={firstNameInputRef}
@@ -311,7 +297,7 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 autoComplete="family-name"
                                 value={formData.last_name}
                                 onChange={handleChange}
-                                onFocus={() => handleOnFocus(2)}
+                                onBlur={e => handleOnBlur(e, 3)}
                                 onKeyDown={handleKeyDown}
                                 enterKeyHint="next"
                                 ref={lastNameInputRef}
@@ -335,7 +321,7 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 autoComplete="new-password"
                                 value={formData.password}
                                 onChange={handleChange}
-                                onFocus={() => handleOnFocus(3)}
+                                onBlur={e => handleOnBlur(e, 3)}
                                 onKeyDown={handleKeyDown}
                                 enterKeyHint="next"
                                 ref={passwordInputRef}
@@ -362,7 +348,7 @@ export default function RegisterForm({isActive, setIsActive, registerStep, setRe
                                 autoComplete="new-password"
                                 value={formData.password_confirmation}
                                 onChange={handleChange}
-                                onFocus={() => handleOnFocus(3)}
+                                onBlur={e => handleOnBlur(e, 3)}
                                 onKeyDown={handleKeyDown}
                                 enterKeyHint="done"
                                 ref={passwordConfirmationInputRef}

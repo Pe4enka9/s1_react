@@ -60,20 +60,13 @@ export default function LoginForm({isActive, setIsActive, loginStep, setLoginSte
         failedValidation();
     }, [failedValidation]);
 
-    const handleOnFocus = (step) => {
-        if (step !== loginStep) {
-            if (failedValidation()) {
-                if (loginStep === 1) {
-                    phoneInputRef.current?.focus();
-                } else {
-                    passwordInputRef.current?.focus();
-                }
-
-                return;
-            }
-
-            setLoginStep(step);
+    const handleOnBlur = (e, step) => {
+        if (failedValidation()) {
+            e.target.focus();
+            return;
         }
+
+        setLoginStep(step);
     };
 
     const handlePhoneAccept = (value) => {
@@ -225,7 +218,7 @@ export default function LoginForm({isActive, setIsActive, loginStep, setLoginSte
                                 onAccept={value =>
                                     handlePhoneAccept(value)
                                 }
-                                onFocus={() => handleOnFocus(1)}
+                                onBlur={e => handleOnBlur(e, 2)}
                                 prepare={(appended, masked) =>
                                     preparePhoneValue(appended, masked)
                                 }
@@ -252,7 +245,7 @@ export default function LoginForm({isActive, setIsActive, loginStep, setLoginSte
                                 autoComplete="new-password"
                                 value={formData.password}
                                 onChange={handleChange}
-                                onFocus={() => handleOnFocus(2)}
+                                onBlur={e => handleOnBlur(e, 2)}
                                 enterKeyHint="done"
                                 onKeyDown={handleKeyDown}
                                 ref={passwordInputRef}
