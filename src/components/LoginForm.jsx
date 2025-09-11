@@ -1,168 +1,127 @@
 /** @type {string} */
 import profile from '../img/icons/profile.svg';
-import {useCallback, useEffect, useRef, useState} from "react";
-import swipeClose from "../handlers/swipeClose.js";
-import axios from "axios";
+import Step from "./Step.jsx";
 import InputField from "./InputField.jsx";
 import PhoneNumberInput from "./PhoneNumberInput.jsx";
-import Step from "./Step.jsx";
+import BaseForm from "./BaseForm.jsx";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import axios from "axios";
 
-export default function LoginForm({isActive, setIsActive, loginStep, setLoginStep}) {
+export default function LoginForm({isActive, setIsActive}) {
     const [formData, setFormData] = useState({
         phone_number: '',
         password: '',
     });
-    // Ошибки валидации
     const [errors, setErrors] = useState({});
-    // Закрытие формы
-    const [isClosing, setIsClosing] = useState(false);
-    // Скрытие пароля
     const [isPasswordHidden, setIsPasswordHidden] = useState(true);
-    // Загрузка
-    const [isLoading, setIsLoading] = useState(false);
-    // Ошибка сервера
-    const [isServerError, setIsServerError] = useState(false);
-    // Проверка отправляется ли форма сейчас
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    // Блокировка кнопки
+    const [currentStep, setCurrentStep] = useState(0);
     const [isDisabledButton, setIsDisabledButton] = useState(true);
-    // Активность формы
-    const [isFormActive, setIsFormActive] = useState(false);
-    const [direction, setDirection] = useState('next');
+    const [isLoading, setIsLoading] = useState(false);
+    const [isServerError, setIsServerError] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [prevStep, setPrevStep] = useState(null);
+    const [direction, setDirection] = useState('next');
 
-    const phoneInputRef = useRef(null);
+    const phoneNumberInputRef = useRef(null);
     const passwordInputRef = useRef(null);
+    const successTimerRef = useRef(null);
+    const errorTimerRef = useRef(null);
 
-    // Валидация
+    const handleChange = useCallback((e) => {
+        const {name, value} = e.target;
+        setFormData({...formData, [name]: value});
+        setErrors({...errors, [name]: ''});
+    }, [errors, formData]);
+
     const failedValidation = useCallback(() => {
         let isDisabled = false;
 
-        if (loginStep === 1) {
+        if (currentStep === 1) {
             isDisabled = formData.phone_number.length !== 18;
-        } else if (loginStep === 2) {
+        } else if (currentStep === 2) {
             isDisabled = !formData.password.trim();
         }
 
-        setIsDisabledButton(isDisabled);
         return isDisabled;
-    }, [formData.password, formData.phone_number.length, loginStep]);
+    }, [currentStep, formData.password, formData.phone_number.length]);
 
-    const handleChange = (e) => {
-        const {name, value} = e.target;
-        setFormData({...formData, [name]: value});
+    const handleSubmit = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            setErrors({});
+            setIsServerError(false);
 
-        e.target.classList.remove('error-input');
-        e.target.nextSibling.classList.remove('active');
-        setErrors({...errors, [name]: ''});
-    }
+            const response = await axios.post(import.meta.env.VITE_API_URL + '/login', formData);
 
-    const handleBack = () => {
-        if (loginStep <= 1) return;
-        setDirection('prev');
-        setPrevStep(loginStep);
-        setLoginStep(prev => prev - 1);
-    }
 
-    const handleCancel = useCallback(() => {
-        document.body.style.overflowY = 'auto';
+            if (response.status === 200) {
+                setIsActive({register: false, login: false, booking: false});
+                setFormData({phone_number: '', password: ''});
 
-        setIsClosing(true);
-        setIsFormActive(false);
+                successTimerRef.current = setTimeout(() =>
+                        setCurrentStep(0),
+                    1000);
 
-        const timer = setTimeout(() =>
-                setIsActive(prev => ({...prev, login: false})),
-            1000);
+                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+                window.dispatchEvent(new Event('storage'));
+            }
+        } catch (err) {
+            if (err.code === 'ERR_NETWORK') {
+                setIsServerError(true);
 
-        return () => clearTimeout(timer);
-    }, [setIsActive]);
+                errorTimerRef.current = setTimeout(() =>
+                        setIsServerError(false),
+                    2000);
+            } else if (err.status === 401) {
+                setErrors({password: 'Неверный логин или пароль'});
+                return;
+            }
 
-    const handleContinue = () => {
-        if (loginStep >= 2) return;
-        setDirection('next');
-        setPrevStep(loginStep);
-        setLoginStep(prev => prev + 1);
-    }
+            const currentErrors = err.response.data.errors;
+            setErrors(currentErrors);
 
-    const handleKeyDown = (e) => {
+            // Переход к шагу, где возникла ошибка
+            if (currentErrors.password && currentErrors !== 2) {
+                setPrevStep(currentStep);
+                setDirection('next');
+                setCurrentStep(2);
+
+                setTimeout(() =>
+                        passwordInputRef.current?.focus(),
+                    800)
+            } else if (currentErrors.phone_number && currentStep !== 1) {
+                setPrevStep(currentStep);
+                setDirection('prev');
+                setCurrentStep(1);
+
+                setTimeout(() =>
+                        phoneNumberInputRef.current?.focus(),
+                    800)
+            }
+        } finally {
+            setIsLoading(false);
+            setIsSubmitting(false);
+        }
+    }, [currentStep, formData, setIsActive]);
+
+    const handleKeyDown = useCallback((e) => {
         if (e.key !== 'Enter') return;
-
         e.preventDefault();
 
         if (
-            loginStep === 2 &&
+            currentStep === 2 &&
             e.target.name === 'password' &&
-            !isLoading && !isSubmitting && !failedValidation()
+            !isLoading && !isSubmitting &&
+            !failedValidation()
         ) {
             setIsSubmitting(true);
-            handleSubmit(e);
+            handleSubmit();
         }
-    };
+    }, [currentStep, failedValidation, handleSubmit, isLoading, isSubmitting]);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (loginStep === 2) {
-            try {
-                setIsLoading(true);
-                setErrors({});
-                setIsServerError(false);
-
-                const response = await axios.post(import.meta.env.VITE_API_URL + '/login', formData);
-
-
-                if (response.status === 200) {
-                    setIsActive({register: false, login: false, booking: false});
-                    setFormData({phone_number: '', password: ''});
-
-                    const timer = setTimeout(() =>
-                            setLoginStep(0),
-                        1000);
-
-                    localStorage.setItem('token', response.data.token);
-                    localStorage.setItem('user', JSON.stringify(response.data.user));
-                    window.dispatchEvent(new Event('storage'));
-
-                    return () => clearTimeout(timer);
-                }
-            } catch (err) {
-                if (err.code === 'ERR_NETWORK') {
-                    setIsServerError(true);
-
-                    const timer = setTimeout(() =>
-                            setIsServerError(false),
-                        2000);
-
-                    return () => clearTimeout(timer);
-                } else if (err.status === 401) {
-                    setErrors({password: 'Неверный логин или пароль'});
-                    return;
-                }
-
-                const currentErrors = err.response.data.errors;
-                setErrors(currentErrors);
-
-                // Переход к шагу, где возникла ошибка
-                if (currentErrors.password && loginStep !== 2) {
-                    setPrevStep(loginStep);
-                    setDirection('next');
-                    setLoginStep(2);
-                } else if (currentErrors.phone_number && loginStep !== 1) {
-                    setPrevStep(loginStep);
-                    setDirection('prev');
-                    setLoginStep(1);
-                }
-            } finally {
-                setIsLoading(false);
-                setIsSubmitting(false);
-            }
-        } else {
-            handleContinue();
-        }
-    };
-
-    const steps = [
-        <Step>
+    const steps = useMemo(() => [
+        <Step key="step-1">
             <InputField
                 id="phone_number"
                 label="Номер телефона"
@@ -171,13 +130,13 @@ export default function LoginForm({isActive, setIsActive, loginStep, setLoginSte
                 <PhoneNumberInput
                     formData={formData}
                     setFormData={setFormData}
-                    inputRef={phoneInputRef}
                     errors={errors}
                     setErrors={setErrors}
+                    inputRef={phoneNumberInputRef}
                 />
             </InputField>
         </Step>,
-        <Step>
+        <Step key="step-2">
             <InputField
                 id="password_login"
                 label="Пароль"
@@ -202,100 +161,50 @@ export default function LoginForm({isActive, setIsActive, loginStep, setLoginSte
                 />
             </InputField>
         </Step>
-    ];
+    ], [errors, formData, handleChange, handleKeyDown, isPasswordHidden]);
 
     useEffect(() => {
-        if (isActive) {
-            setIsClosing(false);
-            requestAnimationFrame(() => setIsFormActive(true));
-        }
-    }, [isActive, setIsActive]);
+        return () => {
+            if (successTimerRef.current) clearTimeout(successTimerRef.current);
+            if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
+        };
+    }, []);
 
     useEffect(() => {
-        return swipeClose(handleCancel);
-    }, [handleCancel]);
+        let timer = null;
 
-    // Блокировка кнопки "Продолжить" или "Войти" в случае пустых полей
-    useEffect(() => {
-        failedValidation();
-    }, [failedValidation]);
-
-    useEffect(() => {
-        if (loginStep === 2) {
-            const timer = setTimeout(() =>
-                    passwordInputRef.current.focus(),
+        if (currentStep === 2) {
+            timer = setTimeout(() =>
+                    passwordInputRef.current?.focus(),
                 800);
-
-            return () => clearTimeout(timer);
         }
-    }, [loginStep]);
+
+        return () => {
+            if (timer) clearTimeout(timer);
+        };
+    }, [currentStep]);
 
     return (
-        <>
-            {isActive && (
-                <div id="login" className={`modal ${isFormActive ? 'active' : ''}`}>
-                    <form className={`${isFormActive ? 'active' : ''} ${isClosing ? 'closing' : ''}`}
-                          onSubmit={handleSubmit}>
-                        <div className={`steps-progress step-${loginStep}`}>
-                            <div className="steps-name">
-                                <p className="small">Контакт</p>
-                                <p className="small">Пароль</p>
-                            </div>
-
-                            <div className="steps-progress-bar"></div>
-                        </div>
-
-                        <div className="title">
-                            <div className="icon">
-                                <img src={profile} alt="Вход в аккаунт"/>
-                            </div>
-
-                            <h4>Вход в аккаунт</h4>
-                        </div>
-
-                        <div className="step-container">
-                            {prevStep !== null && (
-                                <div
-                                    key={`step-${prevStep}`}
-                                    className={`step leaving ${direction === 'next' ? 'slide-out-left' : 'slide-out-right'}`}
-                                    onAnimationEnd={() => setPrevStep(null)}
-                                >
-                                    {steps[prevStep - 1]}
-                                </div>
-                            )}
-
-                            <div
-                                key={`step-${loginStep}`}
-                                className={`step entering ${direction === 'next' ? 'slide-in-right' : 'slide-in-left'}`}
-                            >
-                                {steps[loginStep - 1]}
-                            </div>
-                        </div>
-
-                        <div className="buttons">
-                            <button
-                                type="submit"
-                                className="btn"
-                                onClick={handleSubmit}
-                                disabled={isDisabledButton || isLoading}
-                            >
-                                {loginStep === 2 && !isServerError ? 'Войти'
-                                    : loginStep === 2 && isServerError ? 'Ошибка сервера'
-                                        : 'Продолжить'}
-                                <div className={`loader ${isLoading ? 'active' : ''}`}></div>
-                            </button>
-
-                            <button
-                                type="button"
-                                className="btn cancel"
-                                onClick={loginStep === 1 ? handleCancel : handleBack}
-                            >
-                                {loginStep === 1 ? 'Отмена' : 'Назад'}
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            )}
-        </>
+        <BaseForm
+            isActive={isActive}
+            setIsActive={setIsActive}
+            currentStep={currentStep}
+            setCurrentStep={setCurrentStep}
+            steps={steps}
+            isDisabledButton={isDisabledButton}
+            setIsDisabledButton={setIsDisabledButton}
+            isServerError={isServerError}
+            isLoading={isLoading}
+            direction={direction}
+            setDirection={setDirection}
+            prevStep={prevStep}
+            setPrevStep={setPrevStep}
+            failedValidation={failedValidation}
+            icon={<img src={profile} alt="Вход в аккаунт"/>}
+            title="Вход в аккаунт"
+            buttonText="Войти"
+            progressLabels={['Контакт', 'Пароль']}
+            onSubmit={handleSubmit}
+        />
     )
-}
+};

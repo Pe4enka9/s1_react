@@ -2,7 +2,7 @@ import {IMaskInput} from "react-imask";
 import preparePhoneValue from "../handlers/preparePhoneValue.js";
 import {useCallback} from "react";
 
-export default function PhoneNumberInput({formData, setFormData, inputRef, errors, setErrors}) {
+export default function PhoneNumberInput({formData, setFormData, errors, setErrors, inputRef = null}) {
     const handlePhoneAccept = useCallback((value) => {
         setFormData(prev => ({...prev, phone_number: value}));
 

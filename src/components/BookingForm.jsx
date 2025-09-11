@@ -128,7 +128,7 @@ export default function BookingForm({isActive, setIsActive, bookingStep, setBook
     }, [setIsActive]);
 
     useEffect(() => {
-        return swipeClose(isCalendarActive, handleCancel);
+        return swipeClose(handleCancel, isCalendarActive);
     }, [handleCancel, isCalendarActive]);
 
     const handleKeyDown = (e) => {

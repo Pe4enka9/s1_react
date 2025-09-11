@@ -1,24 +1,22 @@
-#login {
-  form .steps-progress {
-    &.step-1 {
-      .steps-progress-bar::after {
-        width: 50%;
-      }
-
-      .steps-name p:first-child {
-        color: $gray;
-      }
+form .steps-progress {
+  &.step-1 {
+    .steps-progress-bar::after {
+      width: 50%;
     }
 
-    &.step-2 {
-      .steps-progress-bar::after {
-        width: 100%;
-      }
+    .steps-name p:first-child {
+      color: $gray;
+    }
+  }
 
-      .steps-name p:first-child,
-      .steps-name p:last-child {
-        color: $gray;
-      }
+  &.step-2 {
+    .steps-progress-bar::after {
+      width: 100%;
+    }
+
+    .steps-name p:first-child,
+    .steps-name p:last-child {
+      color: $gray;
     }
   }
 }

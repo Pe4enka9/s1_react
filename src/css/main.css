@@ -751,17 +751,17 @@ form .btn {
   color: #D1D5DC;
 }
 
-#login form .steps-progress.step-1 .steps-progress-bar::after {
+form .steps-progress.step-1 .steps-progress-bar::after {
   width: 50%;
 }
-#login form .steps-progress.step-1 .steps-name p:first-child {
+form .steps-progress.step-1 .steps-name p:first-child {
   color: #D1D5DC;
 }
-#login form .steps-progress.step-2 .steps-progress-bar::after {
+form .steps-progress.step-2 .steps-progress-bar::after {
   width: 100%;
 }
-#login form .steps-progress.step-2 .steps-name p:first-child,
-#login form .steps-progress.step-2 .steps-name p:last-child {
+form .steps-progress.step-2 .steps-name p:first-child,
+form .steps-progress.step-2 .steps-name p:last-child {
   color: #D1D5DC;
 }
 
