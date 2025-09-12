@@ -5,8 +5,8 @@ import Footer from "./components/Footer.jsx";
 import ShowMenuItem from "./components/ShowMenuItem.jsx";
 import {useState} from "react";
 import LoginForm from "./components/LoginForm.jsx";
-import BookingForm from "./components/BookingForm.jsx";
 import RegisterForm from "./components/RegisterForm.jsx";
+import BookingForm from "./components/BookingForm.jsx";
 
 export default function App() {
     const [isActive, setIsActive] = useState({
@@ -30,14 +30,12 @@ export default function App() {
                 setIsActive={setIsActive}
             />
 
-            {/*<BookingForm*/}
-            {/*    isActive={isActive}*/}
-            {/*    setIsActive={setIsActive}*/}
-            {/*    bookingStep={bookingStep}*/}
-            {/*    setBookingStep={setBookingStep}*/}
-            {/*/>*/}
+            <BookingForm
+                isActive={isActive.booking}
+                setIsActive={setIsActive}
+            />
 
-            {/*<div id="calendar"></div>*/}
+            <div id="calendar"></div>
 
             <Header
                 isActive={isActive}

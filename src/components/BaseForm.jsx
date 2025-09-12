@@ -26,6 +26,8 @@ export default function BaseForm({
                                      progressLabels = [],
                                      onSubmit = () => {
                                      },
+                                     isCalendar = false,
+                                     isCalendarActive = false
                                  }) {
     const [isClosing, setIsClosing] = useState(false);
 
@@ -51,7 +53,7 @@ export default function BaseForm({
         setIsAnimating(false);
 
         cancelTimerRef.current = setTimeout(() =>
-                setIsActive(prev => ({...prev, login: false})),
+                setIsActive(false),
             1000);
     }, [setIsActive, setIsAnimating]);
 
@@ -80,8 +82,9 @@ export default function BaseForm({
     }, [isActive, setIsActive, setIsAnimating]);
 
     useEffect(() => {
+        if (isCalendar) return swipeClose(handleCancel, isCalendarActive);
         return swipeClose(handleCancel);
-    }, [handleCancel]);
+    }, [handleCancel, isCalendar, isCalendarActive]);
 
     useEffect(() => {
         if (isActive && currentStep === 0) {
