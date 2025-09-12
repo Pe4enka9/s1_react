@@ -14,9 +14,6 @@ export default function App() {
         login: false,
         booking: false,
     });
-    const [registerStep, setRegisterStep] = useState(0);
-    const [loginStep, setLoginStep] = useState(0);
-    const [bookingStep, setBookingStep] = useState(0)
 
     return (
         <>
@@ -40,21 +37,11 @@ export default function App() {
             <Header
                 isActive={isActive}
                 setIsActive={setIsActive}
-                registerStep={registerStep}
-                setRegisterStep={setRegisterStep}
-                loginStep={loginStep}
-                setLoginStep={setLoginStep}
             />
 
             <main>
                 <Routes>
-                    <Route path="/"
-                           element={<Home
-                               setIsActive={setIsActive}
-                               bookingStep={bookingStep}
-                               setBookingStep={setBookingStep}
-                           />}
-                    />
+                    <Route path="/" element={<Home setIsActive={setIsActive}/>}/>
                     <Route path="/show" element={<ShowMenuItem setIsActive={setIsActive}/>}/>
                 </Routes>
             </main>
@@ -62,10 +49,6 @@ export default function App() {
             <Footer
                 isActive={isActive}
                 setIsActive={setIsActive}
-                registerStep={registerStep}
-                setRegisterStep={setRegisterStep}
-                loginStep={loginStep}
-                setLoginStep={setLoginStep}
             />
         </>
     )

@@ -1,5 +1,3 @@
-import {Link} from "react-router-dom";
-import Navigation from "./Navigation.jsx";
 /** @type {string} */
 import telegram from '../img/icons/telegram.svg';
 /** @type {string} */
@@ -10,8 +8,10 @@ import clock from '../img/icons/clock.svg';
 import phone from '../img/icons/phone.svg';
 /** @type {string} */
 import email from '../img/icons/email.svg';
+import {Link} from "react-router-dom";
+import Navigation from "./Navigation.jsx";
 
-export default function Footer({isActive, setIsActive, registerStep, setRegisterStep, loginStep, setLoginStep}) {
+export default function Footer({isActive, setIsActive}) {
     const handleClick = () => {
         setIsActive({register: false, login: false});
     };
@@ -29,10 +29,6 @@ export default function Footer({isActive, setIsActive, registerStep, setRegister
                         <Navigation
                             isActive={isActive}
                             setIsActive={setIsActive}
-                            registerStep={registerStep}
-                            setRegisterStep={setRegisterStep}
-                            loginStep={loginStep}
-                            setLoginStep={setLoginStep}
                         />
                     </div>
 
