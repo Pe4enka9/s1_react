@@ -1,4 +1,16 @@
-export default function Banner({bgImg, icon = '', iconText = '', title = '', description = '', button = 'Записаться'}) {
+export default function Banner({
+                                   setIsActive,
+                                   bgImg,
+                                   icon = '',
+                                   iconText = '',
+                                   title = '',
+                                   description = '',
+                                   button = 'Записаться'
+                               }) {
+    const handleClick = () => {
+        setIsActive({register: false, login: false, booking: true});
+    };
+
     return (
         <div className="banner" style={{background: `url(${bgImg}) no-repeat center / cover`}}>
             <div className="content">
@@ -16,7 +28,7 @@ export default function Banner({bgImg, icon = '', iconText = '', title = '', des
                     </div>
                 ) : null}
 
-                <button type="button" className="btn cta">{button}</button>
+                <button type="button" className="btn cta" onClick={handleClick}>{button}</button>
             </div>
         </div>
     )

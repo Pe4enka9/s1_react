@@ -40,12 +40,38 @@ export default function Home({setIsActive, bookingStep, setBookingStep}) {
                     }}
                     speed={800}
                 >
-                    <SwiperSlide><Banner bgImg={banner} icon={fire} iconText="Акция" title="Скидка 30%"
-                                         description="На все симуляторы до воскресенья"/></SwiperSlide>
-                    <SwiperSlide><Banner bgImg={menuBg1} icon={fire} iconText="Акция" title="Скидка 20%"
-                                         description="На все симуляторы до воскресенья"/></SwiperSlide>
-                    <SwiperSlide><Banner bgImg={menuBg2} icon={fire} iconText="Акция" title="Скидка 10%"
-                                         description="На все симуляторы до воскресенья"/></SwiperSlide>
+                    <SwiperSlide>
+                        <Banner
+                            setIsActive={setIsActive}
+                            bgImg={banner}
+                            icon={fire}
+                            iconText="Акция"
+                            title="Скидка 30%"
+                            description="На все симуляторы до воскресенья"
+                        />
+                    </SwiperSlide>
+
+                    <SwiperSlide>
+                        <Banner
+                            setIsActive={setIsActive}
+                            bgImg={menuBg1}
+                            icon={fire}
+                            iconText="Акция"
+                            title="Скидка 20%"
+                            description="На все симуляторы до воскресенья"
+                        />
+                    </SwiperSlide>
+
+                    <SwiperSlide>
+                        <Banner
+                            setIsActive={setIsActive}
+                            bgImg={menuBg2}
+                            icon={fire}
+                            iconText="Акция"
+                            title="Скидка 10%"
+                            description="На все симуляторы до воскресенья"
+                        />
+                    </SwiperSlide>
                 </Swiper>
             </div>
 
