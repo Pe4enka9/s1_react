@@ -187,7 +187,7 @@ export default function LoginForm({isActive, setIsActive}) {
             setIsAnimating={setIsAnimating}
             id="login"
             failedValidation={failedValidation}
-            icon={<img src={profile} alt="Вход в аккаунт"/>}
+            icon={<img src={profile} alt="Вход в аккаунт" loading="lazy"/>}
             title="Вход в аккаунт"
             buttonText="Войти"
             progressLabels={['Контакт', 'Пароль']}

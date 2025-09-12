@@ -17,7 +17,7 @@ export default function Banner({
             <div className="content">
                 {icon || iconText ? (
                     <div className="type">
-                        <img src={icon} alt={iconText}/>
+                        <img src={icon} alt={iconText} loading="lazy"/>
                         <span>{iconText}</span>
                     </div>
                 ) : null}

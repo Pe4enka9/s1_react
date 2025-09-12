@@ -299,7 +299,7 @@ export default function RegisterForm({isActive, setIsActive}) {
             setIsAnimating={setIsAnimating}
             id="register"
             failedValidation={failedValidation}
-            icon={<img src={profile} alt="Создание аккаунта"/>}
+            icon={<img src={profile} alt="Создание аккаунта" loading="lazy"/>}
             title="Создание аккаунта"
             buttonText="Зарегистрироваться"
             progressLabels={['Контакт', 'Личные данные', 'Пароль']}

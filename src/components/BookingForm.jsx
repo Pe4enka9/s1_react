@@ -266,7 +266,7 @@ export default function BookingForm({isActive, setIsActive}) {
             setIsAnimating={setIsAnimating}
             id="booking"
             failedValidation={failedValidation}
-            icon={<img src={calendar} alt="Бронирование"/>}
+            icon={<img src={calendar} alt="Бронирование" loading="lazy"/>}
             title="Бронирование"
             buttonText="Забронировать"
             progressLabels={['Контакт', 'Дата и время', 'Люди']}

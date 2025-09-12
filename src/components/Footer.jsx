@@ -35,24 +35,24 @@ export default function Footer({isActive, setIsActive}) {
                     <div>
                         <div>
                             <span>
-                                <img src={location} alt="Адрес"/>
+                                <img src={location} alt="Адрес" loading="lazy"/>
                                 <p>ул. Гоночная, 15, Москва</p>
                             </span>
 
                             <span>
-                                <img src={clock} alt="Время работы"/>
+                                <img src={clock} alt="Время работы" loading="lazy"/>
                                 <p>Ежедневно: 10:00 – 22:00</p>
                             </span>
                         </div>
 
                         <div>
                             <a href="tel:+74951234567">
-                                <img src={phone} alt="Номер телефона"/>
+                                <img src={phone} alt="Номер телефона" loading="lazy"/>
                                 <p>+7 (495) 123-45-67</p>
                             </a>
 
                             <a href="mailto:info@simrace.ru">
-                                <img src={email} alt="Электронная почта"/>
+                                <img src={email} alt="Электронная почта" loading="lazy"/>
                                 <p>info@simrace.ru</p>
                             </a>
                         </div>
@@ -62,10 +62,10 @@ export default function Footer({isActive, setIsActive}) {
                         <p>Подписывайтесь</p>
 
                         <div className="social">
-                            <a href="https://t.me/S1racee"><img src={telegram} alt="Телеграм"/></a>
-                            <a href="https://t.me/S1racee"><img src={telegram} alt="Телеграм"/></a>
-                            <a href="https://t.me/S1racee"><img src={telegram} alt="Телеграм"/></a>
-                            <a href="https://t.me/S1racee"><img src={telegram} alt="Телеграм"/></a>
+                            <a href="https://t.me/S1racee"><img src={telegram} alt="Телеграм" loading="lazy"/></a>
+                            <a href="https://t.me/S1racee"><img src={telegram} alt="Телеграм" loading="lazy"/></a>
+                            <a href="https://t.me/S1racee"><img src={telegram} alt="Телеграм" loading="lazy"/></a>
+                            <a href="https://t.me/S1racee"><img src={telegram} alt="Телеграм" loading="lazy"/></a>
                         </div>
                     </div>
                 </div>

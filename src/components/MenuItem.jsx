@@ -61,7 +61,7 @@ export default function MenuItem({
                 <h6>{title}</h6>
 
                 <button type="button" className={`play ${isAnimate ? 'animate' : ''}`}>
-                    <img src={play} alt="Вперед" className={isAnimate ? 'animate' : ''}/>
+                    <img src={play} alt="Вперед" loading="lazy" className={isAnimate ? 'animate' : ''}/>
                 </button>
             </div>
         </div>
