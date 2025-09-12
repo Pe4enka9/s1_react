@@ -7,6 +7,7 @@ export default function Card({
                                  setIsActive = () => {}
                              }) {
     const handleClick = () => {
+        document.body.style.overflowY = 'hidden';
         setIsActive({register: false, login: false, booking: true});
     };
 
