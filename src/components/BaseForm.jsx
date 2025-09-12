@@ -15,6 +15,9 @@ export default function BaseForm({
                                      setDirection,
                                      prevStep,
                                      setPrevStep,
+                                     isAnimating,
+                                     setIsAnimating,
+                                     id = null,
                                      failedValidation = () => {
                                      },
                                      icon = null,
@@ -25,7 +28,6 @@ export default function BaseForm({
                                      },
                                  }) {
     const [isClosing, setIsClosing] = useState(false);
-    const [isFormActive, setIsFormActive] = useState(false);
 
     const cancelTimerRef = useRef(null);
 
@@ -46,12 +48,12 @@ export default function BaseForm({
     const handleCancel = useCallback(() => {
         document.body.style.overflowY = 'auto';
         setIsClosing(true);
-        setIsFormActive(false);
+        setIsAnimating(false);
 
         cancelTimerRef.current = setTimeout(() =>
                 setIsActive(prev => ({...prev, login: false})),
             1000);
-    }, [setIsActive]);
+    }, [setIsActive, setIsAnimating]);
 
     const handleSubmit = useCallback((e) => {
         e.preventDefault();
@@ -66,18 +68,16 @@ export default function BaseForm({
 
     useEffect(() => {
         return () => {
-            if (cancelTimerRef.current) {
-                clearTimeout(cancelTimerRef.current);
-            }
+            if (cancelTimerRef.current) clearTimeout(cancelTimerRef.current);
         }
     }, []);
 
     useEffect(() => {
         if (isActive) {
             setIsClosing(false);
-            requestAnimationFrame(() => setIsFormActive(true));
+            requestAnimationFrame(() => setIsAnimating(true));
         }
-    }, [isActive, setIsActive]);
+    }, [isActive, setIsActive, setIsAnimating]);
 
     useEffect(() => {
         return swipeClose(handleCancel);
@@ -96,8 +96,8 @@ export default function BaseForm({
     return (
         <>
             {isActive && (
-                <div className={`modal ${isFormActive ? 'active' : ''}`}>
-                    <form className={`${isFormActive ? 'active' : ''} ${isClosing ? 'closing' : ''}`}
+                <div className={`modal ${isAnimating ? 'active' : ''}`}>
+                    <form id={id} className={`${isAnimating ? 'active' : ''} ${isClosing ? 'closing' : ''}`}
                           onSubmit={handleSubmit}>
                         <div className={`steps-progress step-${currentStep}`}>
                             <div className="steps-name">

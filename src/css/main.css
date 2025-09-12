@@ -672,6 +672,14 @@ form .btn {
   pointer-events: auto;
   z-index: 2;
 }
+.step .step-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+  flex-direction: column;
+  gap: 3rem;
+  flex-wrap: nowrap;
+}
 .step.slide-in-right {
   transform: translateX(-50%) translateX(100%);
   animation: slideInRight 0.8s ease forwards;
@@ -729,61 +737,61 @@ form .btn {
   }
 }
 
-#register form .steps-progress.step-1 .steps-progress-bar::after {
+#register .steps-progress.step-1 .steps-progress-bar::after {
   width: 25%;
 }
-#register form .steps-progress.step-1 .steps-name p:first-child {
+#register .steps-progress.step-1 .steps-name p:first-child {
   color: #D1D5DC;
 }
-#register form .steps-progress.step-2 .steps-progress-bar::after {
+#register .steps-progress.step-2 .steps-progress-bar::after {
   width: 67%;
 }
-#register form .steps-progress.step-2 .steps-name p:first-child,
-#register form .steps-progress.step-2 .steps-name p:nth-child(2) {
+#register .steps-progress.step-2 .steps-name p:first-child,
+#register .steps-progress.step-2 .steps-name p:nth-child(2) {
   color: #D1D5DC;
 }
-#register form .steps-progress.step-3 .steps-progress-bar::after {
+#register .steps-progress.step-3 .steps-progress-bar::after {
   width: 100%;
 }
-#register form .steps-progress.step-3 .steps-name p:first-child,
-#register form .steps-progress.step-3 .steps-name p:nth-child(2),
-#register form .steps-progress.step-3 .steps-name p:last-child {
+#register .steps-progress.step-3 .steps-name p:first-child,
+#register .steps-progress.step-3 .steps-name p:nth-child(2),
+#register .steps-progress.step-3 .steps-name p:last-child {
   color: #D1D5DC;
 }
 
-form .steps-progress.step-1 .steps-progress-bar::after {
+#login .steps-progress.step-1 .steps-progress-bar::after {
   width: 50%;
 }
-form .steps-progress.step-1 .steps-name p:first-child {
+#login .steps-progress.step-1 .steps-name p:first-child {
   color: #D1D5DC;
 }
-form .steps-progress.step-2 .steps-progress-bar::after {
+#login .steps-progress.step-2 .steps-progress-bar::after {
   width: 100%;
 }
-form .steps-progress.step-2 .steps-name p:first-child,
-form .steps-progress.step-2 .steps-name p:last-child {
+#login .steps-progress.step-2 .steps-name p:first-child,
+#login .steps-progress.step-2 .steps-name p:last-child {
   color: #D1D5DC;
 }
 
-#booking form .steps-progress.step-1 .steps-progress-bar::after {
+#booking .steps-progress.step-1 .steps-progress-bar::after {
   width: 25%;
 }
-#booking form .steps-progress.step-1 .steps-name p:first-child {
+#booking .steps-progress.step-1 .steps-name p:first-child {
   color: #D1D5DC;
 }
-#booking form .steps-progress.step-2 .steps-progress-bar::after {
+#booking .steps-progress.step-2 .steps-progress-bar::after {
   width: 67%;
 }
-#booking form .steps-progress.step-2 .steps-name p:first-child,
-#booking form .steps-progress.step-2 .steps-name p:nth-child(2) {
+#booking .steps-progress.step-2 .steps-name p:first-child,
+#booking .steps-progress.step-2 .steps-name p:nth-child(2) {
   color: #D1D5DC;
 }
-#booking form .steps-progress.step-3 .steps-progress-bar::after {
+#booking .steps-progress.step-3 .steps-progress-bar::after {
   width: 100%;
 }
-#booking form .steps-progress.step-3 .steps-name p:first-child,
-#booking form .steps-progress.step-3 .steps-name p:nth-child(2),
-#booking form .steps-progress.step-3 .steps-name p:last-child {
+#booking .steps-progress.step-3 .steps-name p:first-child,
+#booking .steps-progress.step-3 .steps-name p:nth-child(2),
+#booking .steps-progress.step-3 .steps-name p:last-child {
   color: #D1D5DC;
 }
 

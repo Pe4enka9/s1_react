@@ -10,8 +10,22 @@ export default function InputField({
                                        isPassword = false
                                    }) {
     const toggleEyePassword = useCallback(() => {
-        setIsPasswordHidden(prev => !prev);
-    }, [setIsPasswordHidden]);
+        if (typeof isPasswordHidden === 'object') {
+            if (id === 'password') {
+                setIsPasswordHidden(prev => ({
+                    ...prev,
+                    password_register: !prev.password_register,
+                }));
+            } else if (id === 'password_confirmation') {
+                setIsPasswordHidden(prev => ({
+                    ...prev,
+                    password_confirmation: !prev.password_confirmation,
+                }));
+            }
+        } else {
+            setIsPasswordHidden(prev => !prev);
+        }
+    }, [id, isPasswordHidden, setIsPasswordHidden]);
 
     return (
         <div className="field">

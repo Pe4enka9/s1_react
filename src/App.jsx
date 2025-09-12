@@ -3,14 +3,10 @@ import Home from "./components/Home.jsx";
 import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
 import ShowMenuItem from "./components/ShowMenuItem.jsx";
-import RegisterForm from "./components/RegisterForm.jsx";
 import {useState} from "react";
 import LoginForm from "./components/LoginForm.jsx";
 import BookingForm from "./components/BookingForm.jsx";
-import BaseForm from "./components/BaseForm.jsx";
-import Step from "./components/Step.jsx";
-import InputField from "./components/InputField.jsx";
-import PhoneNumberInput from "./components/PhoneNumberInput.jsx";
+import RegisterForm from "./components/RegisterForm.jsx";
 
 export default function App() {
     const [isActive, setIsActive] = useState({
@@ -29,19 +25,10 @@ export default function App() {
                 setIsActive={setIsActive}
             />
 
-            {/*<RegisterForm*/}
-            {/*    isActive={isActive}*/}
-            {/*    setIsActive={setIsActive}*/}
-            {/*    registerStep={registerStep}*/}
-            {/*    setRegisterStep={setRegisterStep}*/}
-            {/*/>*/}
-
-            {/*<LoginForm*/}
-            {/*    isActive={isActive.login}*/}
-            {/*    setIsActive={setIsActive}*/}
-            {/*    loginStep={loginStep}*/}
-            {/*    setLoginStep={setLoginStep}*/}
-            {/*/>*/}
+            <RegisterForm
+                isActive={isActive.register}
+                setIsActive={setIsActive}
+            />
 
             {/*<BookingForm*/}
             {/*    isActive={isActive}*/}

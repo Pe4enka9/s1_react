@@ -132,6 +132,10 @@
     z-index: 2;
   }
 
+  .step-wrapper {
+    @include flex($fd: column, $g: 3rem);
+  }
+
   &.slide-in-right {
     transform: translateX(-50%) translateX(100%);
     animation: slideInRight 0.8s ease forwards;

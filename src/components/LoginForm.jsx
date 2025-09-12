@@ -18,9 +18,9 @@ export default function LoginForm({isActive, setIsActive}) {
     const [isDisabledButton, setIsDisabledButton] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [isServerError, setIsServerError] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const [prevStep, setPrevStep] = useState(null);
     const [direction, setDirection] = useState('next');
+    const [isAnimating, setIsAnimating] = useState(false);
 
     const phoneNumberInputRef = useRef(null);
     const passwordInputRef = useRef(null);
@@ -47,20 +47,21 @@ export default function LoginForm({isActive, setIsActive}) {
 
     const handleSubmit = useCallback(async () => {
         try {
+            passwordInputRef.current?.blur();
             setIsLoading(true);
             setErrors({});
             setIsServerError(false);
 
             const response = await axios.post(import.meta.env.VITE_API_URL + '/login', formData);
 
-
             if (response.status === 200) {
-                setIsActive({register: false, login: false, booking: false});
-                setFormData({phone_number: '', password: ''});
+                setIsAnimating(false);
 
-                successTimerRef.current = setTimeout(() =>
-                        setCurrentStep(0),
-                    1000);
+                successTimerRef.current = setTimeout(() => {
+                    setCurrentStep(0);
+                    setFormData({phone_number: '', password: ''});
+                    setIsActive(false);
+                }, 1200);
 
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('user', JSON.stringify(response.data.user));
@@ -101,24 +102,8 @@ export default function LoginForm({isActive, setIsActive}) {
             }
         } finally {
             setIsLoading(false);
-            setIsSubmitting(false);
         }
     }, [currentStep, formData, setIsActive]);
-
-    const handleKeyDown = useCallback((e) => {
-        if (e.key !== 'Enter') return;
-        e.preventDefault();
-
-        if (
-            currentStep === 2 &&
-            e.target.name === 'password' &&
-            !isLoading && !isSubmitting &&
-            !failedValidation()
-        ) {
-            setIsSubmitting(true);
-            handleSubmit();
-        }
-    }, [currentStep, failedValidation, handleSubmit, isLoading, isSubmitting]);
 
     const steps = useMemo(() => [
         <Step key="step-1">
@@ -138,7 +123,7 @@ export default function LoginForm({isActive, setIsActive}) {
         </Step>,
         <Step key="step-2">
             <InputField
-                id="password_login"
+                id="password"
                 label="Пароль"
                 error={errors.password}
                 isPasswordHidden={isPasswordHidden}
@@ -149,19 +134,18 @@ export default function LoginForm({isActive, setIsActive}) {
                     type={isPasswordHidden ? "password" : "text"}
                     inputMode="text"
                     name="password"
-                    id="password_login"
+                    id="password"
                     className={errors.password ? 'error-input' : ''}
                     placeholder="Введите пароль"
                     autoComplete="new-password"
                     value={formData.password}
                     onChange={handleChange}
                     enterKeyHint="done"
-                    onKeyDown={handleKeyDown}
                     ref={passwordInputRef}
                 />
             </InputField>
         </Step>
-    ], [errors, formData, handleChange, handleKeyDown, isPasswordHidden]);
+    ], [errors, formData, handleChange, isPasswordHidden]);
 
     useEffect(() => {
         return () => {
@@ -199,6 +183,9 @@ export default function LoginForm({isActive, setIsActive}) {
             setDirection={setDirection}
             prevStep={prevStep}
             setPrevStep={setPrevStep}
+            isAnimating={isAnimating}
+            setIsAnimating={setIsAnimating}
+            id="login"
             failedValidation={failedValidation}
             icon={<img src={profile} alt="Вход в аккаунт"/>}
             title="Вход в аккаунт"

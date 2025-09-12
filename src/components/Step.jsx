@@ -1,6 +1,6 @@
 export default function Step({children}) {
     return (
-        <div>
+        <div className="step-wrapper">
             {children}
         </div>
     )
