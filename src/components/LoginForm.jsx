@@ -83,7 +83,7 @@ export default function LoginForm({isActive, setIsActive}) {
             setErrors(currentErrors);
 
             // Переход к шагу, где возникла ошибка
-            if (currentErrors.password && currentErrors !== 2) {
+            if (currentErrors.password && currentStep !== 2) {
                 setPrevStep(currentStep);
                 setDirection('next');
                 setCurrentStep(2);
