@@ -9,7 +9,7 @@ import cardBg3 from '../img/card-bg-3.jpg';
 import cardBg4 from '../img/card-bg-4.jpg';
 import cardBg5 from '../img/card-bg-5.webp';
 
-export default function ShowMenuItem() {
+export default function ShowMenuItem({setIsActive}) {
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
@@ -56,8 +56,16 @@ export default function ShowMenuItem() {
                 speed={800}
             >
                 {slides.map((slide, index) => (
-                    <SwiperSlide><Card bgImg={slide.bgImg} number={`0${index + 1}`} title={slide.title}
-                                       description={slide.description} button={slide.button}/></SwiperSlide>
+                    <SwiperSlide>
+                        <Card
+                            bgImg={slide.bgImg}
+                            number={`0${index + 1}`}
+                            title={slide.title}
+                            description={slide.description}
+                            button={slide.button}
+                            setIsActive={setIsActive}
+                        />
+                    </SwiperSlide>
                 ))}
             </Swiper>
         </section>

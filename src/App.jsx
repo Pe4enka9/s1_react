@@ -55,7 +55,7 @@ export default function App() {
                                setBookingStep={setBookingStep}
                            />}
                     />
-                    <Route path="/show" element={<ShowMenuItem/>}/>
+                    <Route path="/show" element={<ShowMenuItem setIsActive={setIsActive}/>}/>
                 </Routes>
             </main>
 
