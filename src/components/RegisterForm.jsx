@@ -8,7 +8,7 @@ import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import axios from "axios";
 import getFirstError from "../handlers/getFirstError.js";
 
-export default function RegisterForm({isActive, setIsActive}) {
+export default function RegisterForm({isActive, setIsActive, setNotification}) {
     const [formData, setFormData] = useState({
         phone_number: '',
         first_name: '',
@@ -69,6 +69,13 @@ export default function RegisterForm({isActive, setIsActive}) {
             if (response.status === 201) {
                 setIsAnimating(false);
 
+                setNotification({text: 'Вы зарегистрировались!', failed: false, active: true});
+
+                setTimeout(() =>
+                        setNotification(prev => ({...prev, active: false})),
+                    2000
+                );
+
                 successTimerRef.current = setTimeout(() => {
                     setCurrentStep(0);
                     setFormData({
@@ -86,6 +93,13 @@ export default function RegisterForm({isActive, setIsActive}) {
                 window.dispatchEvent(new Event('storage'));
             }
         } catch (err) {
+            setNotification({text: 'Не удалось зарегистрироваться', failed: true, active: true});
+
+            setTimeout(() =>
+                    setNotification(prev => ({...prev, active: false})),
+                2000
+            );
+
             if (err.code === 'ERR_NETWORK') {
                 setIsServerError(true);
 
@@ -134,7 +148,7 @@ export default function RegisterForm({isActive, setIsActive}) {
         } finally {
             setIsLoading(false);
         }
-    }, [currentStep, formData, setIsActive]);
+    }, [currentStep, formData, setIsActive, setNotification]);
 
     const handleKeyDown = useCallback((e) => {
         if (e.key !== 'Enter') return;

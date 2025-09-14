@@ -13,7 +13,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 registerLocale('ru', ru);
 
-export default function BookingForm({isActive, setIsActive}) {
+export default function BookingForm({isActive, setIsActive, setNotification}) {
     const [formData, setFormData] = useState({
         phone_number: '',
         date: '',
@@ -66,6 +66,13 @@ export default function BookingForm({isActive, setIsActive}) {
             const response = await axios.post(import.meta.env.VITE_API_URL + '/booking', formData);
 
             if (response.status === 201) {
+                setNotification({text: 'Вы записаны!', failed: false, active: true});
+
+                setTimeout(() =>
+                        setNotification(prev => ({...prev, active: false})),
+                    2000
+                );
+
                 setIsAnimating(false);
 
                 successTimerRef.current = setTimeout(() => {
@@ -75,6 +82,13 @@ export default function BookingForm({isActive, setIsActive}) {
                 }, 1200);
             }
         } catch (err) {
+            setNotification({text: 'Не удалось забронировать', failed: true, active: true});
+
+            setTimeout(() =>
+                    setNotification(prev => ({...prev, active: false})),
+                2000
+            );
+
             if (err.code === 'ERR_NETWORK') {
                 setIsServerError(true);
 
@@ -119,7 +133,7 @@ export default function BookingForm({isActive, setIsActive}) {
         } finally {
             setIsLoading(false);
         }
-    }, [currentStep, formData, setIsActive]);
+    }, [currentStep, formData, setIsActive, setNotification]);
 
     const steps = useMemo(() => [
         <Step key="step-1">

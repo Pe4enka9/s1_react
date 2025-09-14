@@ -48,7 +48,6 @@ export default function BaseForm({
     }, [currentStep, setCurrentStep, setDirection, setPrevStep, steps.length]);
 
     const handleCancel = useCallback(() => {
-        document.body.style.overflowY = 'auto';
         setIsClosing(true);
         setIsAnimating(false);
 

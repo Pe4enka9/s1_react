@@ -11,7 +11,7 @@ import email from '../img/icons/email.svg';
 import {Link} from "react-router-dom";
 import Navigation from "./Navigation.jsx";
 
-export default function Footer({isActive, setIsActive}) {
+export default function Footer({isActive, setIsActive, setNotification}) {
     const handleClick = () => {
         setIsActive({register: false, login: false});
     };
@@ -29,6 +29,7 @@ export default function Footer({isActive, setIsActive}) {
                         <Navigation
                             isActive={isActive}
                             setIsActive={setIsActive}
+                            setNotification={setNotification}
                         />
                     </div>
 

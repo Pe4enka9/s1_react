@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
 
-export default function Navigation({isActive, setIsActive}) {
+export default function Navigation({isActive, setIsActive, setNotification}) {
     const [token, setToken] = useState(localStorage.getItem('token') || null);
 
     const handleClick = (e) => {
@@ -9,10 +9,8 @@ export default function Navigation({isActive, setIsActive}) {
 
         if (button.id === 'register-btn') {
             setIsActive({register: true, login: false, booking: false});
-            document.body.style.overflowY = 'hidden';
         } else {
             setIsActive({register: false, login: true, booking: false});
-            document.body.style.overflowY = 'hidden';
         }
     };
 
@@ -25,12 +23,26 @@ export default function Navigation({isActive, setIsActive}) {
                 });
 
             if (response.status === 204) {
+                setNotification(prev => ({...prev, text: 'Вы вышли!', active: true}));
+
+                setTimeout(() =>
+                        setNotification(prev => ({...prev, active: false})),
+                    2000
+                );
+
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
                 window.dispatchEvent(new Event('storage'));
             }
         } catch (err) {
             console.log(err);
+
+            setNotification({text: 'Не удалось выйти', failed: true, active: true});
+
+            setTimeout(() =>
+                    setNotification(prev => ({...prev, active: false})),
+                2000
+            );
         }
     };
 
@@ -39,7 +51,8 @@ export default function Navigation({isActive, setIsActive}) {
             setToken(localStorage.getItem('token'));
         });
 
-        return () => window.removeEventListener('storage', () => {});
+        return () => window.removeEventListener('storage', () => {
+        });
     }, []);
 
     return (

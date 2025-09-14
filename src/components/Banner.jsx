@@ -8,7 +8,6 @@ export default function Banner({
                                    button = 'Записаться'
                                }) {
     const handleClick = () => {
-        document.body.style.overflowY = 'hidden';
         setIsActive({register: false, login: false, booking: true});
     };
 

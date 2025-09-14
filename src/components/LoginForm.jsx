@@ -7,7 +7,7 @@ import BaseForm from "./BaseForm.jsx";
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import axios from "axios";
 
-export default function LoginForm({isActive, setIsActive}) {
+export default function LoginForm({isActive, setIsActive, setNotification}) {
     const [formData, setFormData] = useState({
         phone_number: '',
         password: '',
@@ -55,6 +55,13 @@ export default function LoginForm({isActive, setIsActive}) {
             const response = await axios.post(import.meta.env.VITE_API_URL + '/login', formData);
 
             if (response.status === 200) {
+                setNotification({text: 'Вы вошли!', failed: false, active: true});
+
+                setTimeout(() =>
+                        setNotification(prev => ({...prev, active: false})),
+                    2000
+                );
+
                 setIsAnimating(false);
 
                 successTimerRef.current = setTimeout(() => {
@@ -68,6 +75,13 @@ export default function LoginForm({isActive, setIsActive}) {
                 window.dispatchEvent(new Event('storage'));
             }
         } catch (err) {
+            setNotification({text: 'Не удалось войти', failed: true, active: true});
+
+            setTimeout(() =>
+                    setNotification(prev => ({...prev, active: false})),
+                2000
+            );
+
             if (err.code === 'ERR_NETWORK') {
                 setIsServerError(true);
 
@@ -103,7 +117,7 @@ export default function LoginForm({isActive, setIsActive}) {
         } finally {
             setIsLoading(false);
         }
-    }, [currentStep, formData, setIsActive]);
+    }, [currentStep, formData, setIsActive, setNotification]);
 
     const steps = useMemo(() => [
         <Step key="step-1">

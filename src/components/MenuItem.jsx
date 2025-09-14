@@ -22,7 +22,6 @@ export default function MenuItem({
 
         if (booking) {
             setIsActiveForm({register: false, login: false, booking: true});
-            document.body.style.overflowY = 'hidden';
             const currentStep = bookingStep > 1 ? bookingStep : 1;
             const timer = setTimeout(() =>
                     setBookingStep(currentStep),
