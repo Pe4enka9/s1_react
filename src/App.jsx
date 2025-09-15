@@ -1,16 +1,25 @@
 import {Route, Routes} from "react-router-dom";
-import Home from "./components/Home.jsx";
 import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
-import ShowMenuItem from "./components/ShowMenuItem.jsx";
-import React, {useEffect, useState} from "react";
-import LoginForm from "./components/LoginForm.jsx";
-import RegisterForm from "./components/RegisterForm.jsx";
-import BookingForm from "./components/BookingForm.jsx";
+import {lazy, Suspense, useEffect, useState} from "react";
 import Notification from "./components/Notification.jsx";
+import PageLoader from "./components/PageLoader.jsx";
+import 'react-datepicker/dist/react-datepicker.min.css';
+
+const Home = lazy(() => import('./components/Home.jsx'));
+const ShowMenuItem = lazy(() => import('./components/ShowMenuItem.jsx'));
+
+const LazyLoginForm = lazy(() => import('./components/LoginForm.jsx'));
+const LazyRegisterForm = lazy(() => import('./components/RegisterForm.jsx'));
+const LazyBookingForm = lazy(() => import('./components/BookingForm.jsx'));
 
 export default function App() {
     const [isActive, setIsActive] = useState({
+        register: false,
+        login: false,
+        booking: false,
+    });
+    const [loadedModals, setLoadedModals] = useState({
         register: false,
         login: false,
         booking: false,
@@ -28,6 +37,20 @@ export default function App() {
         else document.body.style.overflowY = "auto";
     }, [isActive]);
 
+    useEffect(() => {
+        const toLoad = {};
+
+        Object.keys(isActive).forEach(key => {
+            if (isActive[key] && !loadedModals[key]) {
+                toLoad[key] = true;
+            }
+        });
+
+        if (Object.keys(toLoad).length > 0) {
+            setLoadedModals(prev => ({...prev, ...toLoad}));
+        }
+    }, [isActive, loadedModals]);
+
     return (
         <>
             <Notification
@@ -36,23 +59,35 @@ export default function App() {
                 active={notification.active}
             />
 
-            <LoginForm
-                isActive={isActive.login}
-                setIsActive={setIsActive}
-                setNotification={setNotification}
-            />
+            {loadedModals.login && (
+                <Suspense fallback={<PageLoader isElement/>}>
+                    <LazyLoginForm
+                        isActive={isActive.login}
+                        setIsActive={setIsActive}
+                        setNotification={setNotification}
+                    />
+                </Suspense>
+            )}
 
-            <RegisterForm
-                isActive={isActive.register}
-                setIsActive={setIsActive}
-                setNotification={setNotification}
-            />
+            {loadedModals.register && (
+                <Suspense fallback={<PageLoader isElement/>}>
+                    <LazyRegisterForm
+                        isActive={isActive.register}
+                        setIsActive={setIsActive}
+                        setNotification={setNotification}
+                    />
+                </Suspense>
+            )}
 
-            <BookingForm
-                isActive={isActive.booking}
-                setIsActive={setIsActive}
-                setNotification={setNotification}
-            />
+            {loadedModals.booking && (
+                <Suspense fallback={<PageLoader isElement/>}>
+                    <LazyBookingForm
+                        isActive={isActive.booking}
+                        setIsActive={setIsActive}
+                        setNotification={setNotification}
+                    />
+                </Suspense>
+            )}
 
             <div id="calendar"></div>
 
@@ -63,10 +98,12 @@ export default function App() {
             />
 
             <main>
-                <Routes>
-                    <Route path="/" element={<Home setIsActive={setIsActive}/>}/>
-                    <Route path="/show" element={<ShowMenuItem setIsActive={setIsActive}/>}/>
-                </Routes>
+                <Suspense fallback={<PageLoader/>}>
+                    <Routes>
+                        <Route path="/" element={<Home setIsActive={setIsActive}/>}/>
+                        <Route path="/show" element={<ShowMenuItem setIsActive={setIsActive}/>}/>
+                    </Routes>
+                </Suspense>
             </main>
 
             <Footer

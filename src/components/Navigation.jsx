@@ -4,17 +4,15 @@ import axios from "axios";
 export default function Navigation({isActive, setIsActive, setNotification}) {
     const [token, setToken] = useState(localStorage.getItem('token') || null);
 
-    const handleClick = (e) => {
-        const button = e.target;
+    const handleRegisterClick = useCallback(() => {
+        setIsActive({register: true, login: false, booking: false});
+    }, [setIsActive]);
 
-        if (button.id === 'register-btn') {
-            setIsActive({register: true, login: false, booking: false});
-        } else {
-            setIsActive({register: false, login: true, booking: false});
-        }
-    };
+    const handleLoginClick = useCallback(() => {
+        setIsActive({register: false, login: true, booking: false});
+    }, [setIsActive]);
 
-    const handleLogout = async () => {
+    const handleLogout = useCallback(async () => {
         try {
             const response = await axios.post(import.meta.env.VITE_API_URL + '/logout',
                 {},
@@ -35,7 +33,7 @@ export default function Navigation({isActive, setIsActive, setNotification}) {
                 window.dispatchEvent(new Event('storage'));
             }
         } catch (err) {
-            console.log(err);
+            console.log('Logout error:', err);
 
             setNotification({text: 'Не удалось выйти', failed: true, active: true});
 
@@ -44,15 +42,16 @@ export default function Navigation({isActive, setIsActive, setNotification}) {
                 2000
             );
         }
-    };
+    }, [setNotification, token]);
 
     useEffect(() => {
-        window.addEventListener('storage', () => {
+        const handleStorageChange = () => {
             setToken(localStorage.getItem('token'));
-        });
+        };
 
-        return () => window.removeEventListener('storage', () => {
-        });
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => window.removeEventListener('storage', handleStorageChange);
     }, []);
 
     return (

@@ -9,7 +9,6 @@ import axios from "axios";
 import getFirstError from "../handlers/getFirstError.js";
 import DatePicker, {registerLocale} from "react-datepicker";
 import {ru} from "date-fns/locale/ru";
-import 'react-datepicker/dist/react-datepicker.css';
 
 registerLocale('ru', ru);
 

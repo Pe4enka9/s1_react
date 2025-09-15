@@ -56,7 +56,7 @@ export default function ShowMenuItem({setIsActive}) {
                 speed={800}
             >
                 {slides.map((slide, index) => (
-                    <SwiperSlide>
+                    <SwiperSlide key={index}>
                         <Card
                             bgImg={slide.bgImg}
                             number={`0${index + 1}`}

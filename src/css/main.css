@@ -990,6 +990,35 @@ form .btn {
   height: 2rem;
 }
 
+.page-loader {
+  width: 100dvw;
+  height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  gap: 0;
+  flex-wrap: nowrap;
+  background: #2F2F2F url("../img/icons/S1.svg") repeat;
+  z-index: 4;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+.page-loader.element {
+  background: rgba(0, 0, 0, 0.8);
+}
+.page-loader .page-loader-item {
+  width: 6rem;
+  height: 6rem;
+  border: 0.5rem solid rgba(255, 255, 255, 0.5);
+  border-top: 0.5rem solid #FF6467;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  animation: loader 1s linear infinite;
+}
+
 * {
   margin: 0;
   padding: 0;
