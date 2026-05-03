@@ -2,6 +2,7 @@ import BorderButton from "../../Button/BorderButton.jsx";
 import PrimaryButton from "../../Button/PrimaryButton.jsx";
 import {AnimatePresence, motion} from "framer-motion";
 import Loader from "../../Loader.jsx";
+import {useLockBodyScroll} from "../../../hooks/useLockBodyScroll.js";
 
 export default function ModalForm({
                                       title,
@@ -37,15 +38,9 @@ export default function ModalForm({
         }
     };
 
-    const handleClose = () => {
-        setIsOpen(false);
-        document.body.style.overflow = '';
-    };
+    useLockBodyScroll(isOpen);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSubmit();
-    };
+    const handleClose = () => setIsOpen(false);
 
     return (
         <AnimatePresence>
@@ -60,7 +55,7 @@ export default function ModalForm({
                     />
 
                     <motion.div
-                        className="relative h-screen flex justify-center items-center"
+                        className="relative h-dvh flex justify-center items-center"
                         variants={modalVariants}
                         initial="hidden"
                         animate="visible"
@@ -68,7 +63,7 @@ export default function ModalForm({
                     >
                         <form
                             className="bg-main flex flex-col items-center gap-8 p-5 w-full h-full sm:w-1/3 sm:h-2/3 sm:border sm:border-my-border sm:rounded-lg"
-                            onSubmit={handleSubmit}
+                            onSubmit={onSubmit}
                         >
                             <div className="flex flex-col items-center gap-3">
                                 {icon && (
@@ -80,16 +75,12 @@ export default function ModalForm({
                                 <h4 className="text-white font-medium text-2xl">{title}</h4>
                             </div>
 
-                            <div className="w-screen relative h-full overflow-hidden sm:w-[33vw]">
-                                <div className="absolute inset-0 flex">
-                                    <div className="flex flex-col gap-4 w-full shrink-0 px-5">
-                                        {children}
-                                    </div>
-                                </div>
+                            <div className="flex flex-col gap-4 w-full">
+                                {children}
                             </div>
 
-                            <div className="flex flex-col gap-4 w-full mt-auto sm:flex-row-reverse">
-                                <PrimaryButton disabled={loading}>
+                            <div className="flex flex-col gap-4 flex-1 justify-end w-full sm:flex-row-reverse sm:items-end">
+                                <PrimaryButton type="submit" disabled={loading}>
                                     {loading ? <Loader/> : button}
                                 </PrimaryButton>
 

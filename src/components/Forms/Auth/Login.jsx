@@ -1,62 +1,70 @@
 import ModalForm from "../Base/ModalForm.jsx";
-import MyInput from "../../Input/MyInput.jsx";
 import profileIcon from '../../../icons/profile.svg';
-import PhoneInput from "../../Input/PhoneInput.jsx";
-import {useContext, useState} from "react";
+import {useContext, useEffect} from "react";
 import client, {getCsrf} from "../../../api/client.js";
 import {UserContext} from "../../../context/UserContext.js";
 import {useUI} from "../../../hooks/useUI.js";
-import {useLockBodyScroll} from "../../../hooks/useLockBodyScroll.js";
-
-const validators = {
-    phone: (value) => {
-        if (!/^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/.test(value.trim())) {
-            return 'Введите корректный номер телефона.';
-        }
-    },
-    password: (value) => {
-        if (!value) {
-            return 'Пароль обязателен.';
-        }
-    },
-};
+import {Controller, useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {loginSchema} from "../../../validations/auth/login.js";
+import MyInput from "../../Input/MyInput.jsx";
+import PhoneInput from "../../Input/PhoneInput.jsx";
 
 export default function Login() {
     const {setUser} = useContext(UserContext);
     const {isOpenLogin, setIsOpenLogin} = useUI();
-    useLockBodyScroll(isOpenLogin);
 
-    const [formData, setFormData] = useState({
-        phone: '',
-        password: '',
+    const {
+        control,
+        register,
+        handleSubmit,
+        formState: {
+            errors,
+            isSubmitting,
+        },
+        setError,
+        reset,
+        clearErrors,
+    } = useForm({
+        resolver: zodResolver(loginSchema),
+        mode: 'onSubmit',
+        reValidateMode: 'onChange',
+        defaultValues: {
+            phone: '',
+            password: '',
+        },
     });
-    const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async () => {
+    useEffect(() => {
+        if (!isOpenLogin) clearErrors();
+    }, [clearErrors, isOpenLogin]);
+
+    const onSubmit = async (values) => {
         try {
-            setLoading(true);
-            setErrors({});
-
             await getCsrf();
-            const {data} = await client.post('/login', formData);
-            setUser(data);
+            const {data} = await client.post('/login', values);
 
-            setFormData({phone: '', password: ''});
+            setUser(data);
             setIsOpenLogin(false);
+
+            reset();
         } catch (e) {
-            if (e.response.status === 401) {
-                setErrors({auth: 'Неверный логин или пароль.'})
+            const {errors} = e.response.data;
+
+            if (!errors) {
+                setError('auth', {
+                    type: 'server',
+                    message: 'Неверный логин или пароль.',
+                });
                 return;
             }
 
-            const errors = e.response.data.errors;
-
-            if (errors) {
-                setErrors(errors);
-            }
-        } finally {
-            setLoading(false);
+            Object.keys(errors).forEach(field => {
+                setError(field, {
+                    type: 'server',
+                    message: errors[field][0],
+                });
+            });
         }
     };
 
@@ -67,33 +75,32 @@ export default function Login() {
             icon={profileIcon}
             isOpen={isOpenLogin}
             setIsOpen={setIsOpenLogin}
-            onSubmit={handleSubmit}
-            loading={loading}
+            onSubmit={handleSubmit(onSubmit)}
+            loading={isSubmitting}
         >
-            <PhoneInput
-                id="login_phone"
-                formData={formData}
-                setFormData={setFormData}
-                errors={errors}
-                setErrors={setErrors}
-                validate={validators.phone}
+            <Controller
+                name="phone"
+                control={control}
+                render={({field}) => (
+                    <PhoneInput
+                        id="login_phone"
+                        error={errors.phone}
+                        {...field}
+                    />
+                )}
             />
 
             <MyInput
                 label="Пароль"
                 type="password"
-                name="password"
                 id="login_password"
                 placeholder="Введите пароль"
-                formData={formData}
-                setFormData={setFormData}
-                errors={errors}
-                setErrors={setErrors}
-                validate={validators.password}
+                error={errors.password}
+                {...register('password')}
             />
 
             {errors.auth && (
-                <div className="text-secondary text-center">{errors.auth}</div>
+                <div className="text-secondary text-center">{errors.auth.message}</div>
             )}
         </ModalForm>
     );

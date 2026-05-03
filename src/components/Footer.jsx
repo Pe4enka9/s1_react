@@ -16,7 +16,7 @@ export default function Footer({
                                }) {
     return (
         <footer className="bg-[#222] mt-5">
-            <div className="container mx-auto flex flex-col gap-6 items-center pt-3 pb-5">
+            <div className="container mx-auto flex flex-col gap-6 items-center pt-3 pb-5 px-3 sm:px-0">
                 <div className="container mx-auto flex justify-between items-center">
                     <Logo/>
 
@@ -72,16 +72,16 @@ export default function Footer({
 
                 <hr className="w-full border-primary/40"/>
 
-                <div className="flex items-center gap-1.5">
+                <div className="flex flex-col items-center gap-1.5 sm:flex-row">
                     <p className="text-white text-sm">&copy; 2025 S1</p>
 
-                    <div className="bg-white w-1.5 h-1.5 rounded-full"></div>
+                    <div className="hidden bg-white w-1.5 h-1.5 rounded-full sm:block"></div>
 
                     <a href="#" className="text-white/70 text-sm hover:text-white transition-colors">
                         Политика конфиденциальности
                     </a>
 
-                    <div className="bg-white w-1.5 h-1.5 rounded-full"></div>
+                    <div className="hidden bg-white w-1.5 h-1.5 rounded-full sm:block"></div>
 
                     <a href="#" className="text-white/70 text-sm hover:text-white transition-colors">Оферта</a>
                 </div>

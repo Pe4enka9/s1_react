@@ -19,9 +19,9 @@ export default function Slide({slide, number}) {
                 {number < 10 ? `0${number}` : number}
             </div>
 
-            <div className="flex flex-col items-center gap-6 z-10">
+            <div className="flex flex-col items-center gap-6 z-10 p-3">
                 <h2 className="text-white uppercase font-medium text-4xl font-oswald">{slide.name}</h2>
-                <p className="text-white">{slide.description}</p>
+                <p className="text-white text-center">{slide.description}</p>
 
                 {slide.button && (
                     <CTAButton onClick={openBooking}>

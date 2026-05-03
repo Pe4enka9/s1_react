@@ -1,7 +1,6 @@
 import PrimaryButton from "../../Button/PrimaryButton.jsx";
 import BorderButton from "../../Button/BorderButton.jsx";
 import {AnimatePresence, motion} from "framer-motion";
-import {useState} from "react";
 import clsx from "clsx";
 import Loader from "../../Loader.jsx";
 import {useLockBodyScroll} from "../../../hooks/useLockBodyScroll.js";
@@ -12,14 +11,13 @@ export default function StepForm({
                                      title,
                                      button,
                                      isOpen,
-                                     setIsOpen,
                                      onSubmit,
                                      loading,
-                                     validateStep,
+                                     currentStep,
+                                     onNext,
+                                     onPrev,
                                      children,
                                  }) {
-    const [currentStep, setCurrentStep] = useState(1);
-
     useLockBodyScroll(isOpen);
 
     const backdropVariants = {
@@ -46,38 +44,6 @@ export default function StepForm({
         }
     };
 
-    const handleClose = () => {
-        if (currentStep > 1) {
-            setCurrentStep(prev => prev - 1);
-            return;
-        }
-
-        setIsOpen(false);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (validateStep) {
-            const isValid = validateStep(currentStep);
-
-            if (!isValid) return;
-        }
-
-        if (currentStep < 3) {
-            setCurrentStep(prev => prev + 1);
-            return;
-        }
-
-        const step = await onSubmit();
-
-        if (step) {
-            setCurrentStep(step);
-        } else {
-            setCurrentStep(1);
-        }
-    };
-
     return (
         <AnimatePresence>
             {isOpen && (
@@ -91,7 +57,7 @@ export default function StepForm({
                     />
 
                     <motion.div
-                        className="relative h-screen flex justify-center items-center"
+                        className="relative h-dvh flex justify-center items-center"
                         variants={modalVariants}
                         initial="hidden"
                         animate="visible"
@@ -99,7 +65,7 @@ export default function StepForm({
                     >
                         <form
                             className="bg-main flex flex-col items-center gap-8 p-5 w-full h-full sm:w-1/3 sm:h-2/3 sm:border sm:border-my-border sm:rounded-lg"
-                            onSubmit={handleSubmit}
+                            onSubmit={onSubmit}
                         >
                             <div className="flex flex-col gap-3 w-full">
                                 <div className="flex justify-between">
@@ -149,11 +115,15 @@ export default function StepForm({
                             </div>
 
                             <div className="flex flex-col gap-4 w-full mt-auto sm:flex-row-reverse">
-                                <PrimaryButton disabled={loading}>
+                                <PrimaryButton
+                                    type={currentStep === 3 ? 'submit' : 'button'}
+                                    disabled={loading}
+                                    onClick={currentStep === 3 ? undefined : onNext}
+                                >
                                     {loading ? <Loader/> : currentStep === 3 ? button : 'Продолжить'}
                                 </PrimaryButton>
 
-                                <BorderButton onClick={handleClose}>
+                                <BorderButton onClick={onPrev}>
                                     {currentStep === 1 ? 'Отмена' : 'Назад'}
                                 </BorderButton>
                             </div>

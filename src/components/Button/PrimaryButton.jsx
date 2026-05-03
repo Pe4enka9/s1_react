@@ -1,6 +1,7 @@
 import clsx from "clsx";
 
 export default function PrimaryButton({
+                                          type = 'button',
                                           disabled,
                                           onClick,
                                           className = '',
@@ -8,7 +9,7 @@ export default function PrimaryButton({
                                       }) {
     return (
         <button
-            type="submit"
+            type={type}
             disabled={disabled}
             onClick={onClick}
             className={clsx(

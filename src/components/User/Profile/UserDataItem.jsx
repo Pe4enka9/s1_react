@@ -4,7 +4,7 @@ export default function UserDataItem({
                                          value,
                                      }) {
     return (
-        <div className="flex items-center gap-3 border-b border-my-border/40 pb-4">
+        <div className="flex items-center gap-3">
             <div className="w-10 h-10 p-2 bg-primary/40 rounded-lg">
                 <img src={icon} alt=""/>
             </div>

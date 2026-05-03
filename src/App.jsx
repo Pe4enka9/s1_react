@@ -53,7 +53,7 @@ export default function App() {
 
                 <Header/>
 
-                <main className="container mx-auto grow">
+                <main className="container mx-auto grow px-3 sm:px-0">
                     <AnimatePresence mode="wait">
                         <Routes location={location} key={location.pathname}>
                             <Route path="/" element={<PageWrapper><Home/></PageWrapper>}/>
