@@ -1,6 +1,7 @@
 import TabItem from "./TabItem.jsx";
 import {useState} from "react";
 import SliderTab from "./Tabs/Slider/SliderTab.jsx";
+import MenuTab from "./Tabs/Menu/MenuTab.jsx";
 
 export default function AdminPanel() {
     const [activeTab, setActiveTab] = useState('slider');
@@ -41,6 +42,10 @@ export default function AdminPanel() {
 
             {activeTab === 'slider' && (
                 <SliderTab/>
+            )}
+
+            {activeTab === 'menu' && (
+                <MenuTab/>
             )}
         </>
     );

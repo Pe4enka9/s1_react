@@ -14,6 +14,7 @@ export default function SliderEditForm({
                                            slider,
                                        }) {
     const [previewBgImg, setPreviewBgImg] = useState(null);
+    const [previewIcon, setPreviewIcon] = useState(null);
 
     const {
         register,
@@ -37,6 +38,9 @@ export default function SliderEditForm({
             button: '',
         },
     });
+
+    const bgImgOnChange = register('bg_img').onChange;
+    const iconOnChange = register('icon').onChange;
 
     useEffect(() => {
         if (isOpen && slider) {
@@ -63,6 +67,21 @@ export default function SliderEditForm({
         } else {
             setPreviewBgImg(null);
         }
+
+        bgImgOnChange(e);
+    };
+
+    const handleIconChange = (e) => {
+        const file = e.target.files?.[0];
+
+        if (file) {
+            const objectUrl = URL.createObjectURL(file);
+            setPreviewIcon(objectUrl);
+        } else {
+            setPreviewIcon(null);
+        }
+
+        iconOnChange(e);
     };
 
     const onSubmit = async (data) => {
@@ -143,14 +162,23 @@ export default function SliderEditForm({
                 />
             </div>
 
-            <MyInput
-                label="Иконка (SVG)"
-                secondaryLabel="Необязательно"
-                type="file"
-                id="slider-edit-icon"
-                error={errors.icon}
-                {...register('icon')}
-            />
+            <div className="flex items-end gap-2">
+                <MyInput
+                    label="Иконка (SVG)"
+                    secondaryLabel="Необязательно"
+                    type="file"
+                    id="slider-edit-icon"
+                    error={errors.icon}
+                    {...register('icon')}
+                    onChange={handleIconChange}
+                />
+
+                <img
+                    src={previewIcon ?? slider?.icon}
+                    alt=""
+                    className="w-16 h-16 rounded-lg border border-my-border object-cover"
+                />
+            </div>
 
             <MyInput
                 label="Подпись к иконке"

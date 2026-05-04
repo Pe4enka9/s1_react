@@ -1,17 +1,17 @@
 import MyInput from "../../../../Input/MyInput.jsx";
-import MyTextarea from "../../../../Input/MyTextarea.jsx";
 import ModalForm from "../../../../Forms/Base/ModalForm.jsx";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {createSliderSchema} from "../../../../../validations/slider/createSlider.js";
 import client from "../../../../../api/client.js";
 import {useState} from "react";
+import {createMenuSchema} from "../../../../../validations/menu/createMenu.js";
+import MyCheckbox from "../../../../Input/MyCheckbox.jsx";
 
-export default function SliderCreateForm({
-                                             isOpen,
-                                             setIsOpen,
-                                             setSliders,
-                                         }) {
+export default function MenuCreateForm({
+                                           isOpen,
+                                           setIsOpen,
+                                           setMenus,
+                                       }) {
     const [previewBgImg, setPreviewBgImg] = useState(null);
     const [previewIcon, setPreviewIcon] = useState(null);
 
@@ -25,16 +25,14 @@ export default function SliderCreateForm({
         setError,
         reset,
     } = useForm({
-        resolver: zodResolver(createSliderSchema),
+        resolver: zodResolver(createMenuSchema),
         mode: 'onSubmit',
         reValidateMode: 'onChange',
         defaultValues: {
             name: '',
-            description: '',
             bg_img: null,
             icon: null,
-            icon_text: '',
-            button: '',
+            is_booking: false,
         },
     });
 
@@ -71,9 +69,7 @@ export default function SliderCreateForm({
         const formData = new FormData();
 
         formData.append('name', data.name);
-        formData.append('description', data.description || '');
-        formData.append('icon_text', data.icon_text || '');
-        formData.append('button', data.button || '');
+        formData.append('is_booking', data.is_booking ? '1' : '0');
 
         if (data.bg_img && data.bg_img.length > 0) {
             formData.append('bg_img', data.bg_img[0]);
@@ -84,9 +80,9 @@ export default function SliderCreateForm({
         }
 
         try {
-            const {data} = await client.post('/sliders', formData);
+            const {data} = await client.post('/menus', formData);
 
-            setSliders(prev => [...prev, data]);
+            setMenus(prev => [...prev, data]);
             setIsOpen(false);
             setPreviewBgImg(null);
             setPreviewIcon(null);
@@ -94,6 +90,7 @@ export default function SliderCreateForm({
             reset();
         } catch (e) {
             const {errors} = e.response.data;
+            console.log(errors);
 
             Object.keys(errors).forEach(field => {
                 setError(field, {
@@ -106,7 +103,7 @@ export default function SliderCreateForm({
 
     return (
         <ModalForm
-            title="Добавить слайд"
+            title="Добавить пункт меню"
             button="Сохранить"
             isOpen={isOpen}
             setIsOpen={setIsOpen}
@@ -117,26 +114,17 @@ export default function SliderCreateForm({
             <MyInput
                 label="Заголовок"
                 type="text"
-                id="slider-create-name"
+                id="menu-create-name"
                 placeholder="Введите заголовок"
                 error={errors.name}
                 {...register('name')}
-            />
-
-            <MyTextarea
-                label="Описание"
-                secondaryLabel="Необязательно"
-                id="slider-create-description"
-                placeholder="Введите описание"
-                error={errors.description}
-                {...register('description')}
             />
 
             <div className="flex items-end gap-2">
                 <MyInput
                     label="Фоновое изображение"
                     type="file"
-                    id="slider-create-bg-img"
+                    id="menu-create-bg-img"
                     error={errors.bg_img}
                     {...register('bg_img')}
                     onChange={handleBgImgChange}
@@ -152,9 +140,8 @@ export default function SliderCreateForm({
             <div className="flex items-end gap-2">
                 <MyInput
                     label="Иконка (SVG)"
-                    secondaryLabel="Необязательно"
                     type="file"
-                    id="slider-create-icon"
+                    id="menu-create-icon"
                     error={errors.icon}
                     {...register('icon')}
                     onChange={handleIconChange}
@@ -167,24 +154,10 @@ export default function SliderCreateForm({
                 />
             </div>
 
-            <MyInput
-                label="Подпись к иконке"
-                secondaryLabel="Необязательно"
-                type="text"
-                id="slider-create-icon-text"
-                placeholder="Введите подпись"
-                error={errors.icon_text}
-                {...register('icon_text')}
-            />
-
-            <MyInput
-                label="Текст кнопки"
-                secondaryLabel="оставьте пустым, чтобы не показывать кнопку"
-                type="text"
-                id="slider-create-button"
-                placeholder="Например: Забронировать"
-                error={errors.button}
-                {...register('button')}
+            <MyCheckbox
+                id="menu-create-is-booking"
+                label="Открывать форму бронирования"
+                {...register('is_booking')}
             />
         </ModalForm>
     );

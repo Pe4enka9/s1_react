@@ -1,17 +1,18 @@
 import MyInput from "../../../../Input/MyInput.jsx";
-import MyTextarea from "../../../../Input/MyTextarea.jsx";
 import ModalForm from "../../../../Forms/Base/ModalForm.jsx";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {createSliderSchema} from "../../../../../validations/slider/createSlider.js";
 import client from "../../../../../api/client.js";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {editMenuSchema} from "../../../../../validations/menu/editMenu.js";
+import MyCheckbox from "../../../../Input/MyCheckbox.jsx";
 
-export default function SliderCreateForm({
-                                             isOpen,
-                                             setIsOpen,
-                                             setSliders,
-                                         }) {
+export default function MenuEditForm({
+                                         isOpen,
+                                         setIsOpen,
+                                         setMenus,
+                                         menu,
+                                     }) {
     const [previewBgImg, setPreviewBgImg] = useState(null);
     const [previewIcon, setPreviewIcon] = useState(null);
 
@@ -25,21 +26,34 @@ export default function SliderCreateForm({
         setError,
         reset,
     } = useForm({
-        resolver: zodResolver(createSliderSchema),
+        resolver: zodResolver(editMenuSchema),
         mode: 'onSubmit',
         reValidateMode: 'onChange',
         defaultValues: {
             name: '',
-            description: '',
             bg_img: null,
             icon: null,
-            icon_text: '',
-            button: '',
+            is_booking: false,
         },
     });
 
     const bgImgOnChange = register('bg_img').onChange;
     const iconOnChange = register('icon').onChange;
+
+    useEffect(() => {
+        if (isOpen && menu) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setPreviewBgImg(null);
+            setPreviewIcon(null);
+
+            reset({
+                name: menu.name,
+                bg_img: null,
+                icon: null,
+                is_booking: menu.is_booking || false,
+            });
+        }
+    }, [isOpen, reset, menu]);
 
     const handleBgImgChange = (e) => {
         const file = e.target.files?.[0];
@@ -71,9 +85,7 @@ export default function SliderCreateForm({
         const formData = new FormData();
 
         formData.append('name', data.name);
-        formData.append('description', data.description || '');
-        formData.append('icon_text', data.icon_text || '');
-        formData.append('button', data.button || '');
+        formData.append('is_booking', data.is_booking ? '1' : '0');
 
         if (data.bg_img && data.bg_img.length > 0) {
             formData.append('bg_img', data.bg_img[0]);
@@ -84,14 +96,10 @@ export default function SliderCreateForm({
         }
 
         try {
-            const {data} = await client.post('/sliders', formData);
+            const {data} = await client.patch(`/menus/${menu.id}`, formData);
 
-            setSliders(prev => [...prev, data]);
+            setMenus(prev => prev.map(item => item.id === data.id ? data : item));
             setIsOpen(false);
-            setPreviewBgImg(null);
-            setPreviewIcon(null);
-
-            reset();
         } catch (e) {
             const {errors} = e.response.data;
 
@@ -106,7 +114,7 @@ export default function SliderCreateForm({
 
     return (
         <ModalForm
-            title="Добавить слайд"
+            title="Редактировать пункт меню"
             button="Сохранить"
             isOpen={isOpen}
             setIsOpen={setIsOpen}
@@ -117,33 +125,24 @@ export default function SliderCreateForm({
             <MyInput
                 label="Заголовок"
                 type="text"
-                id="slider-create-name"
+                id="menu-edit-name"
                 placeholder="Введите заголовок"
                 error={errors.name}
                 {...register('name')}
-            />
-
-            <MyTextarea
-                label="Описание"
-                secondaryLabel="Необязательно"
-                id="slider-create-description"
-                placeholder="Введите описание"
-                error={errors.description}
-                {...register('description')}
             />
 
             <div className="flex items-end gap-2">
                 <MyInput
                     label="Фоновое изображение"
                     type="file"
-                    id="slider-create-bg-img"
+                    id="menu-edit-bg-img"
                     error={errors.bg_img}
                     {...register('bg_img')}
                     onChange={handleBgImgChange}
                 />
 
                 <img
-                    src={previewBgImg}
+                    src={previewBgImg ?? menu?.bg_img}
                     alt=""
                     className="w-16 h-16 rounded-lg border border-my-border object-cover"
                 />
@@ -152,39 +151,24 @@ export default function SliderCreateForm({
             <div className="flex items-end gap-2">
                 <MyInput
                     label="Иконка (SVG)"
-                    secondaryLabel="Необязательно"
                     type="file"
-                    id="slider-create-icon"
+                    id="menu-edit-icon"
                     error={errors.icon}
                     {...register('icon')}
                     onChange={handleIconChange}
                 />
 
                 <img
-                    src={previewIcon}
+                    src={previewIcon ?? menu?.icon}
                     alt=""
                     className="w-16 h-16 rounded-lg border border-my-border object-cover"
                 />
             </div>
 
-            <MyInput
-                label="Подпись к иконке"
-                secondaryLabel="Необязательно"
-                type="text"
-                id="slider-create-icon-text"
-                placeholder="Введите подпись"
-                error={errors.icon_text}
-                {...register('icon_text')}
-            />
-
-            <MyInput
-                label="Текст кнопки"
-                secondaryLabel="оставьте пустым, чтобы не показывать кнопку"
-                type="text"
-                id="slider-create-button"
-                placeholder="Например: Забронировать"
-                error={errors.button}
-                {...register('button')}
+            <MyCheckbox
+                id="menu-edit-is-booking"
+                label="Открывать форму бронирования"
+                {...register('is_booking')}
             />
         </ModalForm>
     );
