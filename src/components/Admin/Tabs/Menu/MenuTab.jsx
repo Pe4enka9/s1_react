@@ -2,9 +2,9 @@ import PrimaryButton from "../../../Button/PrimaryButton.jsx";
 import Loader from "../../../Loader.jsx";
 import {useEffect, useState} from "react";
 import client from "../../../../api/client.js";
-import SlideCreateForm from "../Slide/Forms/SlideCreateForm.jsx";
-import SlideEditForm from "../Slide/Forms/SlideEditForm.jsx";
 import BookingStatus from "../../../User/Profile/BookingStatus.jsx";
+import MenuCreateForm from "./Forms/MenuCreateForm.jsx";
+import MenuEditForm from "./Forms/MenuEditForm.jsx";
 
 export default function MenuTab() {
     const [menus, setMenus] = useState([]);
@@ -59,13 +59,13 @@ export default function MenuTab() {
 
     return (
         <>
-            <SlideCreateForm
+            <MenuCreateForm
                 isOpen={isOpenCreate}
                 setIsOpen={setIsOpenCreate}
                 setMenus={setMenus}
             />
 
-            <SlideEditForm
+            <MenuEditForm
                 isOpen={isOpenEdit}
                 setIsOpen={setIsOpenEdit}
                 setMenus={setMenus}

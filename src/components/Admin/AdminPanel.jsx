@@ -33,12 +33,12 @@ export default function AdminPanel() {
                     Слайды меню
                 </TabItem>
 
-                <TabItem
-                    onClick={() => setActiveTab('admins')}
-                    isActive={activeTab === 'admins'}
-                >
-                    Администраторы
-                </TabItem>
+                {/*<TabItem*/}
+                {/*    onClick={() => setActiveTab('admins')}*/}
+                {/*    isActive={activeTab === 'admins'}*/}
+                {/*>*/}
+                {/*    Администраторы*/}
+                {/*</TabItem>*/}
             </div>
 
             {activeTab === 'slider' && (

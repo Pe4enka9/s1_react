@@ -6,6 +6,8 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import client from "../../../../../api/client.js";
 import {useEffect, useState} from "react";
 import {editSliderSchema} from "../../../../../validations/slider/editSlider.js";
+import {handleImgChange} from "../../../../../functions/handleImgChange.js";
+import MyFileInput from "../../../../Input/MyFileInput.jsx";
 
 export default function SliderEditForm({
                                            isOpen,
@@ -39,9 +41,6 @@ export default function SliderEditForm({
         },
     });
 
-    const bgImgOnChange = register('bg_img').onChange;
-    const iconOnChange = register('icon').onChange;
-
     useEffect(() => {
         if (isOpen && slider) {
             // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -57,32 +56,6 @@ export default function SliderEditForm({
             });
         }
     }, [isOpen, reset, slider]);
-
-    const handleBgImgChange = (e) => {
-        const file = e.target.files?.[0];
-
-        if (file) {
-            const objectUrl = URL.createObjectURL(file);
-            setPreviewBgImg(objectUrl);
-        } else {
-            setPreviewBgImg(null);
-        }
-
-        bgImgOnChange(e);
-    };
-
-    const handleIconChange = (e) => {
-        const file = e.target.files?.[0];
-
-        if (file) {
-            const objectUrl = URL.createObjectURL(file);
-            setPreviewIcon(objectUrl);
-        } else {
-            setPreviewIcon(null);
-        }
-
-        iconOnChange(e);
-    };
 
     const onSubmit = async (data) => {
         const formData = new FormData();
@@ -145,40 +118,28 @@ export default function SliderEditForm({
                 {...register('description')}
             />
 
-            <div className="flex items-end gap-2">
-                <MyInput
-                    label="Фоновое изображение"
-                    type="file"
-                    id="slider-edit-bg-img"
-                    error={errors.bg_img}
-                    {...register('bg_img')}
-                    onChange={handleBgImgChange}
-                />
+            <MyFileInput
+                label="Фоновое изображение"
+                id="slider-edit-bg-img"
+                error={errors.bg_img}
+                preview={previewBgImg || slider?.bg_img}
+                {...register('bg_img')}
+                onChange={(e) =>
+                    handleImgChange(e, setPreviewBgImg, register('bg_img').onChange)
+                }
+            />
 
-                <img
-                    src={previewBgImg ?? slider?.bg_img}
-                    alt=""
-                    className="w-16 h-16 rounded-lg border border-my-border object-cover"
-                />
-            </div>
-
-            <div className="flex items-end gap-2">
-                <MyInput
-                    label="Иконка (SVG)"
-                    secondaryLabel="Необязательно"
-                    type="file"
-                    id="slider-edit-icon"
-                    error={errors.icon}
-                    {...register('icon')}
-                    onChange={handleIconChange}
-                />
-
-                <img
-                    src={previewIcon ?? slider?.icon}
-                    alt=""
-                    className="w-16 h-16 rounded-lg border border-my-border object-cover"
-                />
-            </div>
+            <MyFileInput
+                label="Иконка (SVG)"
+                secondaryLabel="Необязательно"
+                id="slider-edit-icon"
+                error={errors.icon}
+                preview={previewIcon || slider?.icon}
+                {...register('icon')}
+                onChange={(e) =>
+                    handleImgChange(e, setPreviewIcon, register('icon').onChange)
+                }
+            />
 
             <MyInput
                 label="Подпись к иконке"

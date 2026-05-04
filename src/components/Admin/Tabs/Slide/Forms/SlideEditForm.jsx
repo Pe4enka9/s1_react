@@ -7,6 +7,8 @@ import {useEffect, useState} from "react";
 import MySelect from "../../../../Input/MySelect.jsx";
 import MyTextarea from "../../../../Input/MyTextarea.jsx";
 import {editSlideSchema} from "../../../../../validations/slide/editSlide.js";
+import MyFileInput from "../../../../Input/MyFileInput.jsx";
+import {handleImgChange} from "../../../../../functions/handleImgChange.js";
 
 export default function SlideEditForm({
                                           isOpen,
@@ -39,8 +41,6 @@ export default function SlideEditForm({
         },
     });
 
-    const bgImgOnChange = register('bg_img').onChange;
-
     useEffect(() => {
         const fetchMenus = async () => {
             try {
@@ -69,19 +69,6 @@ export default function SlideEditForm({
             });
         }
     }, [isOpen, reset, slide]);
-
-    const handleBgImgChange = (e) => {
-        const file = e.target.files?.[0];
-
-        if (file) {
-            const objectUrl = URL.createObjectURL(file);
-            setPreviewBgImg(objectUrl);
-        } else {
-            setPreviewBgImg(null);
-        }
-
-        bgImgOnChange(e);
-    };
 
     const onSubmit = async (data) => {
         const formData = new FormData();
@@ -152,22 +139,16 @@ export default function SlideEditForm({
                 {...register('description')}
             />
 
-            <div className="flex items-end gap-2">
-                <MyInput
-                    label="Фоновое изображение"
-                    type="file"
-                    id="slide-edit-bg-img"
-                    error={errors.bg_img}
-                    {...register('bg_img')}
-                    onChange={handleBgImgChange}
-                />
-
-                <img
-                    src={previewBgImg ?? slide?.bg_img}
-                    alt=""
-                    className="w-16 h-16 rounded-lg border border-my-border object-cover"
-                />
-            </div>
+            <MyFileInput
+                label="Фоновое изображение"
+                id="slide-edit-bg-img"
+                error={errors.bg_img}
+                preview={previewBgImg || slide?.bg_img}
+                {...register('bg_img')}
+                onChange={(e) =>
+                    handleImgChange(e, setPreviewBgImg, register('bg_img').onChange)
+                }
+            />
 
             <MyInput
                 label="Текст кнопки"
