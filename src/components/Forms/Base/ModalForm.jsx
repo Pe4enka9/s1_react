@@ -7,11 +7,12 @@ import {useLockBodyScroll} from "../../../hooks/useLockBodyScroll.js";
 export default function ModalForm({
                                       title,
                                       button,
-                                      icon = null,
                                       isOpen,
                                       setIsOpen,
                                       onSubmit,
                                       loading,
+                                      icon = null,
+                                      isFile = false,
                                       children,
                                   }) {
     const backdropVariants = {
@@ -64,6 +65,7 @@ export default function ModalForm({
                         <form
                             className="bg-main flex flex-col items-center gap-8 p-5 w-full h-full sm:w-1/3 sm:h-2/3 sm:border sm:border-my-border sm:rounded-lg"
                             onSubmit={onSubmit}
+                            encType={isFile ? 'multipart/form-data' : 'application/x-www-form-urlencoded'}
                         >
                             <div className="flex flex-col items-center gap-3">
                                 {icon && (
@@ -79,8 +81,10 @@ export default function ModalForm({
                                 {children}
                             </div>
 
-                            <div className="flex flex-col gap-4 flex-1 justify-end w-full sm:flex-row-reverse sm:items-end">
-                                <PrimaryButton type="submit" disabled={loading}>
+                            <div
+                                className="flex flex-col gap-4 flex-1 justify-end w-full sm:flex-row-reverse sm:items-end"
+                            >
+                                <PrimaryButton type="submit" disabled={loading} className="sm:w-full">
                                     {loading ? <Loader/> : button}
                                 </PrimaryButton>
 

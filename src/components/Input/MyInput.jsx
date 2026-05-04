@@ -8,6 +8,7 @@ export default function MyInput({
                                     type,
                                     placeholder,
                                     error,
+                                    secondaryLabel = '',
                                     min = null,
                                     ...rest
                                 }) {
@@ -15,7 +16,13 @@ export default function MyInput({
 
     return (
         <div className="flex flex-col flex-1 gap-1.5">
-            <label htmlFor={id} className="text-white font-medium">{label}</label>
+            <label htmlFor={id} className="text-white font-medium flex items-center gap-1.5">
+                {label}
+
+                {secondaryLabel && (
+                    <span className="text-my-border text-sm">({secondaryLabel})</span>
+                )}
+            </label>
 
             <div className="relative">
                 <input

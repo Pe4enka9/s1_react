@@ -12,6 +12,7 @@ import {UIProvider} from "./providers/UIProvider.jsx";
 import Profile from "./components/User/Profile/Profile.jsx";
 import Show from "./components/Menu/Cards/Show.jsx";
 import {AnimatePresence, motion} from "framer-motion";
+import AdminPanel from "./components/Admin/AdminPanel.jsx";
 
 const PageWrapper = ({children}) => (
     <motion.div
@@ -59,6 +60,7 @@ export default function App() {
                             <Route path="/" element={<PageWrapper><Home/></PageWrapper>}/>
                             <Route path="/profile" element={<PageWrapper><Profile/></PageWrapper>}/>
                             <Route path="/menus/:id" element={<PageWrapper><Show/></PageWrapper>}/>
+                            <Route path="/admin" element={<PageWrapper><AdminPanel/></PageWrapper>}/>
                         </Routes>
                     </AnimatePresence>
                 </main>
