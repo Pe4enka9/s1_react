@@ -3,7 +3,7 @@ import ModalForm from "../../../../Forms/Base/ModalForm.jsx";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import client from "../../../../../api/client.js";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import MySelect from "../../../../Input/MySelect.jsx";
 import MyTextarea from "../../../../Input/MyTextarea.jsx";
 import {createSlideSchema} from "../../../../../validations/slide/createSlide.js";
@@ -14,8 +14,8 @@ export default function SlideCreateForm({
                                             isOpen,
                                             setIsOpen,
                                             setSlides,
+                                            menus,
                                         }) {
-    const [menus, setMenus] = useState([]);
     const [previewBgImg, setPreviewBgImg] = useState(null);
 
     const {
@@ -40,20 +40,6 @@ export default function SlideCreateForm({
         },
     });
 
-    useEffect(() => {
-        const fetchMenus = async () => {
-            try {
-                const {data} = await client.get('/menus');
-
-                setMenus(data);
-            } catch (e) {
-                console.log(e);
-            }
-        };
-
-        fetchMenus();
-    }, []);
-
     const onSubmit = async (data) => {
         const formData = new FormData();
 
@@ -69,7 +55,7 @@ export default function SlideCreateForm({
         try {
             const {data} = await client.post('/slides', formData);
 
-            setSlides(prev => [...prev, data]);
+            setSlides(prev => [data, ...prev]);
             setIsOpen(false);
             setPreviewBgImg(null);
 

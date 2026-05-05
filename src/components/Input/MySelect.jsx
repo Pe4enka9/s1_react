@@ -1,8 +1,11 @@
+import clsx from "clsx";
+
 export default function MySelect({
                                      id,
                                      label,
                                      error,
                                      secondaryLabel = '',
+                                     className = '',
                                      children,
                                      ...rest
                                  }) {
@@ -18,7 +21,10 @@ export default function MySelect({
 
             <select
                 id={id}
-                className="w-full bg-[#222] text-white border-2 border-my-border rounded-lg px-2.5 py-1.5 outline-none focus:border-secondary transition-colors duration-300"
+                className={clsx(
+                    'bg-[#222] text-white border-2 border-my-border rounded-lg px-2.5 py-1.5 outline-none focus:border-secondary transition-colors duration-300',
+                    className,
+                )}
                 {...rest}
             >
                 {children}

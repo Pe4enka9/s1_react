@@ -4,21 +4,37 @@ import {useEffect, useState} from "react";
 import client from "../../../../api/client.js";
 import SlideCreateForm from "./Forms/SlideCreateForm.jsx";
 import SlideEditForm from "./Forms/SlideEditForm.jsx";
+import MySelect from "../../../Input/MySelect.jsx";
+import {useForm, useWatch} from "react-hook-form";
 
 export default function SlideTab() {
     const [slides, setSlides] = useState([]);
+    const [menus, setMenus] = useState([]);
     const [loading, setLoading] = useState(true);
     const [deleteLoading, setDeleteLoading] = useState(null);
     const [isOpenCreate, setIsOpenCreate] = useState(false);
     const [isOpenEdit, setIsOpenEdit] = useState(false);
     const [currentSlide, setCurrentSlide] = useState(null);
 
+    const {register, control} = useForm();
+    const menuId = useWatch({
+        control,
+        name: 'menu',
+        defaultValue: '',
+    });
+
     useEffect(() => {
         const fetchSlides = async () => {
             try {
                 setLoading(true);
 
-                const {data} = await client.get('/slides');
+                const params = new URLSearchParams();
+
+                if (menuId) {
+                    params.append('menu', menuId);
+                }
+
+                const {data} = await client.get(`/slides?${params.toString()}`);
 
                 setSlides(data);
             } catch (e) {
@@ -29,6 +45,20 @@ export default function SlideTab() {
         };
 
         fetchSlides();
+    }, [menuId]);
+
+    useEffect(() => {
+        const fetchMenus = async () => {
+            try {
+                const {data} = await client.get('/menus');
+
+                setMenus(data);
+            } catch (e) {
+                console.log(e);
+            }
+        };
+
+        fetchMenus();
     }, []);
 
     const openCreate = () => setIsOpenCreate(true);
@@ -62,6 +92,7 @@ export default function SlideTab() {
                 isOpen={isOpenCreate}
                 setIsOpen={setIsOpenCreate}
                 setSlides={setSlides}
+                menus={menus}
             />
 
             <SlideEditForm
@@ -69,6 +100,7 @@ export default function SlideTab() {
                 setIsOpen={setIsOpenEdit}
                 setSlides={setSlides}
                 slide={currentSlide}
+                menus={menus}
             />
 
             <div className="flex flex-col gap-3">
@@ -76,6 +108,22 @@ export default function SlideTab() {
                     <div className="text-white font-semibold">Слайды меню</div>
                     <PrimaryButton onClick={openCreate}>Добавить слайд</PrimaryButton>
                 </div>
+
+                <form>
+                    <MySelect
+                        id="filter-menu"
+                        label="Фильтр по меню"
+                        className="w-fit"
+                        {...register('menu')}
+                    >
+                        <option value="">Все</option>
+
+                        {menus.map(menu => (
+                            !menu.is_booking &&
+                            <option key={menu.id} value={menu.id}>{menu.name}</option>
+                        ))}
+                    </MySelect>
+                </form>
 
                 <div className="flex flex-col gap-2">
                     {slides.map(slide => (

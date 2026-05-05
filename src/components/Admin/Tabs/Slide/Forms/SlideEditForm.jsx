@@ -15,8 +15,8 @@ export default function SlideEditForm({
                                           setIsOpen,
                                           setSlides,
                                           slide,
+                                          menus,
                                       }) {
-    const [menus, setMenus] = useState([]);
     const [previewBgImg, setPreviewBgImg] = useState(null);
 
     const {
@@ -40,20 +40,6 @@ export default function SlideEditForm({
             button: '',
         },
     });
-
-    useEffect(() => {
-        const fetchMenus = async () => {
-            try {
-                const {data} = await client.get('/menus');
-
-                setMenus(data);
-            } catch (e) {
-                console.log(e);
-            }
-        };
-
-        fetchMenus();
-    }, []);
 
     useEffect(() => {
         if (isOpen && slide) {
