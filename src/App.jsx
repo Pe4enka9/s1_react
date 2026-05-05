@@ -9,7 +9,7 @@ import client from "./api/client.js";
 import Booking from "./components/Forms/Booking.jsx";
 import {UserContext} from "./context/UserContext.js";
 import {UIProvider} from "./providers/UIProvider.jsx";
-import Profile from "./components/User/Profile/Profile.jsx";
+import Profile from "./components/User/Profile.jsx";
 import Show from "./components/Menu/Cards/Show.jsx";
 import {AnimatePresence, motion} from "framer-motion";
 import AdminPanel from "./components/Admin/AdminPanel.jsx";

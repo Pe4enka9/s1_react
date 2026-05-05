@@ -1,6 +1,6 @@
 import clsx from "clsx";
 
-export default function BookingStatus({
+export default function Status({
                                    status,
                                    children,
                                }) {

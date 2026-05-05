@@ -1,14 +1,14 @@
 import {useContext, useEffect, useState} from "react";
 import UserDataItem from "./UserDataItem.jsx";
-import {UserContext} from "../../../context/UserContext.js";
-import profileIcon from '../../../icons/profile.svg';
-import phoneIcon from '../../../icons/phone.svg';
-import ProfileButton from "../../Button/ProfileButton.jsx";
-import BookingStatus from "./BookingStatus.jsx";
-import client from "../../../api/client.js";
-import Loader from "../../Loader.jsx";
-import calendarIcon from '../../../icons/calendar.svg';
-import PrimaryButton from "../../Button/PrimaryButton.jsx";
+import {UserContext} from "../../context/UserContext.js";
+import profileIcon from '../../icons/profile.svg';
+import phoneIcon from '../../icons/phone.svg';
+import ProfileButton from "../Button/ProfileButton.jsx";
+import Status from "../Status.jsx";
+import client from "../../api/client.js";
+import Loader from "../Loader.jsx";
+import calendarIcon from '../../icons/calendar.svg';
+import PrimaryButton from "../Button/PrimaryButton.jsx";
 
 export default function Profile() {
     const {user} = useContext(UserContext);
@@ -138,9 +138,9 @@ export default function Profile() {
                                             <td className="p-3">{booking.created_at_date_formatted}</td>
 
                                             <td className="p-3">
-                                                <BookingStatus status={booking.status}>
+                                                <Status status={booking.status}>
                                                     {statusLabels[booking.status]}
-                                                </BookingStatus>
+                                                </Status>
                                             </td>
                                         </tr>
                                     ))}
@@ -163,9 +163,9 @@ export default function Profile() {
                                                 </div>
                                             </div>
 
-                                            <BookingStatus status={booking.status}>
+                                            <Status status={booking.status}>
                                                 {statusLabels[booking.status]}
-                                            </BookingStatus>
+                                            </Status>
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-4">
