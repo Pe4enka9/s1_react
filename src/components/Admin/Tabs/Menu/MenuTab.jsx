@@ -5,6 +5,8 @@ import client from "../../../../api/client.js";
 import BookingStatus from "../../../User/Profile/BookingStatus.jsx";
 import MenuCreateForm from "./Forms/MenuCreateForm.jsx";
 import MenuEditForm from "./Forms/MenuEditForm.jsx";
+import {LazyLoadImage} from "react-lazy-load-image-component";
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 export default function MenuTab() {
     const [menus, setMenus] = useState([]);
@@ -84,7 +86,11 @@ export default function MenuTab() {
                             key={menu.id}
                             className="bg-main border border-my-border rounded-lg p-4 flex items-center gap-4"
                         >
-                            <img src={menu.bg_img} alt="" className="w-14 h-14 object-cover rounded-lg"/>
+                            <LazyLoadImage
+                                src={menu.bg_img}
+                                effect="blur"
+                                className="w-14 h-14 object-cover rounded-lg"
+                            />
 
                             <div className="text-white flex items-center gap-3">
                                 <img

@@ -1,5 +1,7 @@
 import CTAButton from "../Button/CTAButton.jsx";
 import {useUI} from "../../hooks/useUI.js";
+import {LazyLoadImage} from "react-lazy-load-image-component";
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 export default function Hero({slider}) {
     const {setIsOpenBooking} = useUI();
@@ -7,10 +9,15 @@ export default function Hero({slider}) {
     const openBooking = () => setIsOpenBooking(true);
 
     return (
-        <div
-            className="relative pb-12 h-full"
-            style={{background: `#2f2f2f url(${slider.bg_img}) no-repeat center / cover`}}
-        >
+        <div className="bg-main relative pb-12 h-full">
+            <LazyLoadImage
+                src={slider.bg_img}
+                alt={slider.name}
+                effect="blur"
+                wrapperClassName="absolute inset-0"
+                className="w-full h-full object-cover"
+            />
+
             <div className="absolute inset-0 bg-linear-to-t from-black/80 to-transparent"></div>
 
             <div className="relative z-10 flex flex-col justify-end items-center gap-5 h-full">

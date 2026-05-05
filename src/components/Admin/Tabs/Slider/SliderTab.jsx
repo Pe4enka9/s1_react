@@ -5,6 +5,8 @@ import PrimaryButton from "../../../Button/PrimaryButton.jsx";
 import Loader from "../../../Loader.jsx";
 import SliderCreateForm from "./Forms/SliderCreateForm.jsx";
 import SliderEditForm from "./Forms/SliderEditForm.jsx";
+import {LazyLoadImage} from "react-lazy-load-image-component";
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 export default function SliderTab() {
     const [sliders, setSliders] = useState([]);
@@ -87,7 +89,11 @@ export default function SliderTab() {
                             key={slider.id}
                             className="bg-main border border-my-border rounded-lg p-4 flex items-center gap-4"
                         >
-                            <img src={slider.bg_img} alt="" className="w-14 h-14 object-cover rounded-lg"/>
+                            <LazyLoadImage
+                                src={slider.bg_img}
+                                effect="blur"
+                                className="w-14 h-14 object-cover rounded-lg"
+                            />
 
                             <div className="text-white">
                                 <div className="font-medium">{slider.name}</div>

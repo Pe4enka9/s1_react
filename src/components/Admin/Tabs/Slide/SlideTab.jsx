@@ -6,6 +6,8 @@ import SlideCreateForm from "./Forms/SlideCreateForm.jsx";
 import SlideEditForm from "./Forms/SlideEditForm.jsx";
 import MySelect from "../../../Input/MySelect.jsx";
 import {useForm, useWatch} from "react-hook-form";
+import {LazyLoadImage} from "react-lazy-load-image-component";
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 export default function SlideTab() {
     const [slides, setSlides] = useState([]);
@@ -131,7 +133,11 @@ export default function SlideTab() {
                             key={slide.id}
                             className="bg-main border border-my-border rounded-lg p-4 flex items-center gap-4"
                         >
-                            <img src={slide.bg_img} alt="" className="w-14 h-14 object-cover rounded-lg"/>
+                            <LazyLoadImage
+                                src={slide.bg_img}
+                                effect="blur"
+                                className="w-14 h-14 object-cover rounded-lg"
+                            />
 
                             <div className="text-white">
                                 <div className="font-medium">{slide.name}</div>
