@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@heroui/styles";
 
 @theme {
     --font-sans: 'Open Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
@@ -6,89 +7,60 @@
     --font-oswald: 'Oswald';
     --color-main: #2f2f2f;
     --color-primary: #e7000b;
+    --color-primary-hover: #b5030c;
     --color-secondary: #ff6467;
     --color-text-secondary: #d1d5dc;
     --color-my-border: #757575;
+}
+
+:root {
+    --accent: var(--color-primary);
 }
 
 body {
     background-image: url("../icons/s1.svg");
 }
 
+/* контейнер пагинации */
 .swiper-pagination {
     display: flex;
+    gap: 10px;
     justify-content: center;
     align-items: center;
-    gap: 10px;
 }
 
+/* ВЕРТИКАЛЬНЫЙ режим */
 .swiper-pagination.vertical {
     flex-direction: column;
 }
 
+/* базовый буллет */
 .custom-bullet {
-    width: 15px;
-    height: 15px;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
 
-    background-color: rgba(255, 255, 255, .5);
-
-    -webkit-border-radius: 50%;
-    -moz-border-radius: 50%;
-    border-radius: 50%;
-
-    transition: background-color .3s ease;
-
+    background: rgba(255, 255, 255, 0.25);
+    transition: all 0.2s ease;
     cursor: pointer;
 }
 
-.custom-bullet.active {
-    background-color: var(--color-secondary);
+/* hover */
+.custom-bullet:hover {
+    background: rgba(255, 255, 255, 0.5);
+    transform: scale(1.2);
 }
 
-.loader {
-    width: 25px;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    border: 4px solid var(--color-secondary);
-    animation: l20-1 0.8s infinite linear alternate,
-    l20-2 1.6s infinite linear;
+/* активный буллет (горизонтальный стиль) */
+.swiper-pagination.horizontal .custom-bullet.active {
+    width: 18px;
+    height: 8px;
+    background: var(--color-primary);
 }
 
-@keyframes l20-1 {
-    0% {
-        clip-path: polygon(50% 50%, 0 0, 50% 0%, 50% 0%, 50% 0%, 50% 0%, 50% 0%)
-    }
-    12.5% {
-        clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 0%, 100% 0%, 100% 0%)
-    }
-    25% {
-        clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 100%, 100% 100%, 100% 100%)
-    }
-    50% {
-        clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%)
-    }
-    62.5% {
-        clip-path: polygon(50% 50%, 100% 0, 100% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%)
-    }
-    75% {
-        clip-path: polygon(50% 50%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 50% 100%, 0% 100%)
-    }
-    100% {
-        clip-path: polygon(50% 50%, 50% 100%, 50% 100%, 50% 100%, 50% 100%, 50% 100%, 0% 100%)
-    }
-}
-
-@keyframes l20-2 {
-    0% {
-        transform: scaleY(1) rotate(0deg)
-    }
-    49.99% {
-        transform: scaleY(1) rotate(135deg)
-    }
-    50% {
-        transform: scaleY(-1) rotate(0deg)
-    }
-    100% {
-        transform: scaleY(-1) rotate(-135deg)
-    }
+/* активный буллет (вертикальный стиль) */
+.swiper-pagination.vertical .custom-bullet.active {
+    width: 8px;
+    height: 18px;
+    background: var(--color-primary);
 }

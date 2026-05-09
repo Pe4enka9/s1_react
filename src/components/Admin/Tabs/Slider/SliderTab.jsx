@@ -1,28 +1,23 @@
 import Slider from "../../../Slider/Slider.jsx";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import client from "../../../../api/client.js";
-import PrimaryButton from "../../../Button/PrimaryButton.jsx";
-import Loader from "../../../Loader.jsx";
 import SliderCreateForm from "./Forms/SliderCreateForm.jsx";
-import SliderEditForm from "./Forms/SliderEditForm.jsx";
-import 'react-lazy-load-image-component/src/effects/blur.css';
+import "react-lazy-load-image-component/src/effects/blur.css";
 import TabCard from "../Cards/TabCard.jsx";
+import { Spinner } from "@heroui/react";
+import SliderEditForm from "./Forms/SliderEditForm.jsx";
 
 export default function SliderTab() {
     const [sliders, setSliders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [deleteLoading, setDeleteLoading] = useState(null);
-    const [isOpenCreate, setIsOpenCreate] = useState(false);
-    const [isOpenEdit, setIsOpenEdit] = useState(false);
-    const [currentSlider, setCurrentSlider] = useState(null);
 
     useEffect(() => {
         const fetchSliders = async () => {
             try {
                 setLoading(true);
 
-                const {data} = await client.get('/sliders');
-
+                const { data } = await client.get("/sliders");
                 setSliders(data);
             } catch (e) {
                 console.log(e);
@@ -34,20 +29,15 @@ export default function SliderTab() {
         fetchSliders();
     }, []);
 
-    const openCreate = () => setIsOpenCreate(true);
-
-    const openEdit = (slider) => {
-        setCurrentSlider(slider);
-        setIsOpenEdit(true);
-    }
-
     const onDelete = async (id) => {
         try {
             setDeleteLoading(id);
 
             await client.delete(`/sliders/${id}`);
 
-            setSliders(prev => prev.filter(slider => slider.id !== id));
+            setSliders((prev) =>
+                prev.filter((slider) => slider.id !== id)
+            );
         } catch (e) {
             console.log(e);
         } finally {
@@ -55,52 +45,76 @@ export default function SliderTab() {
         }
     };
 
-    if (loading) {
-        return <Loader center/>;
-    }
-
     return (
-        <>
-            <SliderCreateForm
-                isOpen={isOpenCreate}
-                setIsOpen={setIsOpenCreate}
-                setSliders={setSliders}
-            />
+        <section className="flex flex-col gap-5" aria-label="Управление слайдером">
+            {/* PREVIEW */}
+            <div>
+                <h2 className="text-white font-semibold mb-3">
+                    Предпросмотр слайдера
+                </h2>
 
-            <SliderEditForm
-                isOpen={isOpenEdit}
-                setIsOpen={setIsOpenEdit}
-                setSliders={setSliders}
-                slider={currentSlider}
-            />
+                {loading ? (
+                    <div
+                        className="flex justify-center items-center py-10"
+                        role="status"
+                        aria-live="polite"
+                        aria-label="Загрузка слайдера"
+                    >
+                        <Spinner size="xl" />
+                    </div>
+                ) : (
+                    <Slider sliders={sliders} />
+                )}
+            </div>
 
-            <div className="text-white font-semibold mb-3">Предпросмотр слайдера</div>
-            <Slider sliders={sliders}/>
-
+            {/* MANAGEMENT */}
             <div className="flex flex-col gap-3">
                 <div className="flex justify-between items-center">
-                    <div className="text-white font-semibold">Слайды</div>
-                    <PrimaryButton onClick={openCreate}>Добавить слайд</PrimaryButton>
+                    <h3 className="text-white font-semibold">
+                        Слайды
+                    </h3>
+
+                    <SliderCreateForm setSliders={setSliders} />
                 </div>
 
-                <div className="flex flex-col gap-2">
-                    {sliders.map(slider => (
-                        <TabCard
-                            key={slider.id}
-                            item={slider}
-                            img={slider.bg_img}
-                            onEdit={() => openEdit(slider)}
-                            onDelete={() => onDelete(slider.id)}
-                            deleteLoading={deleteLoading}
-                        >
-                            <div className="text-white">
-                                <div className="font-medium">{slider.name}</div>
-                                <div className="text-text-secondary text-sm">{slider.description}</div>
-                            </div>
-                        </TabCard>
-                    ))}
-                </div>
+                {loading ? (
+                    <div
+                        className="flex justify-center py-6"
+                        role="status"
+                        aria-live="polite"
+                    >
+                        <Spinner />
+                    </div>
+                ) : (
+                    <ul className="flex flex-col gap-2">
+                        {sliders.map((slider) => (
+                            <li key={slider.id}>
+                                <TabCard
+                                    item={slider}
+                                    img={slider.bg_img}
+                                    onEdit={
+                                        <SliderEditForm
+                                            setSliders={setSliders}
+                                            slider={slider}
+                                        />
+                                    }
+                                    onDelete={() => onDelete(slider.id)}
+                                    deleteLoading={deleteLoading}
+                                >
+                                    <div className="text-white">
+                                        <div className="font-medium">
+                                            {slider.name}
+                                        </div>
+                                        <div className="text-text-secondary text-sm">
+                                            {slider.description}
+                                        </div>
+                                    </div>
+                                </TabCard>
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
-        </>
+        </section>
     );
 }

@@ -1,25 +1,18 @@
-import MyInput from "../../../../Input/MyInput.jsx";
 import ModalForm from "../../../../Forms/Base/ModalForm.jsx";
-import {useForm} from "react-hook-form";
+import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import client from "../../../../../api/client.js";
 import {useEffect, useState} from "react";
 import {editMenuSchema} from "../../../../../validations/menu/editMenu.js";
-import MyCheckbox from "../../../../Input/MyCheckbox.jsx";
-import {handleImgChange} from "../../../../../functions/handleImgChange.js";
-import MyFileInput from "../../../../Input/MyFileInput.jsx";
+import {Pencil, PencilToSquare} from "@gravity-ui/icons";
+import {FieldError, Input, Label, TextField} from "@heroui/react";
+import FileInput from "../../../../Input/FileInput.jsx";
 
-export default function MenuEditForm({
-                                         isOpen,
-                                         setIsOpen,
-                                         setMenus,
-                                         menu,
-                                     }) {
-    const [previewBgImg, setPreviewBgImg] = useState(null);
-    const [previewIcon, setPreviewIcon] = useState(null);
+export default function MenuEditForm({setMenus, menu}) {
+    const [isOpen, setIsOpen] = useState(false);
 
     const {
-        register,
+        control,
         handleSubmit,
         formState: {
             errors,
@@ -27,6 +20,7 @@ export default function MenuEditForm({
         },
         setError,
         reset,
+        clearErrors,
     } = useForm({
         resolver: zodResolver(editMenuSchema),
         mode: 'onSubmit',
@@ -35,30 +29,25 @@ export default function MenuEditForm({
             name: '',
             bg_img: null,
             icon: null,
-            is_booking: false,
         },
     });
 
     useEffect(() => {
         if (isOpen && menu) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setPreviewBgImg(null);
-            setPreviewIcon(null);
+            clearErrors();
 
             reset({
                 name: menu.name,
                 bg_img: null,
                 icon: null,
-                is_booking: menu.is_booking || false,
             });
         }
-    }, [isOpen, reset, menu]);
+    }, [isOpen, reset, menu, clearErrors]);
 
     const onSubmit = async (data) => {
         const formData = new FormData();
 
         formData.append('name', data.name);
-        formData.append('is_booking', data.is_booking ? '1' : '0');
 
         if (data.bg_img && data.bg_img.length > 0) {
             formData.append('bg_img', data.bg_img[0]);
@@ -87,49 +76,57 @@ export default function MenuEditForm({
 
     return (
         <ModalForm
+            id="edit-menu-form"
             title="Редактировать пункт меню"
-            button="Сохранить"
             isOpen={isOpen}
             setIsOpen={setIsOpen}
-            onSubmit={handleSubmit(onSubmit)}
-            loading={isSubmitting}
-            isFile
+            sendButton="Сохранить"
+            handleSubmit={handleSubmit(onSubmit)}
+            isSubmitting={isSubmitting}
+            icon={<Pencil/>}
+            enctype="multipart/form-data"
+            trigger={
+                <div
+                    className="w-9 h-9 text-white cursor-pointer border border-my-border rounded-lg p-2 hover:bg-white/10 transition-colors duration-200 flex justify-center items-center"
+                >
+                    <PencilToSquare className="w-full h-full object-contain"/>
+                </div>
+            }
         >
-            <MyInput
-                label="Заголовок"
-                type="text"
-                id="menu-edit-name"
-                placeholder="Введите заголовок"
-                error={errors.name}
-                {...register('name')}
+            <Controller
+                control={control}
+                name="name"
+                render={({field}) => (
+                    <TextField isInvalid={!!errors.name} isRequired>
+                        <Label>Заголовок</Label>
+
+                        <Input
+                            placeholder="Введите заголовок"
+                            variant="secondary"
+                            {...field}
+                        />
+
+                        <FieldError>{errors.name?.message}</FieldError>
+                    </TextField>
+                )}
             />
 
-            <MyFileInput
+            <FileInput
+                control={control}
+                name="bg_img"
                 label="Фоновое изображение"
-                id="menu-edit-bg-img"
-                error={errors.bg_img}
-                preview={previewBgImg || menu?.bg_img}
-                {...register('bg_img')}
-                onChange={(e) =>
-                    handleImgChange(e, setPreviewBgImg, register('bg_img').onChange)
-                }
+                description="JPEG, JPG, PNG, WEBP до 2 MB"
+                editPreview={menu.bg_img}
+                isRequired
             />
 
-            <MyFileInput
+            <FileInput
+                control={control}
+                name="icon"
                 label="Иконка (SVG)"
-                id="menu-edit-icon"
-                error={errors.icon}
-                preview={previewIcon || menu?.icon}
-                {...register('icon')}
-                onChange={(e) =>
-                    handleImgChange(e, setPreviewIcon, register('icon').onChange)
-                }
-            />
-
-            <MyCheckbox
-                id="menu-edit-is-booking"
-                label="Открывать форму бронирования"
-                {...register('is_booking')}
+                description="SVG до 2 MB"
+                editPreview={menu.icon}
+                isRequired
             />
         </ModalForm>
     );

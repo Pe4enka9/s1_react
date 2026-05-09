@@ -9,7 +9,10 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@heroui/react": "^3.0.3",
+    "@heroui/styles": "^3.0.3",
     "@hookform/resolvers": "^5.2.2",
+    "@internationalized/date": "^3.12.1",
     "@tailwindcss/vite": "^4.2.4",
     "axios": "^1.15.2",
     "clsx": "^2.1.1",
@@ -28,6 +31,7 @@
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "@eslint/js": "^10.0.1",
+    "@gravity-ui/icons": "^2.18.0",
     "@rolldown/plugin-babel": "^0.2.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

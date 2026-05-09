@@ -1,22 +1,20 @@
-import {useContext} from "react";
-import client from "../../../api/client.js";
-import {UserContext} from "../../../context/UserContext.js";
-import {useUI} from "../../../hooks/useUI.js";
+import {Button, Description, FieldError, Input, Label, TextField, toast} from "@heroui/react";
 import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {registerSchema} from "../../../validations/auth/register.js";
-import PhoneInput from "../../Input/PhoneInput.jsx";
-import MyInput from "../../Input/MyInput.jsx";
+import {PhoneInput} from "../../Input/PhoneInput.jsx";
+import client from "../../../api/client.js";
+import {useContext, useEffect, useState} from "react";
+import {UserContext} from "../../../context/UserContext.js";
 import ModalForm from "../Base/ModalForm.jsx";
-import profileIcon from '../../../icons/profile.svg';
+import {PersonPlus} from "@gravity-ui/icons";
 
 export default function Register() {
     const {setUser} = useContext(UserContext);
-    const {isOpenRegister, setIsOpenRegister} = useUI();
+    const [isOpen, setIsOpen] = useState(false);
 
     const {
         control,
-        register,
         handleSubmit,
         formState: {
             errors,
@@ -24,6 +22,7 @@ export default function Register() {
         },
         setError,
         reset,
+        clearErrors,
     } = useForm({
         resolver: zodResolver(registerSchema),
         mode: 'onSubmit',
@@ -35,14 +34,20 @@ export default function Register() {
         },
     });
 
+    useEffect(() => {
+        if (isOpen) clearErrors();
+    }, [clearErrors, isOpen]);
+
     const onSubmit = async (values) => {
         try {
             const {data} = await client.post('/register', values);
 
             setUser(data);
-            setIsOpenRegister(false);
 
+            setIsOpen(false);
             reset();
+
+            toast.success('Вы успешно зарегистрировались');
         } catch (e) {
             const {errors} = e.response.data;
 
@@ -57,42 +62,79 @@ export default function Register() {
 
     return (
         <ModalForm
+            id="register-form"
             title="Создание аккаунта"
-            button="Зарегистироваться"
-            icon={profileIcon}
-            isOpen={isOpenRegister}
-            setIsOpen={setIsOpenRegister}
-            onSubmit={handleSubmit(onSubmit)}
-            loading={isSubmitting}
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            sendButton="Зарегистрироваться"
+            handleSubmit={handleSubmit(onSubmit)}
+            isSubmitting={isSubmitting}
+            icon={<PersonPlus/>}
+            trigger={<Button variant="ghost">Регистрация</Button>}
         >
+            <TextField
+                isInvalid={!!errors.phone}
+                isRequired
+            >
+                <Label>Номер телефона</Label>
+
+                <Controller
+                    control={control}
+                    name="phone"
+                    render={({field}) => (
+                        <PhoneInput
+                            placeholder="+7 (___) ___-__-__"
+                            {...field}
+                        />
+                    )}
+                />
+
+                <FieldError>{errors.phone?.message}</FieldError>
+            </TextField>
+
             <Controller
-                name="phone"
                 control={control}
+                name="password"
                 render={({field}) => (
-                    <PhoneInput
-                        id="register_phone"
-                        error={errors.phone}
-                        {...field}
-                    />
+                    <TextField
+                        type="password"
+                        isInvalid={!!errors.password}
+                        isRequired
+                    >
+                        <Label>Пароль</Label>
+
+                        <Input
+                            placeholder="Введите пароль"
+                            variant="secondary"
+                            {...field}
+                        />
+
+                        <Description>Должен содержать не менее 6 символов.</Description>
+                        <FieldError>{errors.password?.message}</FieldError>
+                    </TextField>
                 )}
             />
 
-            <MyInput
-                label="Пароль"
-                type="password"
-                id="register_password"
-                placeholder="Введите пароль"
-                error={errors.password}
-                {...register('password')}
-            />
+            <Controller
+                control={control}
+                name="password_confirmation"
+                render={({field}) => (
+                    <TextField
+                        type="password"
+                        isInvalid={!!errors.password_confirmation}
+                        isRequired
+                    >
+                        <Label>Повтор пароля</Label>
 
-            <MyInput
-                label="Повтор пароля"
-                type="password"
-                id="register_password_confirmation"
-                placeholder="Повторите пароль"
-                error={errors.password_confirmation}
-                {...register('password_confirmation')}
+                        <Input
+                            placeholder="Повторите пароль"
+                            variant="secondary"
+                            {...field}
+                        />
+
+                        <FieldError>{errors.password_confirmation?.message}</FieldError>
+                    </TextField>
+                )}
             />
         </ModalForm>
     );

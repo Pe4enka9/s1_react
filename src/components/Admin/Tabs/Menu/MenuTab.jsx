@@ -1,28 +1,22 @@
-import PrimaryButton from "../../../Button/PrimaryButton.jsx";
-import Loader from "../../../Loader.jsx";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import client from "../../../../api/client.js";
-import Status from "../../../Status.jsx";
 import MenuCreateForm from "./Forms/MenuCreateForm.jsx";
-import MenuEditForm from "./Forms/MenuEditForm.jsx";
-import 'react-lazy-load-image-component/src/effects/blur.css';
+import "react-lazy-load-image-component/src/effects/blur.css";
 import TabCard from "../Cards/TabCard.jsx";
+import { Spinner } from "@heroui/react";
+import MenuEditForm from "./Forms/MenuEditForm.jsx";
 
 export default function MenuTab() {
     const [menus, setMenus] = useState([]);
     const [loading, setLoading] = useState(true);
     const [deleteLoading, setDeleteLoading] = useState(null);
-    const [isOpenCreate, setIsOpenCreate] = useState(false);
-    const [isOpenEdit, setIsOpenEdit] = useState(false);
-    const [currentMenu, setCurrentMenu] = useState(null);
 
     useEffect(() => {
         const fetchMenus = async () => {
             try {
                 setLoading(true);
 
-                const {data} = await client.get('/menus');
-
+                const { data } = await client.get("/menus");
                 setMenus(data);
             } catch (e) {
                 console.log(e);
@@ -34,20 +28,15 @@ export default function MenuTab() {
         fetchMenus();
     }, []);
 
-    const openCreate = () => setIsOpenCreate(true);
-
-    const openEdit = (menu) => {
-        setCurrentMenu(menu);
-        setIsOpenEdit(true);
-    }
-
     const onDelete = async (id) => {
         try {
             setDeleteLoading(id);
 
             await client.delete(`/menus/${id}`);
 
-            setMenus(prev => prev.filter(menu => menu.id !== id));
+            setMenus((prev) =>
+                prev.filter((menu) => menu.id !== id)
+            );
         } catch (e) {
             console.log(e);
         } finally {
@@ -55,58 +44,59 @@ export default function MenuTab() {
         }
     };
 
-    if (loading) {
-        return <Loader center/>;
-    }
-
     return (
-        <>
-            <MenuCreateForm
-                isOpen={isOpenCreate}
-                setIsOpen={setIsOpenCreate}
-                setMenus={setMenus}
-            />
+        <section className="flex flex-col gap-3" aria-label="Пункты меню">
+            {/* HEADER */}
+            <div className="flex justify-between items-center">
+                <h3 className="text-white font-semibold">
+                    Пункты меню
+                </h3>
 
-            <MenuEditForm
-                isOpen={isOpenEdit}
-                setIsOpen={setIsOpenEdit}
-                setMenus={setMenus}
-                menu={currentMenu}
-            />
-
-            <div className="flex flex-col gap-3">
-                <div className="flex justify-between items-center">
-                    <div className="text-white font-semibold">Пункты меню</div>
-                    <PrimaryButton onClick={openCreate}>Добавить пункт</PrimaryButton>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                    {menus.map(menu => (
-                        <TabCard
-                            key={menu.id}
-                            item={menu}
-                            img={menu.bg_img}
-                            onEdit={() => openEdit(menu)}
-                            onDelete={() => onDelete(menu.id)}
-                            deleteLoading={deleteLoading}
-                        >
-                            <div className="text-white flex items-center gap-3">
-                                <img
-                                    src={menu.icon}
-                                    alt=""
-                                    className="w-10 h-10 border border-my-border rounded-lg p-1"
-                                />
-
-                                <div className="font-medium">{menu.name}</div>
-
-                                {menu.is_booking && (
-                                    <Status status="success">Форма бронирования</Status>
-                                )}
-                            </div>
-                        </TabCard>
-                    ))}
-                </div>
+                <MenuCreateForm setMenus={setMenus} />
             </div>
-        </>
+
+            {/* LOADING */}
+            {loading ? (
+                <div
+                    className="flex justify-center items-center py-10"
+                    role="status"
+                    aria-live="polite"
+                    aria-label="Загрузка меню"
+                >
+                    <Spinner size="xl" />
+                </div>
+            ) : (
+                <ul className="flex flex-col gap-2">
+                    {menus.map((menu) => (
+                        <li key={menu.id}>
+                            <TabCard
+                                item={menu}
+                                img={menu.bg_img}
+                                onEdit={
+                                    <MenuEditForm
+                                        setMenus={setMenus}
+                                        menu={menu}
+                                    />
+                                }
+                                onDelete={() => onDelete(menu.id)}
+                                deleteLoading={deleteLoading}
+                            >
+                                <div className="text-white flex items-center gap-3">
+                                    <img
+                                        src={menu.icon}
+                                        alt={menu.name ? `Иконка ${menu.name}` : "Иконка меню"}
+                                        className="w-10 h-10 border border-my-border rounded-lg p-1"
+                                    />
+
+                                    <div className="font-medium">
+                                        {menu.name}
+                                    </div>
+                                </div>
+                            </TabCard>
+                        </li>
+                    ))}
+                </ul>
+            )}
+        </section>
     );
 }

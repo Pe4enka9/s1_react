@@ -1,4 +1,5 @@
-import Loader from "../../../Loader.jsx";
+import { AlertDialog, Button, Spinner } from "@heroui/react";
+import { TrashBin } from "@gravity-ui/icons";
 
 export default function TabActions({
                                        item,
@@ -6,32 +7,74 @@ export default function TabActions({
                                        onDelete,
                                        deleteLoading,
                                    }) {
-    return (
-        <div className="flex flex-1 justify-end gap-2">
-            <div
-                className="w-9 h-9 text-white cursor-pointer border border-my-border rounded-lg p-2 hover:bg-white/10 transition-colors duration-200"
-                onClick={() => onEdit(item)}
-            >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                </svg>
-            </div>
+    const isDeleting = deleteLoading === item.id;
 
-            <div
-                className="w-9 h-9 text-white cursor-pointer border border-my-border rounded-lg p-2 hover:bg-primary/20 hover:text-secondary/70 hover:border-secondary/70 transition-colors duration-200"
-                onClick={() => onDelete(item.id)}
-            >
-                {deleteLoading === item.id ? (
-                    <Loader center/>
-                ) : (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path
-                            d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    </svg>
-                )}
-            </div>
+    return (
+        <div
+            className="flex flex-1 justify-end gap-2"
+            role="toolbar"
+            aria-label="Действия элемента"
+        >
+            {onEdit}
+
+            {isDeleting ? (
+                <div
+                    className="w-9 h-9 border border-my-border rounded-lg flex justify-center items-center"
+                    role="status"
+                    aria-live="polite"
+                    aria-label="Удаление..."
+                >
+                    <Spinner size="sm" color="current" />
+                </div>
+            ) : (
+                <AlertDialog>
+                    <AlertDialog.Trigger>
+                        <button
+                            type="button"
+                            className="w-9 h-9 text-white cursor-pointer border border-my-border rounded-lg p-2 hover:bg-primary/20 hover:text-secondary/70 hover:border-secondary/70 transition-colors duration-200 flex justify-center items-center"
+                            aria-label="Удалить элемент"
+                        >
+                            <TrashBin
+                                className="w-full h-full object-contain"
+                                aria-hidden="true"
+                            />
+                        </button>
+                    </AlertDialog.Trigger>
+
+                    <AlertDialog.Backdrop>
+                        <AlertDialog.Container>
+                            <AlertDialog.Dialog>
+                                <AlertDialog.CloseTrigger />
+
+                                <AlertDialog.Header>
+                                    <AlertDialog.Icon status="danger" />
+                                    <AlertDialog.Heading>
+                                        Вы уверены, что хотите удалить?
+                                    </AlertDialog.Heading>
+                                </AlertDialog.Header>
+
+                                <AlertDialog.Body>
+                                    <p>Это действие невозможно отменить.</p>
+                                </AlertDialog.Body>
+
+                                <AlertDialog.Footer>
+                                    <Button slot="close" variant="tertiary">
+                                        Отмена
+                                    </Button>
+
+                                    <Button
+                                        slot="close"
+                                        variant="danger"
+                                        onPress={() => onDelete(item.id)}
+                                    >
+                                        Удалить
+                                    </Button>
+                                </AlertDialog.Footer>
+                            </AlertDialog.Dialog>
+                        </AlertDialog.Container>
+                    </AlertDialog.Backdrop>
+                </AlertDialog>
+            )}
         </div>
     );
 }

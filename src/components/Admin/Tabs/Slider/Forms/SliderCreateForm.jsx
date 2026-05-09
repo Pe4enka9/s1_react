@@ -1,24 +1,18 @@
-import MyInput from "../../../../Input/MyInput.jsx";
-import MyTextarea from "../../../../Input/MyTextarea.jsx";
 import ModalForm from "../../../../Forms/Base/ModalForm.jsx";
-import {useForm} from "react-hook-form";
+import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {createSliderSchema} from "../../../../../validations/slider/createSlider.js";
 import client from "../../../../../api/client.js";
-import {useState} from "react";
-import {handleImgChange} from "../../../../../functions/handleImgChange.js";
-import MyFileInput from "../../../../Input/MyFileInput.jsx";
+import {useEffect, useState} from "react";
+import {Plus} from "@gravity-ui/icons";
+import {Button, Description, FieldError, Input, Label, TextArea, TextField} from "@heroui/react";
+import FileInput from "../../../../Input/FileInput.jsx";
 
-export default function SliderCreateForm({
-                                             isOpen,
-                                             setIsOpen,
-                                             setSliders,
-                                         }) {
-    const [previewBgImg, setPreviewBgImg] = useState(null);
-    const [previewIcon, setPreviewIcon] = useState(null);
+export default function SliderCreateForm({setSliders}) {
+    const [isOpen, setIsOpen] = useState(false);
 
     const {
-        register,
+        control,
         handleSubmit,
         formState: {
             errors,
@@ -26,6 +20,7 @@ export default function SliderCreateForm({
         },
         setError,
         reset,
+        clearErrors,
     } = useForm({
         resolver: zodResolver(createSliderSchema),
         mode: 'onSubmit',
@@ -40,20 +35,24 @@ export default function SliderCreateForm({
         },
     });
 
-    const onSubmit = async (data) => {
+    useEffect(() => {
+        if (isOpen) clearErrors();
+    }, [clearErrors, isOpen]);
+
+    const onSubmit = async (values) => {
         const formData = new FormData();
 
-        formData.append('name', data.name);
-        formData.append('description', data.description || '');
-        formData.append('icon_text', data.icon_text || '');
-        formData.append('button', data.button || '');
+        formData.append('name', values.name);
+        formData.append('description', values.description || '');
+        formData.append('icon_text', values.icon_text || '');
+        formData.append('button', values.button || '');
 
-        if (data.bg_img && data.bg_img.length > 0) {
-            formData.append('bg_img', data.bg_img[0]);
+        if (values.bg_img && values.bg_img.length > 0) {
+            formData.append('bg_img', values.bg_img[0]);
         }
 
-        if (data.icon && data.icon.length > 0) {
-            formData.append('icon', data.icon[0]);
+        if (values.icon && values.icon.length > 0) {
+            formData.append('icon', values.icon[0]);
         }
 
         try {
@@ -61,8 +60,6 @@ export default function SliderCreateForm({
 
             setSliders(prev => [...prev, data]);
             setIsOpen(false);
-            setPreviewBgImg(null);
-            setPreviewIcon(null);
 
             reset();
         } catch (e) {
@@ -79,73 +76,103 @@ export default function SliderCreateForm({
 
     return (
         <ModalForm
+            id="create-slide-form"
             title="Добавить слайд"
-            button="Сохранить"
             isOpen={isOpen}
             setIsOpen={setIsOpen}
-            onSubmit={handleSubmit(onSubmit)}
-            loading={isSubmitting}
-            isFile
+            sendButton="Сохранить"
+            handleSubmit={handleSubmit(onSubmit)}
+            isSubmitting={isSubmitting}
+            icon={<Plus/>}
+            enctype="multipart/form-data"
+            trigger={<Button>Добавить слайд</Button>}
         >
-            <MyInput
-                label="Заголовок"
-                type="text"
-                id="slider-create-name"
-                placeholder="Введите заголовок"
-                error={errors.name}
-                {...register('name')}
+            <Controller
+                control={control}
+                name="name"
+                render={({field}) => (
+                    <TextField isInvalid={!!errors.name} isRequired>
+                        <Label>Заголовок</Label>
+
+                        <Input
+                            placeholder="Введите заголовок"
+                            variant="secondary"
+                            {...field}
+                        />
+
+                        <FieldError>{errors.name?.message}</FieldError>
+                    </TextField>
+                )}
             />
 
-            <MyTextarea
-                label="Описание"
-                secondaryLabel="Необязательно"
-                id="slider-create-description"
-                placeholder="Введите описание"
-                error={errors.description}
-                {...register('description')}
+            <Controller
+                control={control}
+                name="description"
+                render={({field}) => (
+                    <TextField isInvalid={!!errors.description}>
+                        <Label>Описание</Label>
+
+                        <TextArea
+                            placeholder="Введите описание"
+                            variant="secondary"
+                            {...field}
+                        />
+
+                        <FieldError>{errors.description?.message}</FieldError>
+                    </TextField>
+                )}
             />
 
-            <MyFileInput
+            <FileInput
+                control={control}
+                name="bg_img"
                 label="Фоновое изображение"
-                id="slider-create-bg-img"
-                error={errors.bg_img}
-                preview={previewBgImg}
-                {...register('bg_img')}
-                onChange={(e) =>
-                    handleImgChange(e, setPreviewBgImg, register('bg_img').onChange)
-                }
+                description="JPEG, JPG, PNG, WEBP до 2 MB"
+                isRequired
             />
 
-            <MyFileInput
+            <FileInput
+                control={control}
+                name="icon"
                 label="Иконка (SVG)"
-                secondaryLabel="Необязательно"
-                id="slider-create-icon"
-                error={errors.icon}
-                preview={previewIcon}
-                {...register('icon')}
-                onChange={(e) =>
-                    handleImgChange(e, setPreviewIcon, register('icon').onChange)
-                }
+                description="SVG до 2 MB"
             />
 
-            <MyInput
-                label="Подпись к иконке"
-                secondaryLabel="Необязательно"
-                type="text"
-                id="slider-create-icon-text"
-                placeholder="Введите подпись"
-                error={errors.icon_text}
-                {...register('icon_text')}
+            <Controller
+                control={control}
+                name="icon_text"
+                render={({field}) => (
+                    <TextField isInvalid={!!errors.icon_text}>
+                        <Label>Подпись к иконке</Label>
+
+                        <Input
+                            placeholder="Введите подпись"
+                            variant="secondary"
+                            {...field}
+                        />
+
+                        <FieldError>{errors.icon_text?.message}</FieldError>
+                    </TextField>
+                )}
             />
 
-            <MyInput
-                label="Текст кнопки"
-                secondaryLabel="оставьте пустым, чтобы не показывать кнопку"
-                type="text"
-                id="slider-create-button"
-                placeholder="Например: Забронировать"
-                error={errors.button}
-                {...register('button')}
+            <Controller
+                control={control}
+                name="button"
+                render={({field}) => (
+                    <TextField isInvalid={!!errors.button}>
+                        <Label>Текст кнопки</Label>
+
+                        <Input
+                            placeholder="Например: Забронировать"
+                            variant="secondary"
+                            {...field}
+                        />
+
+                        <Description>Оставьте пустым, чтобы не показывать кнопку</Description>
+                        <FieldError>{errors.button?.message}</FieldError>
+                    </TextField>
+                )}
             />
         </ModalForm>
     );

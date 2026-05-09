@@ -1,25 +1,18 @@
-import MyInput from "../../../../Input/MyInput.jsx";
-import MyTextarea from "../../../../Input/MyTextarea.jsx";
 import ModalForm from "../../../../Forms/Base/ModalForm.jsx";
-import {useForm} from "react-hook-form";
+import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import client from "../../../../../api/client.js";
 import {useEffect, useState} from "react";
 import {editSliderSchema} from "../../../../../validations/slider/editSlider.js";
-import {handleImgChange} from "../../../../../functions/handleImgChange.js";
-import MyFileInput from "../../../../Input/MyFileInput.jsx";
+import {Pencil, PencilToSquare} from "@gravity-ui/icons";
+import {Description, FieldError, Input, Label, TextArea, TextField} from "@heroui/react";
+import FileInput from "../../../../Input/FileInput.jsx";
 
-export default function SliderEditForm({
-                                           isOpen,
-                                           setIsOpen,
-                                           setSliders,
-                                           slider,
-                                       }) {
-    const [previewBgImg, setPreviewBgImg] = useState(null);
-    const [previewIcon, setPreviewIcon] = useState(null);
+export default function SliderEditForm({setSliders, slider}) {
+    const [isOpen, setIsOpen] = useState(false);
 
     const {
-        register,
+        control,
         handleSubmit,
         formState: {
             errors,
@@ -27,6 +20,7 @@ export default function SliderEditForm({
         },
         setError,
         reset,
+        clearErrors,
     } = useForm({
         resolver: zodResolver(editSliderSchema),
         mode: 'onSubmit',
@@ -43,8 +37,7 @@ export default function SliderEditForm({
 
     useEffect(() => {
         if (isOpen && slider) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setPreviewBgImg(null);
+            clearErrors();
 
             reset({
                 name: slider.name,
@@ -55,7 +48,7 @@ export default function SliderEditForm({
                 button: slider.button || '',
             });
         }
-    }, [isOpen, reset, slider]);
+    }, [clearErrors, isOpen, reset, slider]);
 
     const onSubmit = async (data) => {
         const formData = new FormData();
@@ -92,73 +85,111 @@ export default function SliderEditForm({
 
     return (
         <ModalForm
+            id="edit-slide-form"
             title="Редактировать слайд"
-            button="Сохранить"
             isOpen={isOpen}
             setIsOpen={setIsOpen}
-            onSubmit={handleSubmit(onSubmit)}
-            loading={isSubmitting}
-            isFile
+            sendButton="Сохранить"
+            handleSubmit={handleSubmit(onSubmit)}
+            isSubmitting={isSubmitting}
+            icon={<Pencil/>}
+            enctype="multipart/form-data"
+            trigger={
+                <div
+                    className="w-9 h-9 text-white cursor-pointer border border-my-border rounded-lg p-2 hover:bg-white/10 transition-colors duration-200 flex justify-center items-center"
+                >
+                    <PencilToSquare className="w-full h-full object-contain"/>
+                </div>
+            }
         >
-            <MyInput
-                label="Заголовок"
-                type="text"
-                id="slider-edit-name"
-                placeholder="Введите заголовок"
-                error={errors.name}
-                {...register('name')}
+            <Controller
+                control={control}
+                name="name"
+                render={({field}) => (
+                    <TextField isInvalid={!!errors.name} isRequired>
+                        <Label>Заголовок</Label>
+
+                        <Input
+                            placeholder="Введите заголовок"
+                            variant="secondary"
+                            {...field}
+                        />
+
+                        <FieldError>{errors.name?.message}</FieldError>
+                    </TextField>
+                )}
             />
 
-            <MyTextarea
-                label="Описание"
-                secondaryLabel="Необязательно"
-                id="slider-edit-description"
-                placeholder="Введите описание"
-                error={errors.description}
-                {...register('description')}
+            <Controller
+                control={control}
+                name="description"
+                render={({field}) => (
+                    <TextField isInvalid={!!errors.description}>
+                        <Label>Описание</Label>
+
+                        <TextArea
+                            placeholder="Введите описание"
+                            variant="secondary"
+                            {...field}
+                        />
+
+                        <FieldError>{errors.description?.message}</FieldError>
+                    </TextField>
+                )}
             />
 
-            <MyFileInput
+            <FileInput
+                control={control}
+                name="bg_img"
                 label="Фоновое изображение"
-                id="slider-edit-bg-img"
-                error={errors.bg_img}
-                preview={previewBgImg || slider?.bg_img}
-                {...register('bg_img')}
-                onChange={(e) =>
-                    handleImgChange(e, setPreviewBgImg, register('bg_img').onChange)
-                }
+                description="JPEG, JPG, PNG, WEBP до 2 MB"
+                editPreview={slider.bg_img}
+                isRequired
             />
 
-            <MyFileInput
+            <FileInput
+                control={control}
+                name="icon"
                 label="Иконка (SVG)"
-                secondaryLabel="Необязательно"
-                id="slider-edit-icon"
-                error={errors.icon}
-                preview={previewIcon || slider?.icon}
-                {...register('icon')}
-                onChange={(e) =>
-                    handleImgChange(e, setPreviewIcon, register('icon').onChange)
-                }
+                description="SVG до 2 MB"
+                editPreview={slider.icon}
             />
 
-            <MyInput
-                label="Подпись к иконке"
-                secondaryLabel="Необязательно"
-                type="text"
-                id="slider-edit-icon-text"
-                placeholder="Введите подпись"
-                error={errors.icon_text}
-                {...register('icon_text')}
+            <Controller
+                control={control}
+                name="icon_text"
+                render={({field}) => (
+                    <TextField isInvalid={!!errors.icon_text}>
+                        <Label>Подпись к иконке</Label>
+
+                        <Input
+                            placeholder="Введите подпись"
+                            variant="secondary"
+                            {...field}
+                        />
+
+                        <FieldError>{errors.icon_text?.message}</FieldError>
+                    </TextField>
+                )}
             />
 
-            <MyInput
-                label="Текст кнопки"
-                secondaryLabel="оставьте пустым, чтобы не показывать кнопку"
-                type="text"
-                id="slider-edit-button"
-                placeholder="Например: Забронировать"
-                error={errors.button}
-                {...register('button')}
+            <Controller
+                control={control}
+                name="button"
+                render={({field}) => (
+                    <TextField isInvalid={!!errors.button}>
+                        <Label>Текст кнопки</Label>
+
+                        <Input
+                            placeholder="Например: Забронировать"
+                            variant="secondary"
+                            {...field}
+                        />
+
+                        <Description>Оставьте пустым, чтобы не показывать кнопку</Description>
+                        <FieldError>{errors.button?.message}</FieldError>
+                    </TextField>
+                )}
             />
         </ModalForm>
     );

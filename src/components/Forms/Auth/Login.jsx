@@ -1,22 +1,20 @@
-import ModalForm from "../Base/ModalForm.jsx";
-import profileIcon from '../../../icons/profile.svg';
-import {useContext, useEffect} from "react";
-import client, {getCsrf} from "../../../api/client.js";
-import {UserContext} from "../../../context/UserContext.js";
-import {useUI} from "../../../hooks/useUI.js";
+import {Button, ErrorMessage, FieldError, Input, Label, TextField, toast} from "@heroui/react";
 import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
+import {PhoneInput} from "../../Input/PhoneInput.jsx";
+import client, {getCsrf} from "../../../api/client.js";
+import {useContext, useEffect, useState} from "react";
+import {UserContext} from "../../../context/UserContext.js";
 import {loginSchema} from "../../../validations/auth/login.js";
-import MyInput from "../../Input/MyInput.jsx";
-import PhoneInput from "../../Input/PhoneInput.jsx";
+import ModalForm from "../Base/ModalForm.jsx";
+import {Person} from "@gravity-ui/icons";
 
 export default function Login() {
     const {setUser} = useContext(UserContext);
-    const {isOpenLogin, setIsOpenLogin} = useUI();
+    const [isOpen, setIsOpen] = useState(false);
 
     const {
         control,
-        register,
         handleSubmit,
         formState: {
             errors,
@@ -36,8 +34,8 @@ export default function Login() {
     });
 
     useEffect(() => {
-        if (!isOpenLogin) clearErrors();
-    }, [clearErrors, isOpenLogin]);
+        if (isOpen) clearErrors();
+    }, [clearErrors, isOpen]);
 
     const onSubmit = async (values) => {
         try {
@@ -45,9 +43,10 @@ export default function Login() {
             const {data} = await client.post('/login', values);
 
             setUser(data);
-            setIsOpenLogin(false);
-
+            setIsOpen(false);
             reset();
+
+            toast.success(`Вы вошли`);
         } catch (e) {
             const {errors} = e.response.data;
 
@@ -70,37 +69,60 @@ export default function Login() {
 
     return (
         <ModalForm
+            id="login-form"
             title="Вход в аккаунт"
-            button="Войти"
-            icon={profileIcon}
-            isOpen={isOpenLogin}
-            setIsOpen={setIsOpenLogin}
-            onSubmit={handleSubmit(onSubmit)}
-            loading={isSubmitting}
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            sendButton="Войти"
+            handleSubmit={handleSubmit(onSubmit)}
+            isSubmitting={isSubmitting}
+            icon={<Person/>}
+            trigger={<Button>Вход</Button>}
         >
+            <TextField
+                isInvalid={!!errors.phone}
+                isRequired
+            >
+                <Label>Номер телефона</Label>
+
+                <Controller
+                    control={control}
+                    name="phone"
+                    render={({field}) => (
+                        <PhoneInput
+                            placeholder="+7 (___) ___-__-__"
+                            {...field}
+                        />
+                    )}
+                />
+
+                <FieldError>{errors.phone?.message}</FieldError>
+            </TextField>
+
             <Controller
-                name="phone"
                 control={control}
+                name="password"
                 render={({field}) => (
-                    <PhoneInput
-                        id="login_phone"
-                        error={errors.phone}
-                        {...field}
-                    />
+                    <TextField
+                        type="password"
+                        isInvalid={!!errors.password}
+                        isRequired
+                    >
+                        <Label>Пароль</Label>
+
+                        <Input
+                            placeholder="Введите пароль"
+                            variant="secondary"
+                            {...field}
+                        />
+
+                        <FieldError>{errors.password?.message}</FieldError>
+                    </TextField>
                 )}
             />
 
-            <MyInput
-                label="Пароль"
-                type="password"
-                id="login_password"
-                placeholder="Введите пароль"
-                error={errors.password}
-                {...register('password')}
-            />
-
             {errors.auth && (
-                <div className="text-secondary text-center">{errors.auth.message}</div>
+                <ErrorMessage className="m-auto">{errors.auth?.message}</ErrorMessage>
             )}
         </ModalForm>
     );

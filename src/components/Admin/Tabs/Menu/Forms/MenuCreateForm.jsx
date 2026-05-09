@@ -1,24 +1,18 @@
-import MyInput from "../../../../Input/MyInput.jsx";
 import ModalForm from "../../../../Forms/Base/ModalForm.jsx";
-import {useForm} from "react-hook-form";
+import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import client from "../../../../../api/client.js";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {createMenuSchema} from "../../../../../validations/menu/createMenu.js";
-import MyCheckbox from "../../../../Input/MyCheckbox.jsx";
-import {handleImgChange} from "../../../../../functions/handleImgChange.js";
-import MyFileInput from "../../../../Input/MyFileInput.jsx";
+import {Plus} from "@gravity-ui/icons";
+import {Button, FieldError, Input, Label, TextField} from "@heroui/react";
+import FileInput from "../../../../Input/FileInput.jsx";
 
-export default function MenuCreateForm({
-                                           isOpen,
-                                           setIsOpen,
-                                           setMenus,
-                                       }) {
-    const [previewBgImg, setPreviewBgImg] = useState(null);
-    const [previewIcon, setPreviewIcon] = useState(null);
+export default function MenuCreateForm({setMenus}) {
+    const [isOpen, setIsOpen] = useState(false);
 
     const {
-        register,
+        control,
         handleSubmit,
         formState: {
             errors,
@@ -26,6 +20,7 @@ export default function MenuCreateForm({
         },
         setError,
         reset,
+        clearErrors,
     } = useForm({
         resolver: zodResolver(createMenuSchema),
         mode: 'onSubmit',
@@ -34,15 +29,17 @@ export default function MenuCreateForm({
             name: '',
             bg_img: null,
             icon: null,
-            is_booking: false,
         },
     });
+
+    useEffect(() => {
+        if (isOpen) clearErrors();
+    }, [clearErrors, isOpen]);
 
     const onSubmit = async (data) => {
         const formData = new FormData();
 
         formData.append('name', data.name);
-        formData.append('is_booking', data.is_booking ? '1' : '0');
 
         if (data.bg_img && data.bg_img.length > 0) {
             formData.append('bg_img', data.bg_img[0]);
@@ -57,8 +54,6 @@ export default function MenuCreateForm({
 
             setMenus(prev => [...prev, data]);
             setIsOpen(false);
-            setPreviewBgImg(null);
-            setPreviewIcon(null);
 
             reset();
         } catch (e) {
@@ -76,49 +71,49 @@ export default function MenuCreateForm({
 
     return (
         <ModalForm
+            id="create-menu-form"
             title="Добавить пункт меню"
-            button="Сохранить"
             isOpen={isOpen}
             setIsOpen={setIsOpen}
-            onSubmit={handleSubmit(onSubmit)}
-            loading={isSubmitting}
-            isFile
+            sendButton="Сохранить"
+            handleSubmit={handleSubmit(onSubmit)}
+            isSubmitting={isSubmitting}
+            icon={<Plus/>}
+            enctype="multipart/form-data"
+            trigger={<Button>Добавить пункт меню</Button>}
         >
-            <MyInput
-                label="Заголовок"
-                type="text"
-                id="menu-create-name"
-                placeholder="Введите заголовок"
-                error={errors.name}
-                {...register('name')}
+            <Controller
+                control={control}
+                name="name"
+                render={({field}) => (
+                    <TextField isInvalid={!!errors.name} isRequired>
+                        <Label>Заголовок</Label>
+
+                        <Input
+                            placeholder="Введите заголовок"
+                            variant="secondary"
+                            {...field}
+                        />
+
+                        <FieldError>{errors.name?.message}</FieldError>
+                    </TextField>
+                )}
             />
 
-            <MyFileInput
+            <FileInput
+                control={control}
+                name="bg_img"
                 label="Фоновое изображение"
-                id="menu-create-bg-img"
-                error={errors.bg_img}
-                preview={previewBgImg}
-                {...register('bg_img')}
-                onChange={(e) =>
-                    handleImgChange(e, setPreviewBgImg, register('bg_img').onChange)
-                }
+                description="JPEG, JPG, PNG, WEBP до 2 MB"
+                isRequired
             />
 
-            <MyFileInput
+            <FileInput
+                control={control}
+                name="icon"
                 label="Иконка (SVG)"
-                id="menu-create-icon"
-                error={errors.icon}
-                preview={previewIcon}
-                {...register('icon')}
-                onChange={(e) =>
-                    handleImgChange(e, setPreviewIcon, register('icon').onChange)
-                }
-            />
-
-            <MyCheckbox
-                id="menu-create-is-booking"
-                label="Открывать форму бронирования"
-                {...register('is_booking')}
+                description="SVG до 2 MB"
+                isRequired
             />
         </ModalForm>
     );

@@ -1,8 +1,8 @@
 import Slider from "./components/Slider/Slider.jsx";
 import {useEffect, useState} from "react";
 import client from "./api/client.js";
-import Loader from "./components/Loader.jsx";
 import Menu from "./components/Menu/Menu.jsx";
+import {Spinner} from "@heroui/react";
 
 export default function Home() {
     const [loading, setLoading] = useState(true);
@@ -33,7 +33,9 @@ export default function Home() {
 
     return (
         loading ? (
-            <Loader page/>
+            <div className="flex items-center justify-center h-screen">
+                <Spinner size="xl"/>
+            </div>
         ) : (
             <>
                 <Slider sliders={sliders}/>

@@ -1,22 +1,23 @@
-import calendarIcon from '../../icons/calendar.svg';
-import MyInput from "../Input/MyInput.jsx";
-import PhoneInput from "../Input/PhoneInput.jsx";
-import {useContext, useEffect} from "react";
-import client from "../../api/client.js";
-import {useUI} from "../../hooks/useUI.js";
-import {UserContext} from "../../context/UserContext.js";
+import {Button, FieldError, Input, Label, TextField, toast} from "@heroui/react";
 import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import ModalForm from "./Base/ModalForm.jsx";
+import {PhoneInput} from "../Input/PhoneInput.jsx";
+import client from "../../api/client.js";
+import {useContext, useEffect, useState} from "react";
+import {UserContext} from "../../context/UserContext.js";
 import {bookingSchema} from "../../validations/booking.js";
+import {formatDateTime, formatDateTimeHuman} from "../../utils/formatDateTime.js";
+import ModalForm from "./Base/ModalForm.jsx";
+import {Calendar} from '@gravity-ui/icons';
+import DateTimeInput from "../Input/DateTimeInput.jsx";
+import {getLocalTimeZone, now} from "@internationalized/date";
 
-export default function Booking() {
+export default function Booking({button}) {
     const {user} = useContext(UserContext);
-    const {isOpenBooking, setIsOpenBooking} = useUI();
+    const [isOpen, setIsOpen] = useState(false);
 
     const {
         control,
-        register,
         handleSubmit,
         formState: {
             errors,
@@ -32,27 +33,35 @@ export default function Booking() {
         reValidateMode: 'onChange',
         defaultValues: {
             phone: '',
-            date: '',
+            date: now(getLocalTimeZone()),
             duration: '',
             peoples: '',
         },
     });
 
     useEffect(() => {
-        setValue('phone', user?.phone);
-    }, [setValue, user, isOpenBooking]);
-
-    useEffect(() => {
-        if (!isOpenBooking) clearErrors();
-    }, [clearErrors, isOpenBooking]);
+        if (isOpen) {
+            clearErrors();
+            setValue('phone', user?.phone);
+        }
+    }, [clearErrors, isOpen, setValue, user]);
 
     const onSubmit = async (data) => {
+        const payload = {
+            ...data,
+            date: formatDateTime(data.date),
+        };
+
         try {
-            await client.post('/bookings', data);
+            await client.post('/bookings', payload);
 
-            setIsOpenBooking(false);
-
+            setIsOpen(false);
             reset();
+
+            toast.success('Бронирование успешно создано', {
+                description: `Дата: ${formatDateTimeHuman(data.date)}`,
+                indicator: <Calendar/>,
+            });
         } catch (e) {
             const {errors} = e.response.data;
 
@@ -67,52 +76,91 @@ export default function Booking() {
 
     return (
         <ModalForm
+            id="booking-form"
             title="Бронирование"
-            button="Забронировать"
-            icon={calendarIcon}
-            isOpen={isOpenBooking}
-            setIsOpen={setIsOpenBooking}
-            onSubmit={handleSubmit(onSubmit)}
-            loading={isSubmitting}
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            sendButton="Забронировать"
+            handleSubmit={handleSubmit(onSubmit)}
+            isSubmitting={isSubmitting}
+            icon={<Calendar/>}
+            trigger={<Button size="lg">{button}</Button>}
         >
+            <TextField
+                isInvalid={!!errors.phone}
+                isRequired
+            >
+                <Label>Номер телефона</Label>
+
+                <Controller
+                    control={control}
+                    name="phone"
+                    render={({field}) => (
+                        <PhoneInput
+                            placeholder="+7 (___) ___-__-__"
+                            {...field}
+                        />
+                    )}
+                />
+
+                <FieldError>{errors.phone?.message}</FieldError>
+            </TextField>
+
             <Controller
-                name="phone"
                 control={control}
+                name="date"
                 render={({field}) => (
-                    <PhoneInput
-                        id="register_phone"
-                        error={errors.phone}
-                        {...field}
+                    <DateTimeInput
+                        label="Дата и время"
+                        field={field}
+                        error={errors.date}
                     />
                 )}
             />
 
-            <MyInput
-                label="Дата и время"
-                type="datetime-local"
-                id="booking_date"
-                min={new Date(new Date() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16)}
-                error={errors.date}
-                {...register('date')}
-            />
+            <div className="flex gap-5 *:flex-1">
+                <Controller
+                    control={control}
+                    name="duration"
+                    render={({field}) => (
+                        <TextField
+                            type="number"
+                            isInvalid={!!errors.duration}
+                            isRequired
+                        >
+                            <Label>Продолжительность (в часах)</Label>
 
-            <div className="flex gap-5">
-                <MyInput
-                    label="Продолжительность (в часах)"
-                    type="number"
-                    id="booking_duration"
-                    placeholder="2"
-                    error={errors.duration}
-                    {...register('duration')}
+                            <Input
+                                placeholder="2"
+                                variant="secondary"
+                                {...field}
+                            />
+
+                            <FieldError>{errors.duration?.message}</FieldError>
+                        </TextField>
+                    )}
                 />
 
-                <MyInput
-                    label="Количество человек"
-                    type="number"
-                    id="booking_peoples"
-                    placeholder="Максимум 5"
-                    error={errors.peoples}
-                    {...register('peoples')}
+                <Controller
+                    control={control}
+                    name="peoples"
+                    render={({field}) => (
+                        <TextField
+                            type="number"
+                            isInvalid={!!errors.peoples}
+                            isRequired
+                        >
+                            <Label>Количество человек</Label>
+
+                            <Input
+                                placeholder="Максимум 5"
+                                variant="secondary"
+                                {...field}
+                            />
+
+                            <FieldError>{errors.peoples?.message}</FieldError>
+                        </TextField>
+                    )}
                 />
             </div>
         </ModalForm>

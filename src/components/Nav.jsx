@@ -1,53 +1,74 @@
-import NavButton from "./Button/NavButton.jsx";
-import client from "../api/client.js";
 import {useContext, useState} from "react";
-import {UserContext} from "../context/UserContext.js";
-import {useUI} from "../hooks/useUI.js";
 import {useNavigate} from "react-router-dom";
-import Loader from "./Loader.jsx";
+import {Spinner, toast} from "@heroui/react";
+
+import client from "../api/client.js";
+import {UserContext} from "../context/UserContext.js";
+
+import NavButton from "./Button/NavButton.jsx";
+import Register from "./Forms/Auth/Register.jsx";
+import Login from "./Forms/Auth/Login.jsx";
 
 export default function Nav() {
     const navigate = useNavigate();
+    const {user, setUser} = useContext(UserContext);
 
     const [loading, setLoading] = useState(false);
 
-    const {user, setUser} = useContext(UserContext);
-    const {setIsOpenLogin, setIsOpenRegister} = useUI();
-
-    const openLogin = () => setIsOpenLogin(true);
-    const openRegister = () => setIsOpenRegister(true);
-
-    const toProfile = () => navigate('/profile');
+    const toProfile = () => navigate("/profile");
+    const toAdminPanel = () => navigate("/admin");
 
     const logout = async () => {
+        if (loading) return;
+
         try {
             setLoading(true);
 
-            await client.post('/logout');
+            await client.post("/logout");
             setUser(null);
-        } catch (e) {
-            console.log(e);
+
+            toast.success("Вы успешно вышли");
+        } catch {
+            toast.danger("Не удалось выйти", {
+                description: "Попробуйте позже",
+            });
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <nav className="flex items-center gap-2">
+        <nav
+            className="flex items-center gap-2"
+            aria-label="Основная навигация"
+        >
             {user ? (
                 <>
-                    <NavButton onClick={toProfile}>Профиль</NavButton>
+                    <NavButton
+                        onClick={user.is_admin ? toAdminPanel : toProfile}
+                    >
+                        {user.is_admin ? "Админ панель" : "Профиль"}
+                    </NavButton>
 
-                    {loading ? (
-                        <Loader/>
-                    ) : (
-                        <NavButton onClick={logout}>Выход</NavButton>
-                    )}
+                    <NavButton
+                        onClick={logout}
+                        disabled={loading}
+                        aria-busy={loading}
+                    >
+                        {loading ? (
+                            <span className="flex items-center gap-2">
+                                <Spinner size="sm"/>
+                                Выход...
+                            </span>
+                        ) : (
+                            "Выход"
+                        )}
+                    </NavButton>
                 </>
             ) : (
                 <>
-                    <NavButton onClick={openRegister}>Регистрация</NavButton>
-                    <NavButton onClick={openLogin}>Вход</NavButton>
+                    <Register/>
+                    <Login/>
                 </>
             )}
         </nav>

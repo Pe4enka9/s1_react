@@ -1,24 +1,19 @@
-import PrimaryButton from "../../../Button/PrimaryButton.jsx";
-import Loader from "../../../Loader.jsx";
 import {useEffect, useState} from "react";
 import client from "../../../../api/client.js";
 import SlideCreateForm from "./Forms/SlideCreateForm.jsx";
-import SlideEditForm from "./Forms/SlideEditForm.jsx";
-import MySelect from "../../../Input/MySelect.jsx";
-import {useForm, useWatch} from "react-hook-form";
+import {Controller, useForm, useWatch} from "react-hook-form";
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import TabCard from "../Cards/TabCard.jsx";
+import {Form, Label, ListBox, Select, Spinner, TextField} from "@heroui/react";
+import SlideEditForm from "./Forms/SlideEditForm.jsx";
 
 export default function SlideTab() {
     const [slides, setSlides] = useState([]);
     const [menus, setMenus] = useState([]);
     const [loading, setLoading] = useState(true);
     const [deleteLoading, setDeleteLoading] = useState(null);
-    const [isOpenCreate, setIsOpenCreate] = useState(false);
-    const [isOpenEdit, setIsOpenEdit] = useState(false);
-    const [currentSlide, setCurrentSlide] = useState(null);
 
-    const {register, control} = useForm();
+    const {control} = useForm();
     const menuId = useWatch({
         control,
         name: 'menu',
@@ -30,13 +25,9 @@ export default function SlideTab() {
             try {
                 setLoading(true);
 
-                const params = new URLSearchParams();
-
-                if (menuId) {
-                    params.append('menu', menuId);
-                }
-
-                const {data} = await client.get(`/slides?${params.toString()}`);
+                const {data} = await client.get(`/slides`, {
+                    params: {menu: menuId},
+                });
 
                 setSlides(data);
             } catch (e) {
@@ -63,13 +54,6 @@ export default function SlideTab() {
         fetchMenus();
     }, []);
 
-    const openCreate = () => setIsOpenCreate(true);
-
-    const openEdit = (menu) => {
-        setCurrentSlide(menu);
-        setIsOpenEdit(true);
-    }
-
     const onDelete = async (id) => {
         try {
             setDeleteLoading(id);
@@ -85,47 +69,58 @@ export default function SlideTab() {
     };
 
     if (loading) {
-        return <Loader center/>;
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <Spinner size="xl"/>
+            </div>
+        );
     }
 
     return (
         <>
-            <SlideCreateForm
-                isOpen={isOpenCreate}
-                setIsOpen={setIsOpenCreate}
-                setSlides={setSlides}
-                menus={menus}
-            />
-
-            <SlideEditForm
-                isOpen={isOpenEdit}
-                setIsOpen={setIsOpenEdit}
-                setSlides={setSlides}
-                slide={currentSlide}
-                menus={menus}
-            />
-
             <div className="flex flex-col gap-3">
                 <div className="flex justify-between items-center">
                     <div className="text-white font-semibold">Слайды меню</div>
-                    <PrimaryButton onClick={openCreate}>Добавить слайд</PrimaryButton>
+                    <SlideCreateForm setSlides={setSlides} menus={menus}/>
                 </div>
 
-                <form>
-                    <MySelect
-                        id="filter-menu"
-                        label="Фильтр по меню"
-                        className="w-fit"
-                        {...register('menu')}
-                    >
-                        <option value="">Все</option>
+                <Form>
+                    <Controller
+                        control={control}
+                        name="menu"
+                        defaultValue=""
+                        render={({field}) => (
+                            <TextField>
+                                <Label>Фильтр по меню</Label>
 
-                        {menus.map(menu => (
-                            !menu.is_booking &&
-                            <option key={menu.id} value={menu.id}>{menu.name}</option>
-                        ))}
-                    </MySelect>
-                </form>
+                                <Select
+                                    className="w-96"
+                                    {...field}
+                                >
+                                    <Select.Trigger>
+                                        <Select.Value/>
+                                        <Select.Indicator/>
+                                    </Select.Trigger>
+
+                                    <Select.Popover>
+                                        <ListBox>
+                                            <ListBox.Item id="" textValue="Все">
+                                                Все
+                                                <ListBox.ItemIndicator/>
+                                            </ListBox.Item>
+                                            {menus.map(menu => (
+                                                <ListBox.Item key={menu.id} id={menu.id} textValue={menu.name}>
+                                                    {menu.name}
+                                                    <ListBox.ItemIndicator/>
+                                                </ListBox.Item>
+                                            ))}
+                                        </ListBox>
+                                    </Select.Popover>
+                                </Select>
+                            </TextField>
+                        )}
+                    />
+                </Form>
 
                 <div className="flex flex-col gap-2">
                     {slides.map(slide => (
@@ -133,7 +128,7 @@ export default function SlideTab() {
                             key={slide.id}
                             item={slide}
                             img={slide.bg_img}
-                            onEdit={() => openEdit(slide)}
+                            onEdit={<SlideEditForm setSlides={setSlides} slide={slide} menus={menus}/>}
                             onDelete={() => onDelete(slide.id)}
                             deleteLoading={deleteLoading}
                         >

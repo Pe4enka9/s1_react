@@ -3,15 +3,23 @@ import {useState} from "react";
 import SliderTab from "./Tabs/Slider/SliderTab.jsx";
 import SlideTab from "./Tabs/Slide/SlideTab.jsx";
 import MenuTab from "./Tabs/Menu/MenuTab.jsx";
+import BookingTab from "./Tabs/Booking/BookingTab.jsx";
 
 export default function AdminPanel() {
-    const [activeTab, setActiveTab] = useState('slider');
+    const [activeTab, setActiveTab] = useState('bookings');
 
     return (
         <>
             <div
                 className="bg-main text-text-secondary font-semibold border border-my-border rounded-xl p-2 flex gap-2 mb-5"
             >
+                <TabItem
+                    onClick={() => setActiveTab('bookings')}
+                    isActive={activeTab === 'bookings'}
+                >
+                    Бронирования
+                </TabItem>
+
                 <TabItem
                     onClick={() => setActiveTab('slider')}
                     isActive={activeTab === 'slider'}
@@ -40,6 +48,10 @@ export default function AdminPanel() {
                 {/*    Администраторы*/}
                 {/*</TabItem>*/}
             </div>
+
+            {activeTab === 'bookings' && (
+                <BookingTab/>
+            )}
 
             {activeTab === 'slider' && (
                 <SliderTab/>

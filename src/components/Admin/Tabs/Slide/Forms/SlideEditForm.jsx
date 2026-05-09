@@ -1,26 +1,22 @@
-import MyInput from "../../../../Input/MyInput.jsx";
 import ModalForm from "../../../../Forms/Base/ModalForm.jsx";
-import {useForm} from "react-hook-form";
+import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import client from "../../../../../api/client.js";
 import {useEffect, useState} from "react";
-import MySelect from "../../../../Input/MySelect.jsx";
-import MyTextarea from "../../../../Input/MyTextarea.jsx";
 import {editSlideSchema} from "../../../../../validations/slide/editSlide.js";
-import MyFileInput from "../../../../Input/MyFileInput.jsx";
-import {handleImgChange} from "../../../../../functions/handleImgChange.js";
+import {Pencil, PencilToSquare} from "@gravity-ui/icons";
+import {Description, FieldError, Input, Label, ListBox, Select, TextArea, TextField} from "@heroui/react";
+import FileInput from "../../../../Input/FileInput.jsx";
 
 export default function SlideEditForm({
-                                          isOpen,
-                                          setIsOpen,
                                           setSlides,
                                           slide,
                                           menus,
                                       }) {
-    const [previewBgImg, setPreviewBgImg] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
 
     const {
-        register,
+        control,
         handleSubmit,
         formState: {
             errors,
@@ -28,6 +24,7 @@ export default function SlideEditForm({
         },
         setError,
         reset,
+        clearErrors,
     } = useForm({
         resolver: zodResolver(editSlideSchema),
         mode: 'onSubmit',
@@ -43,8 +40,7 @@ export default function SlideEditForm({
 
     useEffect(() => {
         if (isOpen && slide) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setPreviewBgImg(null);
+            clearErrors();
 
             reset({
                 menu_id: slide.menu.id,
@@ -54,7 +50,7 @@ export default function SlideEditForm({
                 button: slide.button || '',
             });
         }
-    }, [isOpen, reset, slide]);
+    }, [clearErrors, isOpen, reset, slide]);
 
     const onSubmit = async (data) => {
         const formData = new FormData();
@@ -73,6 +69,8 @@ export default function SlideEditForm({
 
             setSlides(prev => prev.map(item => item.id === data.id ? data : item));
             setIsOpen(false);
+
+            reset();
         } catch (e) {
             const {errors} = e.response.data;
 
@@ -87,63 +85,120 @@ export default function SlideEditForm({
 
     return (
         <ModalForm
+            id="edit-slide-form"
             title="Редактировать слайд меню"
-            button="Сохранить"
             isOpen={isOpen}
             setIsOpen={setIsOpen}
-            onSubmit={handleSubmit(onSubmit)}
-            loading={isSubmitting}
-            isFile
+            sendButton="Сохранить"
+            handleSubmit={handleSubmit(onSubmit)}
+            isSubmitting={isSubmitting}
+            icon={<Pencil/>}
+            enctype="multipart/form-data"
+            trigger={
+                <div
+                    className="w-9 h-9 text-white cursor-pointer border border-my-border rounded-lg p-2 hover:bg-white/10 transition-colors duration-200 flex justify-center items-center"
+                >
+                    <PencilToSquare className="w-full h-full object-contain"/>
+                </div>
+            }
         >
-            <MySelect
-                label="Меню"
-                id="slide-edit-menu-id"
-                error={errors.menu_id}
-                {...register('menu_id')}
-            >
-                <option value="" hidden>Выберите меню</option>
+            <Controller
+                control={control}
+                name="menu_id"
+                render={({field}) => (
+                    <TextField isRequired>
+                        <Label>Меню</Label>
 
-                {menus.map(menu => (
-                    <option key={menu.id} value={menu.id}>{menu.name}</option>
-                ))}
-            </MySelect>
+                        <Select
+                            placeholder="Выберите меню"
+                            variant="secondary"
+                            isInvalid={!!errors.menu_id}
+                            {...field}
+                        >
+                            <Select.Trigger>
+                                <Select.Value/>
+                                <Select.Indicator/>
+                            </Select.Trigger>
 
-            <MyInput
-                label="Заголовок"
-                type="text"
-                id="slide-edit-name"
-                placeholder="Введите заголовок"
-                error={errors.name}
-                {...register('name')}
+                            <Select.Popover>
+                                <ListBox>
+                                    {menus.map(menu => (
+                                        <ListBox.Item key={menu.id} id={menu.id} textValue={menu.name}>
+                                            {menu.name}
+                                            <ListBox.ItemIndicator/>
+                                        </ListBox.Item>
+                                    ))}
+                                </ListBox>
+                            </Select.Popover>
+                        </Select>
+
+                        <FieldError>{errors.menu_id?.message}</FieldError>
+                    </TextField>
+                )}
             />
 
-            <MyTextarea
-                label="Описание"
-                id="slide-edit-description"
-                placeholder="Введите описание"
-                error={errors.description}
-                {...register('description')}
+            <Controller
+                control={control}
+                name="name"
+                render={({field}) => (
+                    <TextField isInvalid={!!errors.name} isRequired>
+                        <Label>Заголовок</Label>
+
+                        <Input
+                            placeholder="Введите заголовок"
+                            variant="secondary"
+                            {...field}
+                        />
+
+                        <FieldError>{errors.name?.message}</FieldError>
+                    </TextField>
+                )}
             />
 
-            <MyFileInput
+            <Controller
+                control={control}
+                name="description"
+                render={({field}) => (
+                    <TextField isInvalid={!!errors.description} isRequired>
+                        <Label>Описание</Label>
+
+                        <TextArea
+                            placeholder="Введите описание"
+                            variant="secondary"
+                            {...field}
+                        />
+
+                        <FieldError>{errors.description?.message}</FieldError>
+                    </TextField>
+                )}
+            />
+
+            <FileInput
+                control={control}
+                name="bg_img"
                 label="Фоновое изображение"
-                id="slide-edit-bg-img"
-                error={errors.bg_img}
-                preview={previewBgImg || slide?.bg_img}
-                {...register('bg_img')}
-                onChange={(e) =>
-                    handleImgChange(e, setPreviewBgImg, register('bg_img').onChange)
-                }
+                description="JPEG, JPG, PNG, WEBP до 2 MB"
+                editPreview={slide.bg_img}
+                isRequired
             />
 
-            <MyInput
-                label="Текст кнопки"
-                secondaryLabel="оставьте пустым, чтобы не показывать кнопку"
-                type="text"
-                id="slide-edit-button"
-                placeholder="Например: Подробнее"
-                error={errors.button}
-                {...register('button')}
+            <Controller
+                control={control}
+                name="button"
+                render={({field}) => (
+                    <TextField isInvalid={!!errors.button}>
+                        <Label>Текст кнопки</Label>
+
+                        <Input
+                            placeholder="Например: Подробнее"
+                            variant="secondary"
+                            {...field}
+                        />
+
+                        <Description>Оставьте пустым, чтобы не показывать кнопку</Description>
+                        <FieldError>{errors.button?.message}</FieldError>
+                    </TextField>
+                )}
             />
         </ModalForm>
     );
