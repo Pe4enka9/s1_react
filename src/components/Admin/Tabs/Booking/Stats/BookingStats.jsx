@@ -1,6 +1,6 @@
 import BookingStatsItem from "./BookingStatsItem.jsx";
 import { useEffect, useState } from "react";
-import client from "../../../../../api/client.js";
+import client from "../../../../../api/api.js";
 
 export default function BookingStats() {
     const [stats, setStats] = useState(null);

@@ -1,6 +1,6 @@
 import Slider from "./components/Slider/Slider.jsx";
 import {useEffect, useState} from "react";
-import client from "./api/client.js";
+import client from "./api/api.js";
 import Menu from "./components/Menu/Menu.jsx";
 import {Spinner} from "@heroui/react";
 

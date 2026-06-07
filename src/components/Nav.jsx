@@ -1,10 +1,8 @@
 import {useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {Spinner, toast} from "@heroui/react";
-
-import client from "../api/client.js";
+import api from "../api/api.js";
 import {UserContext} from "../context/UserContext.js";
-
 import NavButton from "./Button/NavButton.jsx";
 import Register from "./Forms/Auth/Register.jsx";
 import Login from "./Forms/Auth/Login.jsx";
@@ -24,7 +22,7 @@ export default function Nav() {
         try {
             setLoading(true);
 
-            await client.post("/logout");
+            await api.post("/logout");
             setUser(null);
 
             toast.success("Вы успешно вышли");

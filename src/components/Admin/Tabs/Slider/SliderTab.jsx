@@ -1,6 +1,6 @@
 import Slider from "../../../Slider/Slider.jsx";
 import { useEffect, useState } from "react";
-import client from "../../../../api/client.js";
+import client from "../../../../api/api.js";
 import SliderCreateForm from "./Forms/SliderCreateForm.jsx";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import TabCard from "../Cards/TabCard.jsx";

@@ -2,7 +2,7 @@ import {Button, ErrorMessage, FieldError, Input, Label, TextField, toast} from "
 import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {PhoneInput} from "../../Input/PhoneInput.jsx";
-import client, {getCsrf} from "../../../api/client.js";
+import api, {getCsrf} from "../../../api/api.js";
 import {useContext, useEffect, useState} from "react";
 import {UserContext} from "../../../context/UserContext.js";
 import {loginSchema} from "../../../validations/auth/login.js";
@@ -40,7 +40,7 @@ export default function Login() {
     const onSubmit = async (values) => {
         try {
             await getCsrf();
-            const {data} = await client.post('/login', values);
+            const {data} = await api.post('/login', values);
 
             setUser(data);
             setIsOpen(false);

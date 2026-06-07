@@ -5,7 +5,7 @@ import {Pagination} from "swiper/modules";
 import {Spinner} from "@heroui/react";
 
 import Slide from "./Slide.jsx";
-import client from "../../../api/client.js";
+import client from "../../../api/api.js";
 
 import "swiper/css";
 import "swiper/css/pagination";

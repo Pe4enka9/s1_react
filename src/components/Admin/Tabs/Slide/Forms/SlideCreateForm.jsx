@@ -1,7 +1,7 @@
 import ModalForm from "../../../../Forms/Base/ModalForm.jsx";
 import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import client from "../../../../../api/client.js";
+import client from "../../../../../api/api.js";
 import {useEffect, useState} from "react";
 import {createSlideSchema} from "../../../../../validations/slide/createSlide.js";
 import {Plus} from "@gravity-ui/icons";

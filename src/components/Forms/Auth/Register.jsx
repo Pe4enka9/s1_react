@@ -3,7 +3,7 @@ import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {registerSchema} from "../../../validations/auth/register.js";
 import {PhoneInput} from "../../Input/PhoneInput.jsx";
-import client from "../../../api/client.js";
+import client from "../../../api/api.js";
 import {useContext, useEffect, useState} from "react";
 import {UserContext} from "../../../context/UserContext.js";
 import ModalForm from "../Base/ModalForm.jsx";

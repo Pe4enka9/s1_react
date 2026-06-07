@@ -2,7 +2,7 @@ import {Button, FieldError, Input, Label, TextField, toast} from "@heroui/react"
 import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {PhoneInput} from "../Input/PhoneInput.jsx";
-import client from "../../api/client.js";
+import client from "../../api/api.js";
 import {useContext, useEffect, useState} from "react";
 import {UserContext} from "../../context/UserContext.js";
 import {bookingSchema} from "../../validations/booking.js";

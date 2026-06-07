@@ -3,7 +3,7 @@ import {Button, ListBox, Select, Skeleton, toast} from "@heroui/react";
 import Status from "./Status.jsx";
 import {Calendar} from "@gravity-ui/icons";
 import {useEffect, useState} from "react";
-import client from "../api/client.js";
+import client from "../api/api.js";
 import {STATUS_LABELS} from "../constants/statuses.js";
 
 function TableSkeleton() {

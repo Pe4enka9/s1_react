@@ -4,11 +4,10 @@ import Cookies from "js-cookie";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const api = axios.create({
-    baseURL: apiUrl + '/api',
+    baseURL: apiUrl,
     withCredentials: true,
     headers: {
         'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
     },
 });
 
@@ -22,6 +21,6 @@ api.interceptors.request.use(config => {
     return config;
 });
 
-export const getCsrf = () => axios.get(apiUrl + '/sanctum/csrf-cookie', {withCredentials: true});
+export const getCsrf = () => api.get('/csrf-cookie');
 
 export default api;

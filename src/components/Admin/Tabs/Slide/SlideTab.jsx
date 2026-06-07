@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import client from "../../../../api/client.js";
+import client from "../../../../api/api.js";
 import SlideCreateForm from "./Forms/SlideCreateForm.jsx";
 import {Controller, useForm, useWatch} from "react-hook-form";
 import 'react-lazy-load-image-component/src/effects/blur.css';

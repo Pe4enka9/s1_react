@@ -3,7 +3,7 @@ import Home from "./Home.jsx";
 import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
 import {useEffect, useState} from "react";
-import client from "./api/client.js";
+import api from "./api/api.js";
 import {UserContext} from "./context/UserContext.js";
 import Profile from "./components/User/Profile.jsx";
 import Show from "./components/Menu/components/Show.jsx";
@@ -30,10 +30,9 @@ export default function App() {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const {data} = await client.get('/user');
+                const {data} = await api.get('/user');
                 setUser(data);
-            } catch (e) {
-                console.log(e);
+            } catch {
                 setUser(null);
             }
         };
