@@ -1,6 +1,6 @@
 import BookingStatsItem from "./BookingStatsItem.jsx";
-import { useEffect, useState } from "react";
-import client from "../../../../../api/api.js";
+import {useEffect, useState} from "react";
+import api from "../../../../../api/api.js";
 
 export default function BookingStats() {
     const [stats, setStats] = useState(null);
@@ -11,7 +11,7 @@ export default function BookingStats() {
             try {
                 setLoading(true);
 
-                const { data } = await client.get('/bookings/stats');
+                const {data} = await api.get('/bookings/stats');
                 setStats(data);
             } catch (e) {
                 console.log(e);

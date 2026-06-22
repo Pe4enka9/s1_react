@@ -1,4 +1,4 @@
-import Booking from "../../Forms/Booking.jsx";
+import Booking from "../../Forms/Booking/Booking.jsx";
 import {useState} from "react";
 
 export default function Slide({slide, number}) {

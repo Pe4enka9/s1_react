@@ -7,7 +7,7 @@ export default function BookingTab() {
             className="flex flex-col gap-3"
             aria-label="Управление бронированиями"
         >
-            <BookingStats />
+            <BookingStats/>
 
             <BookingTable
                 title="Бронирования"

@@ -35,8 +35,8 @@ export default function MenuCard({menu}) {
                     decoding="async"
                     onLoad={() => setLoaded(true)}
                     onError={(e) => {
-                        e.currentTarget.src = "/fallback-menu.jpg";
-                        setLoaded(true);
+                        // e.currentTarget.src = "/fallback-menu.jpg";
+                        // setLoaded(true);
                     }}
                     className={`
                         absolute inset-0 size-full object-cover

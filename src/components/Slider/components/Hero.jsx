@@ -1,5 +1,5 @@
 import {useState} from "react";
-import Booking from "../../Forms/Booking.jsx";
+import Booking from "../../Forms/Booking/Booking.jsx";
 
 export default function Hero({slider}) {
     const [loaded, setLoaded] = useState(false);
@@ -14,8 +14,8 @@ export default function Hero({slider}) {
                 decoding="async"
                 onLoad={() => setLoaded(true)}
                 onError={(e) => {
-                    e.currentTarget.src = "/fallback-hero.jpg";
-                    setLoaded(true);
+                    // e.currentTarget.src = "/fallback-hero.jpg";
+                    // setLoaded(true);
                 }}
                 className={`
                     absolute inset-0 size-full object-cover z-0

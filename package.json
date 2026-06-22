@@ -3,10 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://pe4enka9.github.io/s1_react",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@heroui/react": "^3.0.3",
