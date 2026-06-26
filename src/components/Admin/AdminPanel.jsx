@@ -4,6 +4,7 @@ import SliderTab from "./Tabs/Slider/SliderTab.jsx";
 import SlideTab from "./Tabs/Slide/SlideTab.jsx";
 import MenuTab from "./Tabs/Menu/MenuTab.jsx";
 import BookingTab from "./Tabs/Booking/BookingTab.jsx";
+import UserTab from "./Tabs/User/UserTab.jsx";
 
 export default function AdminPanel() {
     const [activeTab, setActiveTab] = useState('bookings');
@@ -41,12 +42,12 @@ export default function AdminPanel() {
                     Слайды меню
                 </TabItem>
 
-                {/*<TabItem*/}
-                {/*    onClick={() => setActiveTab('admins')}*/}
-                {/*    isActive={activeTab === 'admins'}*/}
-                {/*>*/}
-                {/*    Администраторы*/}
-                {/*</TabItem>*/}
+                <TabItem
+                    onClick={() => setActiveTab('users')}
+                    isActive={activeTab === 'users'}
+                >
+                    Пользователи
+                </TabItem>
             </div>
 
             {activeTab === 'bookings' && (
@@ -63,6 +64,10 @@ export default function AdminPanel() {
 
             {activeTab === 'slides' && (
                 <SlideTab/>
+            )}
+
+            {activeTab === 'users' && (
+                <UserTab/>
             )}
         </>
     );
