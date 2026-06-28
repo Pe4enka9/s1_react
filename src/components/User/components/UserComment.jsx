@@ -1,11 +1,7 @@
 import {Skeleton} from "@heroui/react";
-import {useContext} from "react";
-import {UserContext} from "../../../context/UserContext.js";
-import {Handset} from "@gravity-ui/icons";
+import {Comment} from "@gravity-ui/icons";
 
-export default function Phone() {
-    const {user} = useContext(UserContext);
-
+export default function UserComment({user}) {
     if (!user) {
         return (
             <div
@@ -29,15 +25,15 @@ export default function Phone() {
     return (
         <dl className="flex items-center gap-3">
             <div className="p-2 bg-primary/40 rounded-lg" aria-hidden="true">
-                <Handset className="w-6 h-6"/>
+                <Comment className="w-6 h-6"/>
             </div>
 
             <div className="flex flex-col">
                 <dt className="text-text-secondary text-xs uppercase font-bold">
-                    Телефон
+                    Комментарий
                 </dt>
                 <dd className="text-white font-medium">
-                    {user.phone}
+                    {user.comment}
                 </dd>
             </div>
         </dl>

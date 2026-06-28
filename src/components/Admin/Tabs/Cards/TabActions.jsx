@@ -4,6 +4,7 @@ import {TrashBin} from "@gravity-ui/icons";
 export default function TabActions({
                                        item,
                                        onEdit,
+                                       onView,
                                        onDelete,
                                        deleteLoading,
                                    }) {
@@ -15,6 +16,8 @@ export default function TabActions({
             role="toolbar"
             aria-label="Действия элемента"
         >
+            {onView}
+
             {onEdit}
 
             {onDelete && (

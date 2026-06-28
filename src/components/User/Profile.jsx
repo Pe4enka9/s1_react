@@ -1,20 +1,50 @@
-import Phone from "./components/Phone.jsx";
+import UserPhone from "./components/UserPhone.jsx";
 import BookingTable from "../BookingTable.jsx";
 import {Avatar, Input, Spinner} from "@heroui/react";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {UserContext} from "../../context/UserContext.js";
 import {Camera, Person} from "@gravity-ui/icons";
 import api from "../../api/api.js";
 
 export default function Profile() {
     const {user, setUser} = useContext(UserContext);
+    const [bookings, setBookings] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [activeStatus, setActiveStatus] = useState('all');
     const [loading, setLoading] = useState(false);
+    const [avatarLoading, setAvatarLoading] = useState(false);
+
+    const [pagination, setPagination] = useState({
+        total: 0,
+        last_page: 1,
+    });
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                setLoading(true);
+
+                const params = {page: currentPage};
+
+                const {data} = await api.get('user/bookings', {params});
+
+                setBookings(data.data);
+                setPagination(data.pagination);
+            } catch (e) {
+                console.log(e);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserData();
+    }, [activeStatus, currentPage]);
 
     const handleFileChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        setLoading(true);
+        setAvatarLoading(true);
 
         const formData = new FormData();
         formData.append('avatar', file);
@@ -30,7 +60,7 @@ export default function Profile() {
         } catch (e) {
             console.error('Ошибка загрузки аватара:', e);
         } finally {
-            setLoading(false);
+            setAvatarLoading(false);
         }
     };
 
@@ -51,7 +81,7 @@ export default function Profile() {
                                     accept="image/*"
                                     onChange={handleFileChange}
                                     className="hidden"
-                                    disabled={loading}
+                                    disabled={avatarLoading}
                                 />
                                 <div className="relative">
                                     <Avatar className="w-24 h-24">
@@ -88,13 +118,23 @@ export default function Profile() {
                     </header>
 
                     <div className="flex flex-col gap-5 p-6">
-                        <Phone/>
+                        <UserPhone user={user}/>
                     </div>
                 </div>
             </section>
 
             <section className="sm:col-span-9" aria-label="Бронирования пользователя">
-                <BookingTable title="Мои бронирования"/>
+                <BookingTable
+                    title="Мои бронирования"
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    activeStatus={activeStatus}
+                    setActiveStatus={setActiveStatus}
+                    bookings={bookings}
+                    setBookings={setBookings}
+                    pagination={pagination}
+                    loading={loading}
+                />
             </section>
         </main>
     );

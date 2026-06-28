@@ -4,6 +4,8 @@ import api from "../../../../api/api.js";
 import TabCard from "../Cards/TabCard.jsx";
 import UserEditForm from "./Forms/UserEditForm.jsx";
 import {Controller, useForm, useWatch} from "react-hook-form";
+import {Link} from "react-router-dom";
+import {Eye} from "@gravity-ui/icons";
 
 export default function UserTab() {
     const [users, setUsers] = useState([]);
@@ -97,6 +99,16 @@ export default function UserTab() {
                             key={user.id}
                             item={user}
                             img={user.avatar}
+                            onView={
+                                <Link to={`/admin/users/${user.id}`}
+                                      className="w-9 h-9 text-white cursor-pointer border border-my-border rounded-lg p-2 hover:bg-white/10 transition-colors duration-200 flex justify-center items-center"
+                                >
+                                    <Eye
+                                        className="w-full h-full object-contain"
+                                        aria-hidden="true"
+                                    />
+                                </Link>
+                            }
                             onEdit={<UserEditForm setUsers={setUsers} user={user}/>}
                         >
                             <div className="text-white">

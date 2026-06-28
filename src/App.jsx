@@ -10,6 +10,7 @@ import Show from "./components/Menu/components/Show.jsx";
 import {AnimatePresence, motion} from "framer-motion";
 import AdminPanel from "./components/Admin/AdminPanel.jsx";
 import {Toast} from "@heroui/react";
+import UserShow from "./components/Admin/Tabs/User/UserShow.jsx";
 
 const PageWrapper = ({children}) => (
     <motion.div
@@ -54,6 +55,7 @@ export default function App() {
                         <Route path="/profile" element={<PageWrapper><Profile/></PageWrapper>}/>
                         <Route path="/menus/:id" element={<PageWrapper><Show/></PageWrapper>}/>
                         <Route path="/admin" element={<PageWrapper><AdminPanel/></PageWrapper>}/>
+                        <Route path="/admin/users/:id" element={<PageWrapper><UserShow/></PageWrapper>}/>
                     </Routes>
                 </AnimatePresence>
             </main>

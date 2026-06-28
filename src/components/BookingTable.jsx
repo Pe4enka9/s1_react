@@ -2,7 +2,7 @@ import ProfileButton from "./Button/ProfileButton.jsx";
 import {ListBox, Pagination, Select, Skeleton, Table, toast} from "@heroui/react";
 import Status from "./Status.jsx";
 import {Calendar} from "@gravity-ui/icons";
-import {useEffect, useMemo, useState} from "react";
+import {useMemo} from "react";
 import api from "../api/api.js";
 import {STATUS_LABELS} from "../constants/statuses.js";
 import clsx from "clsx";
@@ -81,44 +81,16 @@ const columns = [
 
 export default function BookingTable({
                                          title,
+                                         currentPage,
+                                         setCurrentPage,
+                                         activeStatus,
+                                         setActiveStatus,
+                                         bookings,
+                                         setBookings,
+                                         pagination,
+                                         loading,
                                          canEdit = false,
                                      }) {
-    const [bookings, setBookings] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [activeStatus, setActiveStatus] = useState('all');
-    const [currentPage, setCurrentPage] = useState(1);
-    const [pagination, setPagination] = useState({
-        total: 0,
-        last_page: 1,
-    });
-
-    useEffect(() => {
-        const fetchBookings = async () => {
-            try {
-                setLoading(true);
-
-                const params = {
-                    page: currentPage,
-                    status: activeStatus !== 'all' ? activeStatus : undefined,
-                };
-
-                const {data} = await api.get(
-                    !canEdit ? '/user/bookings' : '/bookings',
-                    {params}
-                );
-
-                setBookings(data.data);
-                setPagination(data.pagination);
-            } catch (e) {
-                console.log(e);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchBookings();
-    }, [activeStatus, canEdit, currentPage]);
-
     const setActiveFilter = (status) => {
         setCurrentPage(1);
         setActiveStatus(status);

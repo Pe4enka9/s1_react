@@ -6,6 +6,7 @@ export default function TabCard({
                                     item,
                                     img,
                                     onEdit,
+                                    onView,
                                     onDelete,
                                     deleteLoading,
                                     children,
@@ -23,6 +24,7 @@ export default function TabCard({
             <TabActions
                 item={item}
                 onEdit={onEdit}
+                onView={onView}
                 onDelete={onDelete}
                 deleteLoading={deleteLoading}
             />
