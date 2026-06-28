@@ -6,11 +6,18 @@
     'Segoe UI Symbol', 'Noto Color Emoji';
     --font-oswald: 'Oswald';
     --color-main: #2f2f2f;
+    --color-main-hover: #2f2f2f;
     --color-primary: #e7000b;
     --color-primary-hover: #b5030c;
     --color-secondary: #ff6467;
     --color-text-secondary: #d1d5dc;
     --color-my-border: #757575;
+}
+
+@layer components {
+    .table__cell {
+        @apply bg-main transition-colors;
+    }
 }
 
 :root {

@@ -5,6 +5,7 @@ import {Calendar} from "@gravity-ui/icons";
 import {useEffect, useMemo, useState} from "react";
 import api from "../api/api.js";
 import {STATUS_LABELS} from "../constants/statuses.js";
+import clsx from "clsx";
 
 function TableSkeleton() {
     return (
@@ -125,7 +126,14 @@ export default function BookingTable({
 
     const changeStatus = async (id, status) => {
         try {
-            await api.patch(`/bookings/${id}`, {status});
+            const {data} = await api.patch(`/bookings/${id}`, {status});
+
+            setBookings(prev =>
+                prev.map(booking =>
+                    booking.id === id ? {...booking, status: data.status} : booking
+                )
+            );
+
             toast.success('Статус успешно изменен', {
                 description: `Статус изменен на "${STATUS_LABELS[status].label}"`,
             });
@@ -188,22 +196,45 @@ export default function BookingTable({
                                     <Table.Body items={bookings}>
                                         {booking => (
                                             <Table.Row key={booking.id}>
-                                                <Table.Cell className="font-medium">
+                                                <Table.Cell
+                                                    className={clsx(
+                                                        'font-medium',
+                                                        canEdit && booking.status === 'pending' && 'bg-secondary',
+                                                    )}
+                                                >
                                                     {booking.phone}
                                                 </Table.Cell>
 
-                                                <Table.Cell>
+                                                <Table.Cell
+                                                    className={canEdit && booking.status === 'pending' && 'bg-secondary'}
+                                                >
                                                     <div>{booking.date_formatted}</div>
                                                     <div className="text-text-secondary text-sm">
                                                         {booking.time_formatted}
                                                     </div>
                                                 </Table.Cell>
 
-                                                <Table.Cell>{booking.duration} ч</Table.Cell>
-                                                <Table.Cell>{booking.peoples}</Table.Cell>
-                                                <Table.Cell>{booking.created_at_date_formatted}</Table.Cell>
+                                                <Table.Cell
+                                                    className={canEdit && booking.status === 'pending' && 'bg-secondary'}
+                                                >
+                                                    {booking.duration} ч
+                                                </Table.Cell>
 
-                                                <Table.Cell>
+                                                <Table.Cell
+                                                    className={canEdit && booking.status === 'pending' && 'bg-secondary'}
+                                                >
+                                                    {booking.peoples}
+                                                </Table.Cell>
+
+                                                <Table.Cell
+                                                    className={canEdit && booking.status === 'pending' && 'bg-secondary'}
+                                                >
+                                                    {booking.created_at_date_formatted}
+                                                </Table.Cell>
+
+                                                <Table.Cell
+                                                    className={canEdit && booking.status === 'pending' && 'bg-secondary'}
+                                                >
                                                     {canEdit ? (
                                                         <Select
                                                             className="w-64"
