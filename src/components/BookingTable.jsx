@@ -6,6 +6,7 @@ import {useMemo} from "react";
 import api from "../api/api.js";
 import {STATUS_LABELS} from "../constants/statuses.js";
 import clsx from "clsx";
+import {formatDateHuman, formatTimeHuman} from "../utils/formatDateTime.js";
 
 function TableSkeleton() {
     return (
@@ -180,9 +181,10 @@ export default function BookingTable({
                                                 <Table.Cell
                                                     className={canEdit && booking.status === 'pending' && 'bg-secondary'}
                                                 >
-                                                    <div>{booking.date_formatted}</div>
+                                                    <div>{formatDateHuman(booking.date)}</div>
+
                                                     <div className="text-text-secondary text-sm">
-                                                        {booking.time_formatted}
+                                                        {formatTimeHuman(booking.date)}
                                                     </div>
                                                 </Table.Cell>
 
@@ -201,7 +203,11 @@ export default function BookingTable({
                                                 <Table.Cell
                                                     className={canEdit && booking.status === 'pending' && 'bg-secondary'}
                                                 >
-                                                    {booking.created_at_date_formatted}
+                                                    <div>{formatDateHuman(booking.created_at)}</div>
+
+                                                    <div className="text-text-secondary text-sm">
+                                                        {formatTimeHuman(booking.created_at)}
+                                                    </div>
                                                 </Table.Cell>
 
                                                 <Table.Cell

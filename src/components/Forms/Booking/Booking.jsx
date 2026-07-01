@@ -6,7 +6,7 @@ import api from "../../../api/api.js";
 import {useContext, useEffect, useState} from "react";
 import {UserContext} from "../../../context/UserContext.js";
 import {bookingSchema} from "../../../validations/booking.js";
-import {formatDate, formatDateTimeHuman} from "../../../utils/formatDateTime.js";
+import {formatDate, formatDateTimeCalendar} from "../../../utils/formatDateTime.js";
 import ModalForm from "../Base/ModalForm.jsx";
 import MyCalendar from "../../Input/MyCalendar.jsx";
 import {getLocalTimeZone, now} from "@internationalized/date";
@@ -105,7 +105,7 @@ export default function Booking({button}) {
             reset();
 
             toast.success('Бронирование успешно создано', {
-                description: `Дата: ${formatDateTimeHuman(data.date, data.time)}`,
+                description: `Дата: ${formatDateTimeCalendar(data.date, data.time)}`,
                 indicator: <Calendar/>,
             });
         } catch (e) {
