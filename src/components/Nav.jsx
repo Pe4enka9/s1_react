@@ -43,9 +43,9 @@ export default function Nav() {
             {user ? (
                 <>
                     <NavButton
-                        onClick={user.is_admin ? toAdminPanel : toProfile}
+                        onClick={user.role === 'admin' || user.role === 'owner' ? toAdminPanel : toProfile}
                     >
-                        {user.is_admin ? "Админ панель" : "Профиль"}
+                        {user.role === 'admin' || user.role === 'owner' ? "Админ панель" : "Профиль"}
                     </NavButton>
 
                     <NavButton
